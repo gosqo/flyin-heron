@@ -8,15 +8,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class ViewController {
 
-//    @GetMapping("/")
-//    public String getHome() {
-//        log.info("request to '/' ... ");
-//        return "index";
-//    }
-
-    @GetMapping("member/login")
-    public void viewLogin() {
-        log.info("request to '/member/login' ... ");
+    @GetMapping("/")
+    public String getHome() {
+        log.info("request to \"/\" ... ");
+        return "index";
     }
 
+    @GetMapping("/login")
+    public void viewLogin() { log.info("request to \"/login\" ... "); }
+
+    @GetMapping("test")
+    public void testMapping() { log.info("request to \"/test\" ... "); }
 }
