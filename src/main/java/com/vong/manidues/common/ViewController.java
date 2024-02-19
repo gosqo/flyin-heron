@@ -14,9 +14,6 @@ public class ViewController {
         return "index";
     }
 
-    @GetMapping("/login")
-    public void viewLogin() { log.info("request to \"/login\" ... "); }
-
     @GetMapping("test")
     public void testMapping() { log.info("request to \"/test\" ... "); }
 }

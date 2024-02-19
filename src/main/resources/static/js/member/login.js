@@ -29,7 +29,7 @@ submitButton.addEventListener('click', async (event) => {
             sessionStorage.setItem('jwt', result);
 
             // alert('sign in success.');
-            
+
             self.location = '/';
             
         } else if (response.status === 500) {

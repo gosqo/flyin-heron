@@ -41,7 +41,7 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/error", "/favicon.ico", "/resources/static/img/*", "/js/member/login.js", "/test", "/login", "/login/process", "/member", "/").permitAll()
+                        .requestMatchers("/error", "/favicon.ico", "/img/*", "/js/**", "/css/*", "/test", "/login", "/login/process", "/member", "/").permitAll()
                         .anyRequest().authenticated()
                 )
 //                .formLogin(formLogin ->
@@ -51,7 +51,7 @@ public class SecurityConfig {
 //                                .passwordParameter("password")
 //                                .loginProcessingUrl("/login/process")
 //                                .defaultSuccessUrl("/", true)
-//                                .failureUrl("/login")
+//                                .failureUrl("/")
 //                )
                 .logout(logoutConfig ->
                         logoutConfig.logoutSuccessUrl("/login")
