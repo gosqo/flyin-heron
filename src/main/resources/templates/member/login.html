@@ -10,7 +10,8 @@
 <body>
 <div>
   <div class="container-sm">
-    <form id="form" method="POST" action="/login/process">
+    <form id="form">
+
       <fieldset>
         <legend>로그인</legend>
         <div class="mb-3 row">
@@ -20,16 +21,18 @@
           </div>
         </div>
         <div class="mb-3 row">
-          <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
+          <label for="password" class="col-sm-2 col-form-label">Password</label>
           <div class="col-sm-10">
-            <input type="password" class="form-control" id="inputPassword" name="password" placeholder="password" autocomplete="on">
+            <input type="password" class="form-control" id="password" name="password" placeholder="password" autocomplete="on">
           </div>
         </div>
+
         <div class="mb-3">
           <button class="btn btn-primary" id="submit-form-btn" type="submit">로그인</button>
           <button class="btn btn-secondary" id="go-back-btn" type="button" onclick="self.location.href = '/';">뒤로 가기</button>
         </div>
       </fieldset>
+
     </form>
   </div>
 </div>

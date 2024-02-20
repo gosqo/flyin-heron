@@ -41,7 +41,7 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/error", "/favicon.ico", "/img/*", "/js/**", "/css/*", "/test", "/login", "/login/process", "/member", "/").permitAll()
+                        .requestMatchers("/error", "/favicon.ico", "/img/*", "/js/**", "/css/*", "/signUp", "/test", "/login", "/login/process", "/member", "/").permitAll()
                         .anyRequest().authenticated()
                 )
 //                .formLogin(formLogin ->
