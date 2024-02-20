@@ -7,16 +7,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-
-import java.security.Key;
 
 @Configuration
 @EnableWebSecurity
@@ -36,25 +28,15 @@ public class SecurityConfig {
         http
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
-                .headers().disable()
+                .headers(headers -> headers.disable())
+
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/error", "/favicon.ico", "/img/*", "/js/**", "/css/*", "/signUp", "/test", "/login", "/login/process", "/member", "/").permitAll()
-                        .anyRequest().authenticated()
-                )
-//                .formLogin(formLogin ->
-//                        formLogin
-//                                .loginPage("/login")
-//                                .usernameParameter("email")
-//                                .passwordParameter("password")
-//                                .loginProcessingUrl("/login/process")
-//                                .defaultSuccessUrl("/", true)
-//                                .failureUrl("/")
-//                )
-                .logout(logoutConfig ->
-                        logoutConfig.logoutSuccessUrl("/login")
+                                .requestMatchers("/error", "/img/**", "/js/**", "/css/**", "/signUp", "/login", "/login/process", "/member", "/").permitAll()
+                                .anyRequest().authenticated()
                 );
 
         return http.build();

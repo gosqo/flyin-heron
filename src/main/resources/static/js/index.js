@@ -8,3 +8,16 @@ if (token) {
 } else {
     logoutButton.remove();
 }
+
+function logoutConfirm(event) {
+    const confirmation = confirm('로그아웃 하시겠습니까?')
+    if (confirmation) {
+        sessionStorage.removeItem('jwt');
+    } else {
+        event.preventDefault();
+    }
+}
+
+logoutButton.addEventListener('click', (event) => {
+    logoutConfirm(event);
+});

@@ -26,6 +26,8 @@ public class MemberController {
     public ResponseEntity<Object> login(
             @RequestBody MemberLoginRequest request) throws IOException {
 
+        log.info("request to /login/process ... ");
+
         String token = memberService.login(request.getEmail(), request.getPassword());
         log.info("token: {}", token);
 
@@ -34,6 +36,7 @@ public class MemberController {
 
     @PostMapping("member")
     public ResponseEntity<MemberRegisterResponse> register(@RequestBody MemberRegisterRequest request) {
+        log.info("request 'POST' /member");
         MemberDTO memberDTO = memberService.register(request);
         return new ResponseEntity<>(new MemberRegisterResponse(memberDTO.getNickname()), HttpStatus.OK);
     }
