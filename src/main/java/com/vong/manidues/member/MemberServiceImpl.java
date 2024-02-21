@@ -4,7 +4,7 @@ import com.vong.manidues.member.dto.MemberDTO;
 import com.vong.manidues.member.dto.MemberRegisterRequest;
 import com.vong.manidues.utility.JwtUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,7 +14,7 @@ public class MemberServiceImpl implements MemberService {
     private final JwtUtil jwtUtil;
 
     private final MemberRepository memberRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public MemberDTO register(MemberRegisterRequest request) {
@@ -23,7 +23,7 @@ public class MemberServiceImpl implements MemberService {
                     throw new RuntimeException();
                 });
 
-        Member saveMember = memberRepository.save(request.toEntity(bCryptPasswordEncoder.encode(request.getPassword())));
+        Member saveMember = memberRepository.save(request.toEntity(passwordEncoder.encode(request.getPassword())));
         return MemberDTO.fromEntity(saveMember);
     }
 
@@ -32,7 +32,7 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Member using the email does not exist."));
 
-        if (!bCryptPasswordEncoder.matches(password, member.getPassword())) {
+        if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new RuntimeException("Password does not match.");
         }
 
