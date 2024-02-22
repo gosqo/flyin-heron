@@ -19,7 +19,7 @@ submitButton.addEventListener('click', async (event) => {
         body: JSON.stringify(body),
     }
     try {
-        const response = await fetch('/login/process', requestInit);
+        const response = await fetch('/api/v1/auth/authenticate', requestInit);
         console.log(response);
         console.log(response.body);
 
