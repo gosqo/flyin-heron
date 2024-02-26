@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vong.manidues.config.JwtService;
 import com.vong.manidues.member.Member;
 import com.vong.manidues.member.MemberRepository;
-import com.vong.manidues.member.Role;
 import com.vong.manidues.token.Token;
 import com.vong.manidues.token.TokenRepository;
 import com.vong.manidues.token.TokenType;
@@ -14,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -24,30 +22,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthenticationService {
 
-    private final MemberRepository repository;
+    private final MemberRepository memberRepository;
     private final TokenRepository tokenRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-
-    public AuthenticationResponse register(RegisterRequest request) {
-        Member member = Member.builder()
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .nickname(request.getNickname())
-                .role(Role.USER)
-                .build();
-        Member savedMember = repository.save(member);
-
-        String jwtToken = jwtService.generateToken(member);
-        String refreshToken = jwtService.generateRefreshToken(member);
-
-        saveMemberToken(savedMember, jwtToken);
-        return AuthenticationResponse.builder()
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
-                .build();
-    }
 
     private void revokeAllMemberTokens(Member member) {
         List<Token> validMemberTokens = tokenRepository.findAllValidTokensByMember(member.getId());
@@ -77,7 +55,7 @@ public class AuthenticationService {
                         request.getPassword()
                 )
         );
-        Member member = repository.findByEmail(request.getEmail())
+        Member member = memberRepository.findByEmail(request.getEmail())
                 .orElseThrow();
         String jwtToken = jwtService.generateToken(member);
         String refreshToken = jwtService.generateRefreshToken(member);
@@ -106,7 +84,7 @@ public class AuthenticationService {
         userEmail = jwtService.extractUsername(refreshToken);// extract the userEmail from refreshToken ;
 
         if (userEmail != null) {
-            Member member = this.repository.findByEmail(userEmail).orElseThrow();
+            Member member = this.memberRepository.findByEmail(userEmail).orElseThrow();
 
             if (jwtService.isTokenValid(refreshToken, member)) {
                 var accessToken = jwtService.generateToken(member);

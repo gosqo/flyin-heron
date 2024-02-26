@@ -35,13 +35,13 @@ submitButton.addEventListener('click', async (event) => {
 
         } else {
 
-            const result = await response.json();
+            const result = await response.text();
             console.log(result);
             alert('회원가입에 실패했습니다.');
 
         }
     } catch (error) {
-        console.error("Error: " + error);
+        console.error(error);
     }
 
 });

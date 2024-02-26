@@ -33,6 +33,7 @@ public class SecurityConfig {
             , "/js/**"
             , "/css/**"
             , "/member"
+            , "/signUp"
             , "/"
     };
 

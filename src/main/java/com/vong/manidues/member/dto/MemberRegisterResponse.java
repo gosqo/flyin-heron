@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Getter
 public class MemberRegisterResponse {
 
-    private String nickname;
+    private String message;
 
 }

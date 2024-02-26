@@ -1,5 +1,6 @@
-const token = sessionStorage.getItem('jwt').substring(10, token.length - 2);
-let tokenOnHeader = '';
+const token = sessionStorage.getItem('jwt')
+// .substring(10, token.length - 2);
+// let tokenOnHeader = '';
 
 if (token) {
 
