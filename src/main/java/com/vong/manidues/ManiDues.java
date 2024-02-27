@@ -1,4 +1,4 @@
-package com.vong;
+package com.vong.manidues;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

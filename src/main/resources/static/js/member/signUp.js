@@ -12,6 +12,7 @@ submitButton.addEventListener('click', async (event) => {
         body[key] = value;
     });
 
+    const url = '/member'
     const requestInit = {
         headers: {
             "Content-Type": 'application/json',
@@ -20,7 +21,7 @@ submitButton.addEventListener('click', async (event) => {
         body: JSON.stringify(body),
     }
     try {
-        const response = await fetch('/member', requestInit);
+        const response = await fetch(url, requestInit);
         console.log(response);
         console.log(response.body);
 

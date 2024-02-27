@@ -7,7 +7,7 @@ async function fetchLogout() {
     const url = '/api/v1/auth/logout';
     const requestInit = {
         headers: {
-            'Authorization': tokenOnHeader,
+            'Authorization': refresh_token,
         },
         method: 'POST',
     };
@@ -22,7 +22,8 @@ async function fetchLogout() {
 
             const result = await response.text();
             console.log(result);
-            sessionStorage.removeItem('jwt');
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
 
             alert('로그아웃했습니다.');
 

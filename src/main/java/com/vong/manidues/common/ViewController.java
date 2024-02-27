@@ -15,5 +15,5 @@ public class ViewController {
     }
 
     @GetMapping("/test")
-    public void testMapping() { log.info("request to \"/test\" ... "); }
+    public void test() { log.info("request to \"/test\" ... "); }
 }

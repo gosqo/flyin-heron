@@ -81,7 +81,7 @@ public class AuthenticationService {
             return;
         }
         refreshToken = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(refreshToken);// extract the userEmail from refreshToken ;
+        userEmail = jwtService.extractUsername(refreshToken); // extract the userEmail from refreshToken ;
 
         if (userEmail != null) {
             Member member = this.memberRepository.findByEmail(userEmail).orElseThrow();

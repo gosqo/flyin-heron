@@ -13,23 +13,27 @@ submitButton.addEventListener('click', async (event) => {
 
     const requestInit = {
         headers: {
-            "Content-Type": 'application/json;utf-8',
+            "Content-Type": 'application/json',
         },
         method: 'POST',
         body: JSON.stringify(body),
     }
+
     try {
         const response = await fetch('/api/v1/auth/authenticate', requestInit);
         console.log(response);
-        console.log(response.body);
 
         if (response.status === 200) {
 
-            const result = await response.text();
-            console.log("token: " + result);
-            sessionStorage.setItem('jwt', result);
+            const result = await response.json();
+            console.log(result);
 
-            // alert('sign in success.');
+            console.log("access_token: " + result.access_token);
+            console.log("refresh_token: " + result.refresh_token);
+            localStorage.setItem('access_token', 'Bearer ' + result.access_token);
+            localStorage.setItem('refresh_token', 'Bearer ' + result.refresh_token);
+
+            alert('sign in success.');
 
             self.location = '/';
             
@@ -43,3 +47,4 @@ submitButton.addEventListener('click', async (event) => {
         console.error("Error: ", error);
     }
 });
+ 

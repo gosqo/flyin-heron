@@ -5,10 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -20,11 +17,16 @@ public class AuthenticationController {
 
     private final AuthenticationService service;
 
+    @GetMapping("/jwtValidationTest")
+    public void testTokenValidation(HttpServletRequest request, HttpServletResponse response) {
+        String accessToken = request.getHeader("Authorization");
+    }
+
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> register(
+    public ResponseEntity<AuthenticationResponse> login(
             @RequestBody AuthenticationRequest request
     ) {
-        log.info("request to /api/v1/auth/authenticate");
+        log.info("request to /api/v1/auth/authenticate " + request);
         return ResponseEntity.ok(service.authenticate(request));
     }
 
