@@ -1,10 +1,12 @@
 package com.vong.manidues.auth;
 
+import com.vong.manidues.config.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -16,10 +18,19 @@ import java.io.IOException;
 public class AuthenticationController {
 
     private final AuthenticationService service;
+    private final JwtService jwtService;
+    private final UserDetailsService userDetailsService;
 
-    @GetMapping("/jwtValidationTest")
-    public void testTokenValidation(HttpServletRequest request, HttpServletResponse response) {
+    @GetMapping("/tokenValidationTest")
+    public String testTokenValidation(HttpServletRequest request, HttpServletResponse response) {
         String accessToken = request.getHeader("Authorization");
+        boolean isTokenValid = jwtService.isTokenValid(
+                accessToken, userDetailsService.loadUserByUsername(
+                        jwtService.extractUsername(accessToken)
+                )
+        );
+
+        return "The validation of your token is " + isTokenValid;
     }
 
     @PostMapping("/authenticate")

@@ -35,12 +35,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
+
+        // 헤더 인가가 비었거나, 'Bearer ' 로 시작하지 않는다면 다음 필터로.
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
-        jwt = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(jwt);// extract the userEmail from JWT ;
+
+        // 헤더 인가에 토큰이 있고, 'Bearer ' 로 시작하면,
+        jwt = authHeader.substring(7); // 'Bearer ' 자르고
+        userEmail = jwtService.extractUsername(jwt);// 토큰에서 userEmail 추출;
+
+        // userEmail 이 null 이 아니고, 시큐리티 컨텍스트 홀더에 인증이 null 이면,
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
             boolean isTokenValid = tokenRepository.findByToken(jwt)
