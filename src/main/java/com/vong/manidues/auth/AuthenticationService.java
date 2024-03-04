@@ -1,6 +1,5 @@
 package com.vong.manidues.auth;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vong.manidues.config.JwtService;
 import com.vong.manidues.member.Member;
 import com.vong.manidues.member.MemberRepository;
@@ -8,7 +7,6 @@ import com.vong.manidues.token.Token;
 import com.vong.manidues.token.TokenRepository;
 import com.vong.manidues.token.TokenType;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -70,15 +68,14 @@ public class AuthenticationService {
     }
 
 
-    public void refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response
+    public AuthenticationResponse refreshToken(
+            HttpServletRequest request
     ) throws IOException {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
         final String userEmail;
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return;
+            return null;
         }
         refreshToken = authHeader.substring(7);
         userEmail = jwtService.extractUsername(refreshToken); // extract the userEmail from refreshToken ;
@@ -87,17 +84,18 @@ public class AuthenticationService {
             Member member = this.memberRepository.findByEmail(userEmail).orElseThrow();
 
             if (jwtService.isTokenValid(refreshToken, member)) {
-                var accessToken = jwtService.generateToken(member);
+                String accessToken = jwtService.generateToken(member);
 
                 revokeAllMemberTokens(member);
                 saveMemberToken(member, accessToken);
 
-                var authResponse = AuthenticationResponse.builder()
+                return AuthenticationResponse.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
                         .build();
-                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
             }
         }
+
+        return null;
     }
 }

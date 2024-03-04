@@ -11,6 +11,7 @@ submitButton.addEventListener('click', async (event) => {
         body[key] = value;
     });
 
+    const url = '/api/v1/auth/authenticate';
     const requestInit = {
         headers: {
             "Content-Type": 'application/json',
@@ -20,7 +21,7 @@ submitButton.addEventListener('click', async (event) => {
     }
 
     try {
-        const response = await fetch('/api/v1/auth/authenticate', requestInit);
+        const response = await fetch(url, requestInit);
         console.log(response);
 
         if (response.status === 200) {

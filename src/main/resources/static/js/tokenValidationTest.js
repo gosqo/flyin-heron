@@ -5,20 +5,20 @@ tokenValidationTestButton.addEventListener('click', (event) => {
 });
 
 async function tokenValidationTest() {
-    const url = 'api/v1/auth/tokenValidationTest';
-    const requestInit = {
+    const url = '/tokenValidationTest';
+    let options = {
         headers: {
-            'Authorization': access_token,
+            'Authorization': localStorage.getItem('access_token'),
         }
-    }
+    };
+
     try {
 
-        const response = await fetch(url, requestInit)
-        const data = await response.text();
+        const data = await fetchWithToken(url, options);
 
         const paragraph = document.createElement('p');
         document.body.append(paragraph);
-        paragraph.textContent = data;
+        paragraph.textContent = data.email + " " + data.expiration;
 
     } catch (error) {
         console.error('Error' + error);

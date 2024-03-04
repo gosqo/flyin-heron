@@ -2,12 +2,14 @@ package com.vong.manidues.auth;
 
 import com.vong.manidues.config.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 
@@ -21,18 +23,6 @@ public class AuthenticationController {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
-    @GetMapping("/tokenValidationTest")
-    public String testTokenValidation(HttpServletRequest request, HttpServletResponse response) {
-        String accessToken = request.getHeader("Authorization");
-        boolean isTokenValid = jwtService.isTokenValid(
-                accessToken, userDetailsService.loadUserByUsername(
-                        jwtService.extractUsername(accessToken)
-                )
-        );
-
-        return "The validation of your token is " + isTokenValid;
-    }
-
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> login(
             @RequestBody AuthenticationRequest request
@@ -42,11 +32,10 @@ public class AuthenticationController {
     }
 
     @PostMapping("/refresh-token")
-    public void refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response
+    public ResponseEntity<AuthenticationResponse> refreshToken(
+            HttpServletRequest request
     ) throws IOException {
-        service.refreshToken(request, response);
+        return ResponseEntity.ok(service.refreshToken(request));
     }
 
 }
