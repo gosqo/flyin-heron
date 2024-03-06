@@ -18,13 +18,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
 
-
-        authException.getCause();
-        String Message = authException.getMessage();
-
-        JwtExceptionResponse exceptionResponse = new JwtExceptionResponse();
-        exceptionResponse.setStatusCode(401);
-        exceptionResponse.setExceptionMessage("인증정보가 필요합니다.");
+        JwtExceptionResponse exceptionResponse = new JwtExceptionResponse(401, "인증 정보가 필요합니다.");
 
         ObjectMapper mapper = new ObjectMapper();
         String jsonAsString = mapper.writeValueAsString(exceptionResponse);

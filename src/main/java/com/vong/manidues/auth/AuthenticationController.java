@@ -2,6 +2,7 @@ package com.vong.manidues.auth;
 
 import com.vong.manidues.config.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +34,10 @@ public class AuthenticationController {
 
     @PostMapping("/refresh-token")
     public ResponseEntity<AuthenticationResponse> refreshToken(
-            HttpServletRequest request
+            HttpServletRequest request,
+            HttpServletResponse response
     ) throws IOException {
-        return ResponseEntity.ok(service.refreshToken(request));
+        return ResponseEntity.ok(service.refreshToken(request, response));
     }
 
 }
