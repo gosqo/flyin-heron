@@ -7,7 +7,6 @@ import lombok.Getter;
 @Builder
 public class JwtExceptionResponse {
 
-    private int statusCode;
     private String exceptionMessage;
 
 }

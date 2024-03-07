@@ -1,6 +1,5 @@
 package com.vong.manidues.auth;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vong.manidues.config.JwtService;
 import com.vong.manidues.member.Member;
 import com.vong.manidues.member.MemberRepository;
@@ -8,6 +7,7 @@ import com.vong.manidues.token.JwtExceptionResponse;
 import com.vong.manidues.token.Token;
 import com.vong.manidues.token.TokenRepository;
 import com.vong.manidues.token.TokenType;
+import com.vong.manidues.utility.CustomServletResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -17,8 +17,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -38,6 +36,7 @@ public class AuthenticationService {
     private final TokenRepository tokenRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final CustomServletResponse customServletResponse;
 
     private void revokeAllMemberTokens(Member member) {
         List<Token> validMemberTokens = tokenRepository.findAllValidTokensByMember(member.getId());
@@ -81,28 +80,6 @@ public class AuthenticationService {
                 .build();
     }
 
-
-    /**
-     * <pre>
-     * /api/v1/auth/refresh-token 으로 요청이 올 때,
-     *  리프레시 토큰의 만료 기간에 따라
-     *      리프레시 토큰을 함께 반환할 것인지,
-     *      갱신된 액세스 토큰만 반환할 것인지 기준이 있으면 좋을 것.
-     *  해당 요청의 리프레시 토큰 만료 기간이 1 주일 미만 남은 경우 (만료 전),
-     *      액세스 토큰과 함께 리프레시 토큰도 함께 발급.
-     *  그 외의 경우,
-     *      액세스 토큰만 발급.
-     *     (프론트에서는 'refresh_token' === null 의 경우,
-     *     브라우저에 리프레시 토큰을 저장하지 말 것.)
-     *
-     *  이전에 저장되었던 리프레시 토큰은 디비에서 삭제한다?
-     *
-     * 리프레시 토큰이 필터를 거쳐서 넘어왔다는 것은, 만료 예외를 일으키지 않았다는 뜻.
-     * 인증 서비스 내부에서 한 번 더 유효성을 검사해야할 필요성이 있을까
-     *
-     *
-     * </pre>
-     */
     public AuthenticationResponse refreshToken(
             HttpServletRequest request,
             HttpServletResponse response) throws IOException {
@@ -124,18 +101,6 @@ public class AuthenticationService {
             if (userEmail != null) {
                 Member member = this.memberRepository.findByEmail(userEmail).orElseThrow();
 
-//            if (jwtService.isTokenValid(refreshToken, member)) { // 해당 절이 존재하는 이유?
-                // 토큰 클레임의 이메일과, 디비 조회로 얻어 온 멤버 엔티티의 이메일이 같은지 비교,
-                // 토큰이 만료되었는 지 확인
-
-                // 해당 멤버의 엔티티를 얻기 위해 뽑은 이메일은 요청 헤더에 담겨 들어온 토큰으로 부터 온다.
-                // 당연히 일치할 것,
-                // 만약, 위조된 토큰이라 해당 클레임 이메일로 데이터베이스에 조회되는 개체가 없을 시,Optional<Member>에서 예외를 던짐.
-                // 토큰이 만료되었는지도 확인하는데,
-                // 토큰이 만료되었다면 해당 메서드 트라이 절에서 이미 예외를 던졌을 것. (필터에서도 jwt 오류를 확인, 로그 남김.)
-                // 클라이언트에게는 401 인증 필요 메세지 응답.
-                // 그렇다면 없어도 될 것 같은데?
-
                 String accessToken = jwtService.generateAccessToken(member);
 
                 refreshTokenExpiration = jwtService
@@ -150,7 +115,13 @@ public class AuthenticationService {
                 if (gapToExpiration <= 7) {
                     String renewedRefreshToken = jwtService.generateRefreshToken(member);
 
+
+                    // 만료기간이 7 일 이하로 남아 새로 갱신한 리프레시 토큰을 디비에 저장.
                     saveMemberToken(member, renewedRefreshToken);
+
+                    // 기존의 리프레시 토큰은 삭제하도록
+//                    tokenRepository.delete(tokenRepository.findByToken(refreshToken).orElseThrow());
+                    log.info("deleted token count: {}", tokenRepository.deleteByToken(refreshToken));
 
                     return AuthenticationResponse.builder()
                             .accessToken(accessToken)
@@ -158,29 +129,21 @@ public class AuthenticationService {
                             .build();
                 }
 
-                saveMemberToken(member, refreshToken);
-
+                // 기존의 리프레시 토큰을 반환하는 경우 디비에 해당 토큰이 이미 존재.
+                // 중복 자료가 발생하지 않도록
                 return AuthenticationResponse.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
                         .build();
-//            }
             }
         } catch (ExpiredJwtException | SignatureException | MalformedJwtException e) {
             log.info("caught error: {}", e.getMessage());
 
-            ObjectMapper mapper = new ObjectMapper();
-            String jsonAsString = mapper.writeValueAsString(
+            customServletResponse.jsonResponse(response, 401,
                     JwtExceptionResponse.builder()
-                            .statusCode(401)
-                            .exceptionMessage("인증정보가 필요합니다.")
+                            .exceptionMessage("인증 정보가 필요합니다.")
                             .build()
             );
-
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setContentType(MediaType.APPLICATION_JSON.toString());
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().println(jsonAsString);
         }
 
         return null;
