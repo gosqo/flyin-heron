@@ -80,9 +80,7 @@ public class AuthenticationService {
     }
 
     /**
-     * <p>
      *     액세스 토큰 갱신(refresh) 및 발급.
-     * </p>
      * <pre>
      *     클라이언트는 요청헤더에 리프레시 토큰을 담습니다.
      *     리프레시 토큰이 만료, 위조된 경우 401 상태코드로 응답합니다.
@@ -115,6 +113,7 @@ public class AuthenticationService {
         }
         refreshToken = authHeader.substring(7);
 
+        // refreshToken 의 유효성에 대한 try / catch
         try {
             userEmail = jwtService.extractUsername(refreshToken);// extract the userEmail from refreshToken
             if (userEmail != null) {
@@ -129,17 +128,13 @@ public class AuthenticationService {
                         .toLocalDate();
                 gapToExpiration = ChronoUnit.DAYS.between(today, refreshTokenExpiration);
 
-//                todo 기존 액세스토큰을 저장할 때 사용했던 메서드 삭제 검토 revokeAllMemberTokens(member);
-
                 if (gapToExpiration <= 7) {
                     String renewedRefreshToken = jwtService.generateRefreshToken(member);
 
                     // 만료기간이 7 일 이하로 남아 새로 갱신한 리프레시 토큰을 디비에 저장.
                     saveMemberToken(member, renewedRefreshToken);
 
-                    // 기존의 리프레시 토큰은 삭제하도록
-//                    tokenRepository.delete(tokenRepository.findByToken(refreshToken).orElseThrow());
-                    // todo 로그아웃 서비스에서 사용하는 기존 토크 삭제 로직을 extract n 메서드화 해서 여기서 공유할 것을 고려
+                    // 기존의 리프레시 토큰은 삭제.
                     log.info("deleted token count: {}", tokenRepository.deleteByToken(refreshToken));
 
                     return AuthenticationResponse.builder()

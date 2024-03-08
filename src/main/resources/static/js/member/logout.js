@@ -1,6 +1,5 @@
 logoutButton.addEventListener('click', (event) => {
 
-    console.log(event.target);
     event.preventDefault();
 
     // 로그아웃 컨펌 받는다.
@@ -29,15 +28,11 @@ async function fetchLogout() {
 
     try {
 
-        const response = await fetch(url, requestInit);
-        console.log(response);
-        console.log(response.body);
+        const data = await fetchWithToken(url, requestInit);
+        console.log(data);
 
-        if (response.status === 200) {
+        if (data.statusCode === 200) {
 
-            // todo 로그아웃 서비스 로직에 맞춰서 응답 객체의 변환 함수 맞출 것.
-            const result = await response.text();
-            console.log(result);
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
 
@@ -45,9 +40,8 @@ async function fetchLogout() {
 
             self.location = '/';
 
-        } else /*if (response.status === 500)*/ {
-            const result = await response.json();
-            console.log(result);
+        } else {
+
             alert('logout failed.');
 
         }
