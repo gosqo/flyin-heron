@@ -3,11 +3,10 @@ package com.vong.manidues.auth;
 import com.vong.manidues.config.JwtService;
 import com.vong.manidues.member.Member;
 import com.vong.manidues.member.MemberRepository;
-import com.vong.manidues.token.JwtExceptionResponse;
 import com.vong.manidues.token.Token;
 import com.vong.manidues.token.TokenRepository;
 import com.vong.manidues.token.TokenType;
-import com.vong.manidues.utility.CustomServletResponse;
+import com.vong.manidues.utility.HttpResponseWithBody;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -36,7 +35,7 @@ public class AuthenticationService {
     private final TokenRepository tokenRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private final CustomServletResponse customServletResponse;
+    private final HttpResponseWithBody responseWithBody;
 
     private void revokeAllMemberTokens(Member member) {
         List<Token> validMemberTokens = tokenRepository.findAllValidTokensByMember(member.getId());
@@ -80,6 +79,26 @@ public class AuthenticationService {
                 .build();
     }
 
+    /**
+     * <p>
+     *     액세스 토큰 갱신(refresh) 및 발급.
+     * </p>
+     * <pre>
+     *     클라이언트는 요청헤더에 리프레시 토큰을 담습니다.
+     *     리프레시 토큰이 만료, 위조된 경우 401 상태코드로 응답합니다.
+     *     리프레시 토큰이 검증에 성공하면 데이터 베이스에 조회합니다.
+     *     리프레시 토큰의 만료일을 오늘과 비교합니다.
+     *       만료일까지 7 일 이하로 남았다면,
+     *         accessToken, refreshToken 모두 갱신하여 응답합니다.
+     *       7일 이상 남았다면,
+     *         accessToken 만 갱신하고, 요청헤더의 기존 refreshToken 을 함께 응답합니다.
+     *
+     *     해당 요청이 성공적이라면,
+     *       클라이언트는 갱신된 access_token,
+     *       갱신되거나 기존의 refresh_token 을 모두 브라우저에 저장합니다.
+     *       응답은 json 형태입니다.
+     * </pre>
+     * */
     public AuthenticationResponse refreshToken(
             HttpServletRequest request,
             HttpServletResponse response) throws IOException {
@@ -110,17 +129,17 @@ public class AuthenticationService {
                         .toLocalDate();
                 gapToExpiration = ChronoUnit.DAYS.between(today, refreshTokenExpiration);
 
-                revokeAllMemberTokens(member);
+//                todo 기존 액세스토큰을 저장할 때 사용했던 메서드 삭제 검토 revokeAllMemberTokens(member);
 
                 if (gapToExpiration <= 7) {
                     String renewedRefreshToken = jwtService.generateRefreshToken(member);
-
 
                     // 만료기간이 7 일 이하로 남아 새로 갱신한 리프레시 토큰을 디비에 저장.
                     saveMemberToken(member, renewedRefreshToken);
 
                     // 기존의 리프레시 토큰은 삭제하도록
 //                    tokenRepository.delete(tokenRepository.findByToken(refreshToken).orElseThrow());
+                    // todo 로그아웃 서비스에서 사용하는 기존 토크 삭제 로직을 extract n 메서드화 해서 여기서 공유할 것을 고려
                     log.info("deleted token count: {}", tokenRepository.deleteByToken(refreshToken));
 
                     return AuthenticationResponse.builder()
@@ -138,12 +157,7 @@ public class AuthenticationService {
             }
         } catch (ExpiredJwtException | SignatureException | MalformedJwtException e) {
             log.info("caught error: {}", e.getMessage());
-
-            customServletResponse.jsonResponse(response, 401,
-                    JwtExceptionResponse.builder()
-                            .exceptionMessage("인증 정보가 필요합니다.")
-                            .build()
-            );
+            responseWithBody.jsonResponse(response, 401, "인증정보가 필요합니다.");
         }
 
         return null;

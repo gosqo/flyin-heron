@@ -1,6 +1,5 @@
 package com.vong.manidues.config;
 
-import com.vong.manidues.token.JwtAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
