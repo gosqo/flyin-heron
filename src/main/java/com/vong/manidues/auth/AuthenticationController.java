@@ -1,12 +1,10 @@
 package com.vong.manidues.auth;
 
-import com.vong.manidues.config.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,8 +19,6 @@ import java.io.IOException;
 public class AuthenticationController {
 
     private final AuthenticationService service;
-    private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> login(

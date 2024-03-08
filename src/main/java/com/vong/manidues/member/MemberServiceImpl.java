@@ -12,6 +12,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @SuppressWarnings("null")
     @Override
     public boolean register(MemberRegisterRequest request) {
 

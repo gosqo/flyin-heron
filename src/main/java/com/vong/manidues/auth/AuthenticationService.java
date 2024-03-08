@@ -47,6 +47,7 @@ public class AuthenticationService {
         tokenRepository.saveAll(validMemberTokens);
     }
 
+    @SuppressWarnings("null")
     private void saveMemberToken(Member savedMember, String jwtToken) {
         Token token = Token.builder()
                 .member(savedMember)

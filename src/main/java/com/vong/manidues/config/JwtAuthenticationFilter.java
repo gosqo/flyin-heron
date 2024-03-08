@@ -1,6 +1,5 @@
 package com.vong.manidues.config;
 
-import com.vong.manidues.token.TokenRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
@@ -29,7 +28,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
-    private final TokenRepository tokenRepository;
 
     @Override
     protected void doFilterInternal(
@@ -56,24 +54,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
-                // 토큰이 유효하고,
-                if (jwtService.isTokenValid(jwt, userDetails)) { // 유효성 검토 if 절 삭제 고려. 앞 단계에서 유효성 확인하기 때문.
+                // Principal, Credential, Authorities 매개변수로 UsernamePasswordAuthenticationToken 타입 인스턴스 authToken 생성.
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken( // Authentication 의 구현체 UsernamePasswordAuthenticationToken
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities() // userDetails 객체의 getAuthorities()
+                );
 
-                    // Principal, Credential, Authorities 매개변수로 UsernamePasswordAuthenticationToken 타입 인스턴스 authToken 생성.
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken( // Authentication 의 구현체 UsernamePasswordAuthenticationToken
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities() // userDetails 객체의 getAuthorities()
-                    );
+                // UsernamePasswordAuthenticationToken 인스턴스인 authToken 에 요청 정보를 매개변수로 전달 해 Details 세팅
+                authToken.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request));
 
-                    // UsernamePasswordAuthenticationToken 인스턴스인  authToken 에 요청 정보를 매개변수로 전달 해 Details 세팅
-                    authToken.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request)
-                    );
-
-                    // authToken 을 SecurityContextHolder 에 세팅하고
-                    SecurityContextHolder.getContext().setAuthentication(authToken); // SecurityContext 안에 Authentication 타입으로 담긴다.
-                }
+                // authToken 을 SecurityContextHolder 에 세팅하고
+                SecurityContextHolder.getContext().setAuthentication(authToken); // SecurityContext 안에 Authentication 타입으로 담긴다.
             }
         } catch (ExpiredJwtException | SignatureException | MalformedJwtException e) {
             log.info("caught error: {}\n token is: {}", e.getMessage(), jwt);
