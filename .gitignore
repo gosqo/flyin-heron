@@ -278,3 +278,5 @@ gradle-app.setting
 
 *.yml
 application.properties
+
+src/main/resources/config
