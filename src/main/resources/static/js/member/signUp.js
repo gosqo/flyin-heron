@@ -23,22 +23,18 @@ submitButton.addEventListener('click', async (event) => {
     try {
         const response = await fetch(url, requestInit);
         console.log(response);
-        console.log(response.body);
 
         if(response.status === 200) {
 
             const result = await response.text()
-            console.log("nickname is " + result);
-
-            alert('회원가입을 완료했습니다. 로그인 화면으로 이동합니다.');
+            alert(result);
 
             self.location = '/login';
 
         } else {
 
             const result = await response.text();
-            console.log(result);
-            alert('회원가입에 실패했습니다.');
+            alert(result);
 
         }
     } catch (error) {

@@ -24,7 +24,7 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> login(
             @RequestBody AuthenticationRequest request
     ) {
-        log.info("request to /api/v1/auth/authenticate " + request);
+        log.info("request to /api/v1/auth/authenticate\n Email is: {}", request.getEmail());
         return ResponseEntity.ok(service.authenticate(request));
     }
 
@@ -33,6 +33,7 @@ public class AuthenticationController {
             HttpServletRequest request,
             HttpServletResponse response
     ) throws IOException {
+        log.info("request to /api/v1/auth/refresh-token\n token is: {}", request.getHeader("Authorization"));
         return ResponseEntity.ok(service.refreshToken(request, response));
     }
 

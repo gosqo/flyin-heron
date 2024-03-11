@@ -26,6 +26,7 @@ public class SecurityConfig {
 
     private final String[] WHITE_URLS = {
             "/api/v1/auth/**"
+            , "/favicon.ico"
             , "/login"
             , "/logout"
             , "/error"

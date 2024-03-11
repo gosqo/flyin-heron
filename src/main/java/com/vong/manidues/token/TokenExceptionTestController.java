@@ -23,7 +23,7 @@ public class TokenExceptionTestController {
     public ResponseEntity<Object> tokenValidationTest(HttpServletRequest request) {
         String authHeader = request.getHeader("authorization");
         String jwt = authHeader.substring(7);
-        log.info("request to /tokenValidationTest, token is {}", authHeader);
+        log.info("request to /tokenValidationTest\n token is {}", authHeader);
         Map<String, String> map = new HashMap<>();
         map.put("email", jwtService.extractUsername(jwt));
         map.put("expiration", jwtService.extractClaim(jwt, Claims::getExpiration).toString());

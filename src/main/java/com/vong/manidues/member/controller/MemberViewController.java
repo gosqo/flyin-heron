@@ -16,7 +16,7 @@ public class MemberViewController {
 
     @GetMapping("/signUp")
     public String viewSigunUp() {
-        log.info("request to \"signUp\" ... ");
+        log.info("request to \"/signUp\" ... ");
         return "member/signUp";
     }
 }
