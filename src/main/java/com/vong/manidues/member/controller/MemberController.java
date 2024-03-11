@@ -22,6 +22,12 @@ public class MemberController {
             @RequestBody MemberRegisterRequest request
     ) {
         log.info("request 'POST' /member " + request);
-        return service.register(request) ? ResponseEntity.ok("회원가입에 성공했습니다.") : new ResponseEntity<>("기입한 내용에 문제가 있습니다.\n회원 가입 가이드와 양식에 따라 정보를 기입해주세요.", HttpStatus.CONFLICT);
+        return service.register(request)
+                ? ResponseEntity.ok("회원가입에 성공했습니다.")
+                : new ResponseEntity<>(
+                        "기입한 내용에 문제가 있습니다.\n" +
+                                "회원 가입 가이드와 양식에 따라 정보를 기입해주세요."
+                        , HttpStatus.CONFLICT
+                );
     }
 }

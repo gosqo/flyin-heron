@@ -22,6 +22,10 @@ public class MemberServiceImpl implements MemberService {
             return false;
         }
 
+        if (!request.getPassword().equals(request.getPasswordCheck())) {
+            return false;
+        }
+
         Member member = request.toEntity(passwordEncoder.encode(request.getPassword()));
         memberRepository.save(member);
 
