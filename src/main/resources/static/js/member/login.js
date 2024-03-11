@@ -38,10 +38,11 @@ submitButton.addEventListener('click', async (event) => {
 
             self.location = '/';
             
-        } else if (response.status === 500) {
+        } else {
             const result = await response.json();
-            console.log(result);
-            alert('login failed.');
+            // console.log(result);
+            alert(result.errors[0].defaultMessage);
+
 
         }
     } catch (error) {
