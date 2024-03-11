@@ -5,7 +5,6 @@ import com.vong.manidues.member.Member;
 import com.vong.manidues.member.MemberRepository;
 import com.vong.manidues.token.Token;
 import com.vong.manidues.token.TokenRepository;
-import com.vong.manidues.token.TokenType;
 import com.vong.manidues.utility.HttpResponseWithBody;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -24,7 +23,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -37,24 +35,11 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final HttpResponseWithBody responseWithBody;
 
-    private void revokeAllMemberTokens(Member member) {
-        List<Token> validMemberTokens = tokenRepository.findAllValidTokensByMember(member.getId());
-        if (validMemberTokens.isEmpty()) return;
-        validMemberTokens.forEach(t -> {
-            t.setExpired(true);
-            t.setRevoked(true);
-        });
-        tokenRepository.saveAll(validMemberTokens);
-    }
-
     @SuppressWarnings("null")
     private void saveMemberToken(Member savedMember, String jwtToken) {
         Token token = Token.builder()
                 .member(savedMember)
                 .token(jwtToken)
-                .tokenType(TokenType.BEARER)
-                .revoked(false)
-                .expired(false)
                 .build();
         tokenRepository.save(token);
     }
@@ -66,12 +51,12 @@ public class AuthenticationService {
                         request.getPassword()
                 )
         );
+
         Member member = memberRepository.findByEmail(request.getEmail())
                 .orElseThrow();
         String accessToken = jwtService.generateAccessToken(member);
         String refreshToken = jwtService.generateRefreshToken(member);
 
-        revokeAllMemberTokens(member);
         saveMemberToken(member, refreshToken);
 
         return AuthenticationResponse.builder()

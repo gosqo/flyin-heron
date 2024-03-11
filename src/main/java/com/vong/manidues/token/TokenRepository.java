@@ -14,7 +14,7 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
               FROM Token t
              INNER JOIN Member m
                    ON t.member.id = m.id
-             WHERE m.id = :memberId AND (t.expired = false OR t.revoked = false)
+             WHERE m.id = :memberId
             """)
     List<Token> findAllValidTokensByMember(@Param("memberId") Long memberId);
 
