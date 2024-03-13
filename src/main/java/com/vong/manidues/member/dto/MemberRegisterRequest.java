@@ -19,14 +19,16 @@ public class MemberRegisterRequest {
     @NotBlank(message = "Email 을 입력해주세요.")
     @Pattern(
             regexp =
-                    "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$"
+                    "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$",
+            message = "올바른 형식의 Email 을 입력해주세요."
     )
     private String email;
 
     @NotBlank(message = "비밀번호를 입력해주세요.")
     @Pattern(
             regexp =
-                    "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d~!@#$%^&*()+{}|:\"<>?`=\\[\\]\\-_\\\\;',./]{8,20}$"
+                    "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d~!@#$%^&*()+{}|:\"<>?`=\\[\\]\\-_\\\\;',./]{8,20}$",
+            message = "비밀번호 조합에 영문 대소문자/숫자가 최소 하나씩은 필요합니다."
     )
     @Size(
             min = 8
@@ -38,7 +40,7 @@ public class MemberRegisterRequest {
     @NotBlank(message = "비밀번호 확인란을 입력해주세요.")
     private String passwordCheck;
 
-    @NotBlank(message = "Nickname 을 입력해주세요.")
+    @NotBlank(message = "닉네임을 입력해주세요.")
     private String nickname;
 
     public Member toEntity(String password) {

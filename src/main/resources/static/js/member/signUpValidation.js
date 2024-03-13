@@ -23,7 +23,7 @@ const matchedMessage = '적합';
 const matchedPasswordCheckMessage = '비밀번호와 일치합니다.';
 const notMatchedEmail = 'Email 형식을 확인해주세요.';
 const notMatchedPassword = '비밀번호는 영어 대소문자, 숫자, 특수문자를 조합하여 사용할 수 있습니다.\n최소 8자 이상의 문자가 필요합니다.';
-const notMatchedPasswordCheck = '비밀번호와 일치하지 않습니다.\n비밀번호를 확인하거나 비밀번호 입력을 선행해주세요.';
+const notMatchedPasswordCheck = '비밀번호와 일치하지 않습니다.\n비밀번호를 확인하거나 양식에 맞는 비밀번호 입력을 선행해주세요.';
 const notMatchedNickname = '닉네임은 2자 이상 20자 이하의의 한글, 영어로 사용할 수 있습니다.';
 
 // Event Listeners
@@ -45,6 +45,8 @@ async function addValidationTo(inputElement, regex, matchedMessage, notMatchedMe
 
         const wrapper = inputElement.closest('div');
         const message = document.createElement('pre');
+        message.style.margin = '0.7rem 0 0 0.4rem';
+
         wrapper.append(message)
         message.id = inputElement.name + 'ValidationMessage';
 

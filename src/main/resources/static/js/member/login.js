@@ -38,9 +38,21 @@ submitButton.addEventListener('click', async (event) => {
 
             self.location = '/';
             
+        } else if (response.status === 400) {
+            const result = await response.json();
+
+            if (result.message.includes('Validation')) {
+                alert(result.errors[0].defaultMessage);
+
+            } else {
+                console.log(result);
+                alert(result.additionalMessage);
+
+            }
+            
         } else {
             const result = await response.json();
-            // console.log(result);
+            console.log(result);
             alert(result.errors[0].defaultMessage);
 
 

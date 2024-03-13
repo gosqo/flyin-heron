@@ -33,8 +33,8 @@ submitButton.addEventListener('click', async (event) => {
 
         } else {
 
-            const result = await response.text();
-            alert(result);
+            const result = await response.json();
+            alert(result.errors[0].defaultMessage);
 
         }
     } catch (error) {

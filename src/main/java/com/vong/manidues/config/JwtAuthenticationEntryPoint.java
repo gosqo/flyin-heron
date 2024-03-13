@@ -20,8 +20,15 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
 
+        String message = authException.getMessage();
         HttpResponseWithBody responseWithBody = new HttpResponseWithBody();
-        responseWithBody.jsonResponse(response, 401, "인증정보가 필요합니다.");
+
+        if (message.equals("Bad credentials")) {
+            responseWithBody.jsonResponse(response, 400, "아이디 혹은 비밀번호를 확인해주세요.");
+        } else {
+            responseWithBody.jsonResponse(response, 401, "인증정보가 필요합니다.");
+        }
+
 
     }
 }

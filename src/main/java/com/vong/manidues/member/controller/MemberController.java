@@ -2,6 +2,7 @@ package com.vong.manidues.member.controller;
 
 import com.vong.manidues.member.MemberService;
 import com.vong.manidues.member.dto.MemberRegisterRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,7 @@ public class MemberController {
 
     @PostMapping("/member")
     public ResponseEntity<Object> register(
-            @RequestBody MemberRegisterRequest request
+            @Valid @RequestBody MemberRegisterRequest request
     ) {
         log.info("request 'POST' /member " + request);
         return service.register(request)

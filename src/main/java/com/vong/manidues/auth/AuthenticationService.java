@@ -45,6 +45,8 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        // TODO Authentication, AuthenticationManager,
+        //  UsernamePasswordAuthenticationToken 객체에 대한 학습(구조, 흐름)
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
