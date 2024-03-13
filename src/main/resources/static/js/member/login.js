@@ -49,7 +49,8 @@ submitButton.addEventListener('click', async (event) => {
                 alert(result.additionalMessage);
 
             }
-            
+
+        // TODO else 절 삭제 검토.
         } else {
             const result = await response.json();
             console.log(result);
