@@ -1,11 +1,9 @@
 package com.vong.manidues.member;
 
+import com.vong.manidues.board.Board;
 import com.vong.manidues.token.Token;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,6 +16,7 @@ import java.util.List;
 @Entity
 @Getter
 @Builder
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class Member implements UserDetails {
@@ -52,8 +51,13 @@ public class Member implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "member")
     private List<Token> tokens;
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "member")
+    private List<Board> boards;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
