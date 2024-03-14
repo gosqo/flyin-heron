@@ -19,12 +19,12 @@ public class BoardDTO {
     private LocalDateTime registerDate;
     private LocalDateTime updateDate;
 
-    public BoardDTO(Board board) {
-        this.title = board.getTitle();
-        this.content = board.getContent();
-        this.writer = board.getMember().getNickname();
-        this.registerDate = board.getRegisterDate();
-        this.updateDate = board.getUpdateDate();
+    public BoardDTO(Board entity) {
+        this.title = entity.getTitle();
+        this.content = entity.getContent();
+        this.writer = entity.getMember().getNickname();
+        this.registerDate = entity.getRegisterDate();
+        this.updateDate = entity.getUpdateDate();
     }
 
     public void fromEntity(Board entity) {
