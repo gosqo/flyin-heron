@@ -28,7 +28,7 @@ if (localStorage.getItem('access_token')) {
 
             // data 객체의 요소를 사용해 해당 함수(tokenValidationTest)의 역할을 수행.
             const paragraph = document.createElement('p');
-            document.body.append(paragraph);
+            document.querySelector('body > div').append(paragraph);
             paragraph.textContent = data.email + " " + data.expiration;
 
         // 오류 발생 시 콘솔 프린트.

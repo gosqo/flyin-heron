@@ -103,7 +103,7 @@ public class AuthenticationService {
 
         // refreshToken 의 유효성에 대한 try / catch
         try {
-            userEmail = jwtService.extractUsername(refreshToken);// extract the userEmail from refreshToken
+            userEmail = jwtService.extractUserEmail(refreshToken);// extract the userEmail from refreshToken
             if (userEmail != null) {
                 Member member = this.memberRepository.findByEmail(userEmail).orElseThrow();
 

@@ -25,7 +25,7 @@ public class TokenExceptionTestController {
         String jwt = authHeader.substring(7);
         log.info("request to /tokenValidationTest\n token is {}", authHeader);
         Map<String, String> map = new HashMap<>();
-        map.put("email", jwtService.extractUsername(jwt));
+        map.put("email", jwtService.extractUserEmail(jwt));
         map.put("expiration", jwtService.extractClaim(jwt, Claims::getExpiration).toString());
         return ResponseEntity.ok(map);
     }

@@ -2,6 +2,7 @@ package com.vong.manidues.config;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -48,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 헤더 인가에 토큰이 있고, 'Bearer ' 로 시작하면,
         jwt = authHeader.substring(7); // 'Bearer ' 자르고
         try {
-            userEmail = jwtService.extractUsername(jwt);// 토큰에서 userEmail 추출;
+            userEmail = jwtService.extractUserEmail(jwt);// 토큰에서 userEmail 추출;
             // userEmail 이 null 이 아니고, 시큐리티 컨텍스트 홀더에 인증이 null
             // (요청 헤더에 토큰을 담은 최초의 요청일 시(SecurityContextHolder.SecurityContext.Authentication == null), SecurityContextHolder 에 해당 토큰의 Authentication 을 추가)
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -68,7 +69,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // authToken 을 SecurityContextHolder 에 세팅하고
                 SecurityContextHolder.getContext().setAuthentication(authToken); // SecurityContext 안에 Authentication 타입으로 담긴다.
             }
-        } catch (ExpiredJwtException | SignatureException | MalformedJwtException e) {
+        } catch (ExpiredJwtException | SignatureException | MalformedJwtException | DecodingException e) {
             log.info("caught error: {}\n token is: {}", e.getMessage(), jwt);
         }
 
