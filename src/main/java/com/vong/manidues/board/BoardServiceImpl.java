@@ -17,6 +17,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Long register(String userEmail, BoardRegisterRequest request) {
+
         if (memberRepository.findByEmail(userEmail).isPresent()) {
 
             Board entity = request.toEntity(memberRepository.findByEmail(userEmail).get());
@@ -29,13 +30,41 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public boolean update(BoardUpdateRequest request) {
+    public boolean update(Long id,
+                          String requestUserEmail,
+                          BoardUpdateRequest request) {
 
-        Board storedBoard = boardRepository.findById(request.getId()).orElseThrow(() -> new NoSuchElementException("not exist."));
-        storedBoard.updateTitle(request.getTitle());
-        storedBoard.updateContent(request.getContent());
-        boardRepository.save(storedBoard);
+        Board storedBoard = boardRepository.findById(id).orElseThrow();
 
-        return true;
+        if (storedBoard.getMember().getEmail().equals(requestUserEmail)) {
+
+            storedBoard.updateTitle(request.getTitle());
+            storedBoard.updateContent(request.getContent());
+
+            boardRepository.save(storedBoard);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean delete(Long id, String requestUserEmail) {
+
+        Board storedBoard = boardRepository.findById(id).orElseThrow();
+
+        if (storedBoard.getMember().getEmail().equals(requestUserEmail)) {
+
+            boardRepository.delete(storedBoard);
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public Board get(Long id) {
+        return boardRepository.findById(id).orElse(null);
     }
 }

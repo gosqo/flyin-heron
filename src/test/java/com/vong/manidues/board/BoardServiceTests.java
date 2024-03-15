@@ -16,12 +16,13 @@ public class BoardServiceTests {
     @Test
     public void updateBoard() {
 
-        boolean hasUpdated = service.update(BoardUpdateRequest.builder()
-                .id(20L)
-                .title("updated.")
-                .content("content been updated.")
-                .build()
-        );
+        Long id = 20L;
+
+        boolean hasUpdated = service.update(id, "heron@vong.com",
+                BoardUpdateRequest.builder()
+                        .title("updated again.")
+                        .content("content been updated again.")
+                        .build());
 
         log.info("update performed: {}", hasUpdated);
     }

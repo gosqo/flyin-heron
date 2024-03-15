@@ -9,6 +9,11 @@ public interface BoardService {
 
     public Long register(String userEmail, BoardRegisterRequest request);
 
-    public boolean update(BoardUpdateRequest request);
+    public boolean update(Long id,
+                          String requestUserEmail,
+                          BoardUpdateRequest request);
 
+    public boolean delete(Long id, String requestUserEmail);
+
+    Board get(Long id);
 }
