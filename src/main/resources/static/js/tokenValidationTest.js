@@ -33,7 +33,7 @@ if (localStorage.getItem('access_token')) {
 
         // 오류 발생 시 콘솔 프린트.
         } catch (error) {
-            console.error('Error' + error);
+            console.error('Error ' + error);
         }
     }
 }

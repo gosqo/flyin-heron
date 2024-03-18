@@ -14,33 +14,28 @@
 <body>
   <div class="container">
 
-    <div class="mb-3 row" style="margin-top: 2rem;">
+    <div class="row" style="margin-top: 2rem;">
       <div class="mb-3">
         <button class="btn btn-secondary" id="go-to-list">List</button>
         <button class="btn btn-primary" id="register-board">New board</button>
       </div>
-      <h2>Hello, you're watching /board/{id}<span id="board-id"></span></h2>
+      <h2>Hello, you're watching /board/<span id="board-id"></span></h2>
     </div>
 
-    <div class="d-flex justify-content-between">
-      <div class="row">
-        <div class="display-4" id="board-title">title's here</div>
-        <div class="" id="board-writer"><a href="">tester</a></div>
-      </div>
-      
-      <div class="row">
-        <div class="my-auto align-baseline" id="board-hits">342,253</div>
-        <div class="my-auto align-middle" id="board-date">yy/MM/dd</div>
+    <div class="mb-3">
+      <div class="display-5" id="board-title">title's here. goes Lorem ipsum dolor sit amet consectetur adipisicing
       </div>
     </div>
 
-    <div class="" id="board-content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Eligendi cum unde facere
-      dolores atque assumenda quasi molestias iste culpa error corporis reprehenderit fuga, ex itaque ipsa hic,
-      exercitationem esse quae. Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam dolor, maxime enim ipsa
-      accusantium nulla incidunt. Id provident, voluptas ea officia esse quisquam quo exercitationem in quis saepe
-      itaque iste. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae in vitae delectus, laboriosam
-      doloremque dignissimos consectetur, tempora tempore minima rem exercitationem. Blanditiis praesentium tempora
-      pariatur aliquam delectus eum corrupti necessitatibus?
+    <div class="mb-3 d-flex justify-content-between">
+      <div class="my-auto" id="board-writer"><a href="">tester, nickname goes here.</a></div>
+      <div class="row">
+        <div class="my-auto" id="board-hits" style="text-align: right">342,253</div>
+        <div class="my-auto" id="board-date" style="text-align: right">yy/MM/dd</div>
+      </div>
+    </div>
+
+    <div class="mb-4" id="board-content">
     </div>
 
     <div class="mb-3" id="buttons-area">
@@ -49,7 +44,8 @@
     </div>
   </div>
   <script src="/js/tokenCheck.js"></script>
-  <script src="/js/board/board.js"></script>
+  <script src="/js/board/boardFetch.js"></script>
+  <script src="/js/board/boardDOMManipulation.js"></script>
   <script src="/js/fetchWithToken.js"></script>
 </body>
 

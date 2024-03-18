@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Board {
-//TODO build entity board.
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

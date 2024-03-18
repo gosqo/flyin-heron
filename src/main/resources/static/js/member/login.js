@@ -38,7 +38,7 @@ submitButton.addEventListener('click', async (event) => {
 
             self.location = '/';
             
-        } else if (response.status === 400) {
+        } else {
             const result = await response.json();
 
             if (result.message.includes('Validation')) {
@@ -50,14 +50,7 @@ submitButton.addEventListener('click', async (event) => {
 
             }
 
-        // TODO else 절 삭제 검토.
-        } else {
-            const result = await response.json();
-            console.log(result);
-            alert(result.errors[0].defaultMessage);
-
-
-        }
+        } 
     } catch (error) {
         console.error("Error: ", error);
     }

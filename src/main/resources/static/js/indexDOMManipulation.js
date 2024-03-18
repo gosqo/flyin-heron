@@ -19,6 +19,20 @@ if (localStorage.getItem('access_token')) {
 
     buttonsArea.append(jwtValidationButton);
 
+    // getBoard
+    const getBoardButton = document.createElement('button');
+    
+    getBoardButton.id = 'get-board-btn';
+    getBoardButton.className = 'btn btn-primary';
+    getBoardButton.textContent = 'Get board';
+
+    getBoardButton.addEventListener(
+        'click',
+        () => self.location.href = '/board/12'
+    );
+    
+    buttonsArea.append(getBoardButton);
+
 } else {
     // loginButton
     const loginButton = document.createElement('button');

@@ -1,10 +1,12 @@
 package com.vong.manidues.config;
 
+import com.vong.manidues.member.MemberRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,10 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
+
+    private final MemberRepository memberRepository;
 
     @Value("${application.security.jwt.secret-key}")
     private String secretKey;
@@ -47,8 +52,11 @@ public class JwtService {
             UserDetails userDetails,
             long expiration
     ) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", memberRepository.findByEmail(userDetails.getUsername()).orElseThrow().getId());
         return Jwts.builder()
                 .setClaims(extraClaims)
+                .addClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration ))

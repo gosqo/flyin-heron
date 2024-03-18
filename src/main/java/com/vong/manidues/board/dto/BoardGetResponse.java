@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class BoardGetResponse {
 
+    private Long boardId;
+    private Long writerId;
     private String title;
     private String content;
     private String writer;
@@ -22,6 +24,8 @@ public class BoardGetResponse {
 
     public BoardGetResponse fromEntity(Board entity) {
         return BoardGetResponse.builder()
+                .boardId(entity.getId())
+                .writerId(entity.getMember().getId())
                 .title(entity.getTitle())
                 .content(entity.getContent())
                 .writer(entity.getMember().getNickname())

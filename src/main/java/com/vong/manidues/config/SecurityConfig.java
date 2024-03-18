@@ -36,6 +36,7 @@ public class SecurityConfig {
             , "/member"
             , "/signUp"
             , "/"
+            , "/board/**"
     };
 
     @Bean
