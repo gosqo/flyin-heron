@@ -24,7 +24,7 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
 
-    private final String[] WHITE_URLS = {
+    private final String[] WHITE_LIST_URLS = {
             "/api/v1/auth/**"
             , "/favicon.ico"
             , "/login"
@@ -37,6 +37,7 @@ public class SecurityConfig {
             , "/signUp"
             , "/"
             , "/board/**"
+            , "/error/**"
     };
 
     @Bean
@@ -54,7 +55,7 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(WHITE_URLS).permitAll()
+                        .requestMatchers(WHITE_LIST_URLS).permitAll()
                         .anyRequest().authenticated()
                 )
 

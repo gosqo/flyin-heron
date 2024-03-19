@@ -8,4 +8,5 @@ import lombok.Getter;
 public class BoardUpdateResponse {
     private Long id;
     private boolean isUpdated;
+    private String message;
 }

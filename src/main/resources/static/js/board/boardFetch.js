@@ -1,6 +1,4 @@
-async function getBoard() {
-    const path = window.location.pathname.split('/');
-    const boardId = path[path.length - 1];
+async function getBoard(boardId) {
     console.log(boardId);
     const url = `/api/v1/board/${boardId}`;
     let options = {

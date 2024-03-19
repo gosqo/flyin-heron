@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestController
 @RequestMapping("api/v1/board")
@@ -19,9 +20,12 @@ public class BoardController {
 
     @GetMapping("/{id}")
     public ResponseEntity<BoardGetResponse> getBoard(
-            @PathVariable("id") Long id
-    ) {
+            @PathVariable("id") Long id,
+            HttpServletRequest servletRequest
+    ) throws NoResourceFoundException {
+        log.info("GET /api/v1/board/{} with token: \n{}", id, servletRequestUtility.extractJwtFromHeader(servletRequest));
         Board entity = service.get(id);
+
         return entity != null
                 ? ResponseEntity.ok(
                 new BoardGetResponse().fromEntity(entity)
@@ -62,6 +66,7 @@ public class BoardController {
                 BoardUpdateResponse.builder()
                         .id(id)
                         .isUpdated(true)
+                        .message("해당 게시물의 수정이 처리됐습니다.")
                         .build()
         )
                 : ResponseEntity.badRequest().build();

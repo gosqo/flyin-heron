@@ -18,7 +18,7 @@ submitButton.addEventListener('click', async (event) => {
         },
         method: 'POST',
         body: JSON.stringify(body),
-    }
+    };
 
     try {
         const response = await fetch(url, requestInit);
@@ -52,7 +52,7 @@ submitButton.addEventListener('click', async (event) => {
 
         } 
     } catch (error) {
-        console.error("Error: ", error);
+        console.error('Error: ', error);
     }
 });
  

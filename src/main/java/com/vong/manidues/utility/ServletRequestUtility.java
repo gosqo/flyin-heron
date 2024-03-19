@@ -19,4 +19,12 @@ public class ServletRequestUtility {
         return jwtService.extractUserEmail(accessToken);
     }
 
+    public String extractJwtFromHeader(HttpServletRequest servletRequest) {
+
+        String authHeader = servletRequest.getHeader("Authorization");
+
+        return authHeader.substring(7);
+
+    }
+
 }

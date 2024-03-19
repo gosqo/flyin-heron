@@ -71,6 +71,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         } catch (ExpiredJwtException | SignatureException | MalformedJwtException | DecodingException e) {
             log.info("caught error: {}\n token is: {}", e.getMessage(), jwt);
+            response.setStatus(401);
         }
 
         // 다음 필터로 넘김?

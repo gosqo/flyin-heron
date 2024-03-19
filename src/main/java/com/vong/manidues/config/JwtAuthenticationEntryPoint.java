@@ -23,6 +23,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         String message = authException.getMessage();
         HttpResponseWithBody responseWithBody = new HttpResponseWithBody();
 
+//        another message case: Full authentication is required to access this resource
         if (message.equals("Bad credentials")) {
             responseWithBody.jsonResponse(response, 400, "아이디 혹은 비밀번호를 확인해주세요.");
         } else {

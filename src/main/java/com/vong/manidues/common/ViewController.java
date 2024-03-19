@@ -15,13 +15,15 @@ public class ViewController {
         return "index";
     }
 
-    @GetMapping("/test")
-    public void test() { log.info("request to \"/test\" ... "); }
-
     @GetMapping("/board/{id}")
     public String getBoard(@PathVariable("id") Long id) {
         log.info("request to board id: {}", id);
-        // TODO handling 404
         return "board/board";
+    }
+
+    @GetMapping("/board/{id}/modify")
+    public String modifyBoard(@PathVariable("id") Long id) {
+        log.info("request to board id: {}", id);
+        return "board/boardModify";
     }
 }
