@@ -1,4 +1,4 @@
-window.onload = async () => {
+window.addEventListener('load', async () => {
     const path = window.location.pathname.split('/');
     const boardId = path[path.length - 1];
     const buttonsArea = document.querySelector('#buttons-area')
@@ -102,7 +102,7 @@ window.onload = async () => {
             );
         }
     }
-}
+});
 
 function parseJwt(token) {
     const base64Url = token.split('.')[1];

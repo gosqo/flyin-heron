@@ -1,4 +1,4 @@
-window.onload = async () => {
+window.addEventListener('load', async () => {
     const path = window.location.pathname.split('/');
     const boardId = path[path.length - 2];
     const buttonsArea = document.querySelector('#buttons-area')
@@ -86,7 +86,7 @@ window.onload = async () => {
             );
         }
     }
-}
+});
 
 function formToBody() {
 

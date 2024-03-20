@@ -28,7 +28,7 @@ if (localStorage.getItem('access_token')) {
 
     getBoardButton.addEventListener(
         'click',
-        () => self.location.href = '/board/12'
+        () => self.location.href = '/board/14'
     );
     
     buttonsArea.append(getBoardButton);

@@ -1,6 +1,4 @@
-// TODO 페이지 로드 시 스토리지 확인해서 띰 적용.
-
-window.onload = () => {
+window.addEventListener('load', () => {
 
     const themeToggleButton = document.querySelector('#theme-toggle-button');
     var localTheme = localStorage.getItem('themePreference');
@@ -13,24 +11,30 @@ window.onload = () => {
         themeToggleButtonText(themeToggleButton, localTheme);
 
     } else {
+
         toggleTheme(themeToggleButton, localTheme);
+
     }
 
     themeToggleButton.addEventListener('click', () => {
 
         if (localTheme === 'light') {
+
             localStorage.setItem('themePreference', 'dark');
             localTheme = localStorage.getItem('themePreference');
 
             toggleTheme(themeToggleButton, localTheme);
+
         } else {
+
             localStorage.setItem('themePreference', 'light');
             localTheme = localStorage.getItem('themePreference');
 
             toggleTheme(themeToggleButton, localTheme);
+
         }
     });
-};
+});
 
 function toggleTheme(themeToggleButton, preference) {
 
@@ -48,12 +52,14 @@ function toggleTheme(themeToggleButton, preference) {
 }
 
 function themeToggleButtonText(themeToggleButton, preference) {
+    
     themeToggleButton.textContent = preference === 'light'
         ? 'Dark mode'
         : 'Light mode';
 }
 
 function toggleDarkModeCss(preference) {
+
     if (preference === 'dark') {
 
         var darkModeCss = document.createElement('link');

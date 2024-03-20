@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestController
 @RequestMapping("api/v1/board")
@@ -22,7 +21,7 @@ public class BoardController {
     public ResponseEntity<BoardGetResponse> getBoard(
             @PathVariable("id") Long id,
             HttpServletRequest servletRequest
-    ) throws NoResourceFoundException {
+    ) {
         log.info("GET /api/v1/board/{} with token: \n{}", id, servletRequestUtility.extractJwtFromHeader(servletRequest));
         Board entity = service.get(id);
 
