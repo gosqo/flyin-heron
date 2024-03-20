@@ -1,5 +1,6 @@
 package com.vong.manidues.common;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,14 +17,19 @@ public class ViewController {
     }
 
     @GetMapping("/board/{id}")
-    public String getBoard(@PathVariable("id") Long id) {
+    public String getBoard(@NotNull @PathVariable("id") Long id) {
         log.info("request to board id: {}", id);
         return "board/board";
     }
 
     @GetMapping("/board/{id}/modify")
-    public String modifyBoard(@PathVariable("id") Long id) {
+    public String modifyBoard(@NotNull @PathVariable("id") Long id) {
         log.info("request to board id: {}", id);
         return "board/boardModify";
+    }
+
+    @GetMapping("/boardList")
+    public String getBoardListView() {
+        return "board/boardList";
     }
 }

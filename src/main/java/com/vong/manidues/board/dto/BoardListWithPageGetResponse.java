@@ -1,32 +1,35 @@
 package com.vong.manidues.board.dto;
 
 import com.vong.manidues.board.Board;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import org.springframework.data.domain.Page;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
+@Builder
 public class BoardListWithPageGetResponse {
 
     private List<BoardGetResponse> boardList;
 
-    public void fromEntityList(Page<Board> entityList) {
+//    public BoardListWithPageGetResponse toList(Page<BoardGetResponse> page) {
+//        return BoardListWithPageGetResponse.builder()
+//                .boardList(page.stream().toList())
+//                .build();
+//    }
+
+    public BoardListWithPageGetResponse fromEntityList(List<Board> entityList) {
 
         List<BoardGetResponse> temporalList = new ArrayList<>();
-
         for (Board board : entityList) {
-            BoardGetResponse dto = new BoardGetResponse();
-            dto.fromEntity(board);
-            temporalList.add(dto);
+            temporalList.add(new BoardGetResponse().fromEntity(board));
         }
 
-        this.boardList = temporalList;
+        return BoardListWithPageGetResponse.builder()
+                .boardList(temporalList)
+                .build();
     }
-
 }

@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head th:insert="~{fragment/htmlHead}">
+<head>
+<thymeleaf th:replace="~{fragment/htmlHead}"></thymeleaf>
+  <script defer src="/js/tokenCheck.js"></script>
+  <script defer src="/js/board/boardFetch.js"></script>
+  <script defer src="/js/board/boardDOM.js"></script>
+  <script defer src="/js/fetchWithToken.js"></script>
   <title>Board</title>
 </head>
 
@@ -39,10 +43,7 @@
 
     </div>
   </div>
-  <script src="/js/tokenCheck.js"></script>
-  <script src="/js/board/boardFetch.js"></script>
-  <script src="/js/board/boardDOM.js"></script>
-  <script src="/js/fetchWithToken.js"></script>
+
 </body>
 
 </html>

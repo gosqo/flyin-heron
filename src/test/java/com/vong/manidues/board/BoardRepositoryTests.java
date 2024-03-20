@@ -33,9 +33,10 @@ public class BoardRepositoryTests {
         Pageable pageable = PageRequest.of(0, pageSize);
 
         Page<Board> boardPage = boardRepository.findAll(pageable);
+        List<Board> boardPage0 = boardPage.getContent();
 
         BoardListWithPageGetResponse response = new BoardListWithPageGetResponse();
-        response.fromEntityList(boardPage);
+        response.fromEntityList(boardPage0);
 
         log.info("{}", boardPage);
         log.info("\n{}", response);

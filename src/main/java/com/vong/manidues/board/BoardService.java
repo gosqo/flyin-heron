@@ -2,18 +2,22 @@ package com.vong.manidues.board;
 
 import com.vong.manidues.board.dto.BoardRegisterRequest;
 import com.vong.manidues.board.dto.BoardUpdateRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
 public interface BoardService {
 
-    public Long register(String userEmail, BoardRegisterRequest request);
+    Page<Board> getBoardPage(Pageable pageable);
 
-    public boolean update(Long id,
-                          String requestUserEmail,
-                          BoardUpdateRequest request);
+    Long register(String userEmail, BoardRegisterRequest request);
 
-    public boolean delete(Long id, String requestUserEmail);
+    boolean update(Long id,
+                   String requestUserEmail,
+                   BoardUpdateRequest request);
+
+    boolean delete(Long id, String requestUserEmail);
 
     Board get(Long id);
 }

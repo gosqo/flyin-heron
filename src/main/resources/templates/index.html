@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-
-<head th:insert="~{fragment/htmlHead}">
-  <title>Index</title>
+<head>
+<thymeleaf th:replace="~{fragment/htmlHead}"></thymeleaf>
+  <script defer src="/js/tokenCheck.js"></script>
+  <script defer src="/js/indexDOM.js"></script>
+  <script defer src="/js/tokenValidationTest.js"></script>
+  <script defer src="/js/fetchWithToken.js"></script>
+  <title>Home</title>
 </head>
-
 <body>
   <div th:replace="~{fragment/header :: header}"></div>
   
@@ -15,11 +18,7 @@
     <div class="mb-3" id="buttons-area"></div>
     <div class="mb-3" id="test-jwt-area"></div>
   </div>
-  <script src="/js/tokenCheck.js"></script>
-  <script src="/js/indexDOM.js"></script>
-  <script src="/js/tokenValidationTest.js"></script>
-  <script src="/js/member/logout.js"></script>
-  <script src="/js/fetchWithToken.js"></script>
+
 </body>
 
 </html>

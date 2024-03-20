@@ -5,6 +5,8 @@ import com.vong.manidues.utility.ServletRequestUtility;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +18,13 @@ public class BoardController {
 
     private final BoardService service;
     private final ServletRequestUtility servletRequestUtility;
+
+    @GetMapping("/")
+    public ResponseEntity<BoardListWithPageGetResponse> getBoardList(
+            @PageableDefault Pageable pageable
+            ) {
+        return ResponseEntity.ok(new BoardListWithPageGetResponse().fromEntityList(service.getBoardPage(pageable).getContent()));
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<BoardGetResponse> getBoard(

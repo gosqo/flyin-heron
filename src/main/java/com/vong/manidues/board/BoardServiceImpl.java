@@ -4,6 +4,8 @@ import com.vong.manidues.board.dto.BoardRegisterRequest;
 import com.vong.manidues.board.dto.BoardUpdateRequest;
 import com.vong.manidues.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
@@ -14,6 +16,11 @@ public class BoardServiceImpl implements BoardService {
 
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
+
+    @Override
+    public Page<Board> getBoardPage(Pageable pageable) {
+        return boardRepository.findAll(pageable);
+    }
 
     @Override
     public Long register(String userEmail, BoardRegisterRequest request) {

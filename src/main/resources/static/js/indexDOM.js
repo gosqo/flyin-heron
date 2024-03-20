@@ -15,7 +15,7 @@ if (localStorage.getItem('access_token')) {
 
     jwtValidationButton.id = 'jwtValidationButton';
     jwtValidationButton.className = 'btn btn-primary';
-    jwtValidationButton.textContent = 'test jwt';
+    jwtValidationButton.textContent = 'Test JWT';
 
     buttonsArea.append(jwtValidationButton);
 
@@ -24,11 +24,11 @@ if (localStorage.getItem('access_token')) {
     
     getBoardButton.id = 'get-board-btn';
     getBoardButton.className = 'btn btn-primary';
-    getBoardButton.textContent = 'Get board';
+    getBoardButton.textContent = 'Board List';
 
     getBoardButton.addEventListener(
         'click',
-        () => self.location.href = '/board/14'
+        () => self.location.href = '/boardList'
     );
     
     buttonsArea.append(getBoardButton);

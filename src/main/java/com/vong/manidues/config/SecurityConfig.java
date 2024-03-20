@@ -38,6 +38,7 @@ public class SecurityConfig {
             , "/"
             , "/board/**"
             , "/error/**"
+            , "/boardList"
     };
 
     @Bean

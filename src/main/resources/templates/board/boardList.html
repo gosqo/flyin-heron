@@ -1,16 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head th:insert="~{fragment/htmlHead}">
+<head>
+<thymeleaf th:replace="~{fragment/htmlHead}"></thymeleaf>
+  <script defer src="/js/tokenCheck.js"></script>
+  <script defer src="/js/fetchWithToken.js"></script>
+  <script defer src="/js/board/boardListFetch.js"></script>
+  <script defer src="/js/board/boardListDOM.js"></script>
   <title>Board List</title>
 </head>
 
 <body>
   <div th:replace="~{fragment/header :: header}"></div>
 
-  <div class="container">
+  <div class="container" id="container">
 
   </div>
+
+  
 
 </body>
 
