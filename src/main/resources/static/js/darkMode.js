@@ -2,43 +2,59 @@
 
 window.onload = () => {
 
-    const ThemeToggleButton = document.querySelector('#theme-toggle-button');
-    var localTheme = localStorage.getItem('themePreference')
+    const themeToggleButton = document.querySelector('#theme-toggle-button');
+    var localTheme = localStorage.getItem('themePreference');
 
     if (!localTheme) {
+
         localStorage.setItem('themePreference', 'light');
-        ThemeToggleButton.textContent = 'Dark mode';
+        localTheme = localStorage.getItem('themePreference');
+
+        themeToggleButtonText(themeToggleButton, localTheme);
+
     } else {
-        if (localTheme === 'light') {
-            ThemeToggleButton.textContent = 'Dark mode';
-        } else {
-            ThemeToggleButton.textContent = 'Light mode';
-        }
+        toggleTheme(themeToggleButton, localTheme);
     }
 
-    ThemeToggleButton.addEventListener('click', () => {
+    themeToggleButton.addEventListener('click', () => {
 
-        const userThemePreference = localStorage.getItem('themePreference');
-
-        if (userThemePreference === 'light') {
+        if (localTheme === 'light') {
             localStorage.setItem('themePreference', 'dark');
-            var updatedTheme = localStorage.getItem('themePreference');
-            toggleTheme(ThemeToggleButton, updatedTheme);
+            localTheme = localStorage.getItem('themePreference');
+
+            toggleTheme(themeToggleButton, localTheme);
         } else {
             localStorage.setItem('themePreference', 'light');
-            var updatedTheme = localStorage.getItem('themePreference');
-            toggleTheme(ThemeToggleButton, updatedTheme);
+            localTheme = localStorage.getItem('themePreference');
+
+            toggleTheme(themeToggleButton, localTheme);
         }
-
-
-
     });
 };
 
-function toggleTheme(ThemeToggleButton, updatedTheme) {
+function toggleTheme(themeToggleButton, preference) {
 
-    if (updatedTheme === 'dark') {
-        ThemeToggleButton.textContent = 'Light mode';
+    if (preference === 'dark') {
+
+        themeToggleButtonText(themeToggleButton, preference);
+        toggleDarkModeCss(preference);
+
+    } else if (preference === 'light') {
+
+        themeToggleButtonText(themeToggleButton, preference);
+        toggleDarkModeCss(preference);
+
+    }
+}
+
+function themeToggleButtonText(themeToggleButton, preference) {
+    themeToggleButton.textContent = preference === 'light'
+        ? 'Dark mode'
+        : 'Light mode';
+}
+
+function toggleDarkModeCss(preference) {
+    if (preference === 'dark') {
 
         var darkModeCss = document.createElement('link');
         darkModeCss.setAttribute('rel', 'stylesheet');
@@ -46,8 +62,7 @@ function toggleTheme(ThemeToggleButton, updatedTheme) {
 
         document.querySelector('head').appendChild(darkModeCss);
 
-    } else if (updatedTheme === 'light') {
-        ThemeToggleButton.textContent = 'Dark mode';
+    } else {
 
         var targetNode = document.querySelector('link[href="/css/darkMode.css"]');
         if (targetNode) targetNode.remove();
