@@ -1,56 +1,60 @@
 if (localStorage.getItem('access_token')) {
     const logoutButton = document.querySelector('#logoutButton');
 
-    logoutButton.addEventListener('click', (event) => {
+    if (logoutButton) {
 
-        event.preventDefault();
+        logoutButton.addEventListener('click', (event) => {
 
-        // 로그아웃 컨펌 받는다.
-        if (logoutConfirm()) {
+            event.preventDefault();
 
-            // 컨펌 결과에 따라 퐽취, 엘스 리턴.
-            fetchLogout()
+            // 로그아웃 컨펌 받는다.
+            if (logoutConfirm()) {
 
-        } else return;
-        
-    });
+                // 컨펌 결과에 따라 퐽취, 엘스 리턴.
+                fetchLogout()
 
-    function logoutConfirm() {
-        const confirmation = confirm('로그아웃 하시겠습니까?');
-        return confirmation;
+            } else return;
+
+        });
+
     }
+}
 
-    async function fetchLogout() {
-        const url = '/api/v1/auth/logout';
-        const requestInit = {
-            headers: {
-                'Authorization': localStorage.getItem('refresh_token'),
-            },
-            method: 'POST',
-        };
+function logoutConfirm() {
+    const confirmation = confirm('로그아웃 하시겠습니까?');
+    return confirmation;
+}
 
-        try {
+async function fetchLogout() {
+    const url = '/api/v1/auth/logout';
+    const requestInit = {
+        headers: {
+            'Authorization': localStorage.getItem('refresh_token'),
+        },
+        method: 'POST',
+    };
 
-            const data = await fetchWithToken(url, requestInit);
-            console.log(data);
+    try {
 
-            if (data.statusCode === 200) {
+        const data = await fetchWithToken(url, requestInit);
+        console.log(data);
 
-                localStorage.removeItem('access_token');
-                localStorage.removeItem('refresh_token');
+        if (data.statusCode === 200) {
 
-                alert('로그아웃했습니다.');
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
 
-                self.location = '/';
+            alert('로그아웃했습니다.');
 
-            } else {
+            self.location = '/';
 
-                alert('logout failed.');
+        } else {
 
-            }
+            alert('logout failed.');
 
-        } catch (error) {
-            console.error("Error: ", error);
         }
+
+    } catch (error) {
+        console.error("Error: ", error);
     }
 }

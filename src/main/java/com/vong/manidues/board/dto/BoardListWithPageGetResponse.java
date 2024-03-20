@@ -15,12 +15,6 @@ public class BoardListWithPageGetResponse {
 
     private List<BoardGetResponse> boardList;
 
-//    public BoardListWithPageGetResponse toList(Page<BoardGetResponse> page) {
-//        return BoardListWithPageGetResponse.builder()
-//                .boardList(page.stream().toList())
-//                .build();
-//    }
-
     public BoardListWithPageGetResponse fromEntityList(List<Board> entityList) {
 
         List<BoardGetResponse> temporalList = new ArrayList<>();
