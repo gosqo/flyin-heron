@@ -1,6 +1,6 @@
-async function getBoardList() {
+async function getBoardList(pageNumber) {
     // TODO page control.
-    const url = `/api/v1/board/`;
+    const url = `/api/v1/boards/${pageNumber}`;
     let options = {
         headers: {
             'Authorization': localStorage.getItem('access_token')

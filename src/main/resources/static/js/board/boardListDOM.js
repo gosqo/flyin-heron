@@ -1,15 +1,105 @@
 window.addEventListener('load', async () => {
-    const data = await getBoardList();
-    // console.log(data);
-    const boardList = data.boardList;
+    const path = window.location.pathname.split('/');
+    const uriPageNumber = parseInt(path[path.length - 1]);
+    const data = await getBoardList(typeof uriPageNumber === 'number' ? uriPageNumber : 1);
+    console.log(data);
+    const boardPage = data.boardPage;
+    const boardPageContent = boardPage.content;
+    const boardPageTotalPages = boardPage.totalPages;
+    const boardPageNumber = boardPage.number;
+    console.log(boardPageNumber);
 
-    boardList.forEach(board => {
+    boardPageContent.forEach(board => {
         console.log(board);
         createBoardNodes(board);
         addClickEvent(board.boardId);
     });
+
+    createPageItemsWrapper(boardPageTotalPages, boardPageNumber);
+
     
 });
+
+function createPageItem(targetNumber, boardPageNumber) {
+
+    const pageItem = document.createElement('li');
+    pageItem.className = 'page-item';
+    
+        const pageLink = document.createElement('a');
+        pageLink.className = 'page-link';
+        pageLink.href = `/boards/${targetNumber + 1}`;
+        pageLink.textContent = targetNumber + 1;
+
+        if (boardPageNumber === targetNumber) 
+        pageLink.classList.add('active');
+
+        pageItem.append(pageLink);
+
+    return pageItem;
+}
+
+function createPageItemsWrapper(boardPageTotalPages, boardPageNumber) {
+
+    const paginationContainer = document.querySelector('#pagination-container');
+
+    // variables for iteration (start|endNumber)
+    const startNumber = boardPageNumber > 1 // 1
+            ? boardPageNumber - 2 // 0
+            : 0; // 0
+
+    const endNumber = boardPageNumber + 3 > boardPageTotalPages
+            ? boardPageTotalPages
+            : boardPageNumber + 3;
+
+    const pagination = document.createElement('ul');
+    pagination.className = 'pagination justify-content-center';
+    pagination.id = 'pagination-ul';
+
+    paginationContainer.append(pagination);
+
+    if (boardPageNumber > 2) {
+        const prevItem = document.createElement('li');
+        prevItem.className = 'page-item';
+    
+        pagination.append(prevItem);
+
+        const pageLink = document.createElement('a');
+        pageLink.className = 'page-link';
+        pageLink.href = `/boards/${boardPageNumber + 1 - 3}`;
+
+        prevItem.append(pageLink);
+        
+        const prevChar = document.createElement('span');
+        prevChar.ariaHidden = 'true';
+        prevChar.textContent = '«';
+
+        pageLink.append(prevChar);
+
+    }
+
+    
+    for (i = startNumber; i < endNumber; i++)
+    pagination.append(createPageItem(i, boardPageNumber));
+
+    if (boardPageNumber < boardPageTotalPages - 3) {
+        const nextItem = document.createElement('li');
+        nextItem.className = 'page-item';
+
+        pagination.append(nextItem);
+
+        const pageLink = document.createElement('a');
+        pageLink.className = 'page-link';
+        pageLink.href = `/boards/${boardPageNumber + 1 + 3}`;
+
+        nextItem.append(pageLink);
+        
+        const nextChar = document.createElement('span');
+        nextChar.ariaHidden = 'true';
+        nextChar.textContent = '»';
+
+        pageLink.append(nextChar);
+    }
+}
 
 function addClickEvent(boardId) {
     const targetNode = document.querySelector(`#board${boardId}`);
@@ -23,7 +113,7 @@ function addClickEvent(boardId) {
 
 function createBoardNodes(board) {
 
-    const container = document.querySelector('#container');
+    const boardListContainer = document.querySelector('#board-list-container');
 
     // <div class="card mb-3">
     //   <div class="card-body">
@@ -40,7 +130,7 @@ function createBoardNodes(board) {
     const boardWrapper = document.createElement('div');
     boardWrapper.className = 'card mb-3';
 
-    container.append(boardWrapper);
+    boardListContainer.append(boardWrapper);
     
       const boardBody = document.createElement('div');
       boardBody.id = `board${board.boardId}`;
