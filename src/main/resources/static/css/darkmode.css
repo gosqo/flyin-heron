@@ -7,3 +7,16 @@ body {
     background-color: #373737;
 }
 
+.card:hover {
+    background-color: #414141;
+}
+
+.page-link {
+    background-color: #282828;
+    border-color: #454545;
+    color: #d1d1d1;
+}
+
+/* .active>.page-link, .page-link.active {
+    
+} */

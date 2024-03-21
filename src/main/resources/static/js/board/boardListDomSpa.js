@@ -1,8 +1,14 @@
-window.addEventListener('load', async () => {
-    const path = window.location.pathname.split('/');
-    const uriPageNumber = path[path.length - 1] === 'boards'
-            ? 1
-            : parseInt(path[path.length - 1]);
+// window.addEventListener('load', async () => {
+//     const path = window.location.pathname.split('/');
+//     const uriPageNumber = path[path.length - 1] === 'boards'
+//             ? 1
+//             : parseInt(path[path.length - 1]);
+//     loadBoards(uriPageNumber)
+    
+// });
+
+async function loadBoards(uriPageNumber) {
+    
     const data = await getBoardList(uriPageNumber);
     console.log(data);
     const boardPage = data.boardPage;
@@ -19,7 +25,7 @@ window.addEventListener('load', async () => {
 
     createPageItemsWrapper(boardPageTotalPages, boardPageNumber);
 
-});
+}
 
 function createPageItem(targetNumber, boardPageNumber) {
 
@@ -41,7 +47,9 @@ function createPageItem(targetNumber, boardPageNumber) {
 
 function createPageItemsWrapper(boardPageTotalPages, boardPageNumber) {
 
-    const paginationContainer = document.querySelector('#pagination-container');
+    const boardListContainer = document.querySelector('#board-list-container');
+    // const paginationContainer = document.querySelector('#pagination-container');
+    // boardListContainer.append(paginationContainer);
 
     // variables for iteration (start|endNumber)
     const startNumber = boardPageNumber > 1
@@ -56,7 +64,8 @@ function createPageItemsWrapper(boardPageTotalPages, boardPageNumber) {
     pagination.className = 'pagination justify-content-center';
     pagination.id = 'pagination-ul';
 
-    paginationContainer.append(pagination);
+    boardListContainer.append(pagination);
+    // paginationContainer.append(pagination);
 
     if (boardPageNumber > 2) {
         const prevItem = document.createElement('li');
