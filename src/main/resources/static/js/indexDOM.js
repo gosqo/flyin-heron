@@ -28,13 +28,8 @@ if (localStorage.getItem('access_token')) {
 
     getBoardButton.addEventListener(
         'click',
-        () => {
-            const historyData = { boardPageNumber: 1 }
-            const historyUnused = '';
-            const historyURL = '/boards/1';
-            history.pushState(historyData, historyUnused, historyURL);
-            loadBoards(1);
-});
+        () => self.location.href = '/boards'
+    );
     
     buttonsArea.append(getBoardButton);
 
