@@ -12,8 +12,8 @@ public class GlobalExceptionHandler {
         return "/error/404";
     }
 
-    @ExceptionHandler(Exception.class)
-    public String handleInternalServerError(Exception ex) {
+    @ExceptionHandler(RuntimeException.class)
+    public String handleInternalServerError(RuntimeException ex) {
         return "/error/500";
     }
 

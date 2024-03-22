@@ -21,8 +21,10 @@ window.addEventListener('load', async () => {
         document.querySelector('#board-writer').textContent = boardData.writer;
         // TODO add boardHits on response entity(on server). then unlock below.
         // document.querySelector('#board-hits').textContent = boardData.hits;
+        
+        // console.log(gapBetweenDateTimes(boardData.updateDate, boardData.registerDate));
         document.querySelector('#board-date').textContent = 
-                boardData.registerDate === boardData.updateDate
+                gapBetweenDateTimes(boardData.updateDate, boardData.registerDate) === 0
                         ? formatDate(boardData.registerDate )
                         : '수정됨 ' + formatDate(boardData.updateDate);
         document.querySelector('#board-content').textContent = boardData.content;
@@ -133,4 +135,14 @@ function formatDate(data) {
     return formattedDate;
 }
 
+function gapBetweenDateTimes(later, earlier) {
+    const date1 = new Date(later);
+    const date2 = new Date(earlier);
 
+    console.log(date1.getTime());
+    console.log(date2.getTime());
+
+    const gap = date1.getTime() - date2.getTime();
+
+    return gap;
+}

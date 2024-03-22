@@ -16,6 +16,13 @@ async function fetchWithToken(url, options) {
 
     // access_token 의 만료, 여타 토큰 예외를 발생시키는 경우.
     if (response.status === 401) {
+        try {
+
+            const data = await response.json();
+            console.log(data);
+            console.log(data.message);
+
+        } catch (error) { console.log('Error: ', error); }
 
         const refreshedTokens = await refreshTokenRequest(refresh_token);
         localStorage.setItem('access_token', `Bearer ${refreshedTokens.access_token}`);
@@ -29,6 +36,7 @@ async function fetchWithToken(url, options) {
         // 기존 요청을 새로운 access_token 과 함께 재요청
         return fetch(url, updatedOptions)
             .then(response => {
+                console.log(response);
                 if (response.ok) {
 
                     return response.json();
@@ -42,9 +50,14 @@ async function fetchWithToken(url, options) {
 
                     self.location.href = '/error/500';
 
+                } else if (response.status === 400) {
+
+                    // validation 등 클라이언트 요청 오류 response body 반환.
+                    return response.json();
+                    
                 } else {
 
-                    alert('인증에 문제가 있습니다. 다시 로그인 해주십시오.');
+                    alert('요청이 정상적으로 처리되지 않았습니다.');
 
                 }
             })
@@ -52,7 +65,10 @@ async function fetchWithToken(url, options) {
                 console.log(data);
                 return data;
             })
-            .catch(error => console.error(error));
+            .catch(error => {
+                console.error(error);
+                alert('Catch on retry in fetWithToken')
+            });
 
     } else if (response.status === 404) {
 
@@ -65,11 +81,16 @@ async function fetchWithToken(url, options) {
 
         // access_token 의 만료, 여타 토큰 예외가 발생하지 않는 경우.
     } else {
-
-        const data = await response.json();
-        console.log(data);
-        return data;
-
+        try {
+            const data = await response.json();
+            console.log(data);
+            return data;
+    
+        } catch (error) {
+            console.error("Error: ", error);
+            alert('catch on first try in fetchWithToken');
+        }
+        
     }
 }
 

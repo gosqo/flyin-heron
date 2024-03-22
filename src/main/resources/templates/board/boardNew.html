@@ -1,8 +1,7 @@
 
 <thymeleaf th:replace="~{fragment/htmlHead}"></thymeleaf>
   <script defer src="/js/tokenCheck.js"></script>
-  <script defer src="/js/board/newBoardFetch.js"></script>
-  <script defer src="/js/board/newBoardDOM.js"></script>
+  <script defer src="/js/board/boardNewDOM.js"></script>
   <script defer src="/js/fetchWithToken.js"></script>
   <title>New Board</title>
 </head>
@@ -15,22 +14,13 @@
       <div class="mb-3">
         <button class="btn btn-secondary" id="go-to-list" onclick="window.history.back();">뒤로 가기</button>
       </div>
-      <h2>Hello, you're watching /board/<span id="board-id"></span>/modify</h2>
+      <h2>Hello, you can post here.</h2>
     </div>
     <form id="form">
       <div class="mb-3">
         <label class="form-label" for="board-title">title
           <input type="text" name="title" class="form-control" id="board-title" />
         </label>
-      </div>
-
-      <div class="mb-3 d-flex justify-content-between">
-        <label class="form-label" for="board-writer">writer
-          <input type="text" name="writer" class="form-control" id="board-writer" disabled />
-        </label>
-        <div class="row">
-          <div class="my-auto" id="board-date" style="text-align: right">yy/MM/dd</div>
-        </div>
       </div>
 
       <div class="mb-4">

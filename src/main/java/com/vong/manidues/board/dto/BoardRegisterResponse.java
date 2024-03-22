@@ -7,6 +7,8 @@ import lombok.Getter;
 @Builder
 public class BoardRegisterResponse {
 
-    private Long boardId;
+    private Long id;
+    private boolean posted;
+    private String message;
 
 }

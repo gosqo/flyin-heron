@@ -28,7 +28,7 @@ public class Board {
 
     @Column(
             nullable = false
-            , length = 1000
+            , length = 2000
     )
     private String content;
 

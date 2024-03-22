@@ -35,5 +35,5 @@ public class ViewController {
     }
 
     @GetMapping("/board/new")
-    public String newBoard() { return "board/newBoard"; }
+    public String newBoard() { return "board/boardNew"; }
 }

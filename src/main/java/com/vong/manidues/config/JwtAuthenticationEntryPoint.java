@@ -26,8 +26,10 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 //        another message case: Full authentication is required to access this resource
         if (message.equals("Bad credentials")) {
             responseWithBody.jsonResponse(response, 400, "아이디 혹은 비밀번호를 확인해주세요.");
-        } else {
+
+        } else if (message.equals("Full authentication is required to access this resource")) {
             responseWithBody.jsonResponse(response, 401, "인증정보가 필요합니다.");
+
         }
 
 

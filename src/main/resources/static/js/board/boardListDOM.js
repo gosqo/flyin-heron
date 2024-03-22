@@ -172,8 +172,8 @@ function createBoardNodes(board) {
           const boardDate = document.createElement('small');
           boardDate.className = 'text-body-secondary';
           boardDate.textContent = 
-              board.registerDate === board.updateDate
-                  ? formatDate(board.registerDate )
+               gapBetweenDateTimes(board.updateDate, board.registerDate) === 0
+                  ? formatDate(board.registerDate)
                   : '수정됨 ' + formatDate(board.updateDate);
     
           boardDateWrapper.append(boardDate);
@@ -190,4 +190,13 @@ function formatDate(data) {
         String(date.getDate()).padStart(2, '0');
     
     return formattedDate;
+}
+
+function gapBetweenDateTimes(later, earlier) {
+    const date1 = new Date(later);
+    const date2 = new Date(earlier);
+
+    const gap = date1.getTime() - date2.getTime();
+
+    return gap;
 }

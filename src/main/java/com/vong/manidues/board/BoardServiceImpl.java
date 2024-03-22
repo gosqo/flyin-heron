@@ -2,6 +2,7 @@ package com.vong.manidues.board;
 
 import com.vong.manidues.board.dto.BoardRegisterRequest;
 import com.vong.manidues.board.dto.BoardUpdateRequest;
+import com.vong.manidues.member.Member;
 import com.vong.manidues.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,9 +27,11 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public Long register(String userEmail, BoardRegisterRequest request) {
 
-        if (memberRepository.findByEmail(userEmail).isPresent()) {
+        Optional<Member> optionalMember = memberRepository.findByEmail(userEmail);
 
-            Board entity = request.toEntity(memberRepository.findByEmail(userEmail).get());
+        if (optionalMember.isPresent()) {
+
+            Board entity = request.toEntity(optionalMember.get());
             return boardRepository.save(entity).getId();
 
         } else {

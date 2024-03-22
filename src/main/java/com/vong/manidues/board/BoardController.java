@@ -3,6 +3,7 @@ package com.vong.manidues.board;
 import com.vong.manidues.board.dto.*;
 import com.vong.manidues.utility.ServletRequestUtility;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +23,7 @@ public class BoardController {
     @GetMapping("/")
     public ResponseEntity<BoardListWithPageGetResponse> getBoardList(
             @PageableDefault Pageable pageable
-            ) {
+    ) {
         return ResponseEntity.ok(new BoardListWithPageGetResponse().fromEntityList(service.getBoardPage(pageable).getContent()));
     }
 
@@ -83,18 +84,24 @@ public class BoardController {
     @PostMapping("")
     public ResponseEntity<BoardRegisterResponse> registerBoard(
             HttpServletRequest servletRequest,
-            @RequestBody BoardRegisterRequest request
+            @Valid @RequestBody BoardRegisterRequest request
     ) {
         String requestUserEmail = servletRequestUtility
                 .extractEmailFromHeader(servletRequest);
 
         log.info("request to POST /api/v1/board/ Email is : {}", requestUserEmail);
 
-        return ResponseEntity.ok(
+        Long id = service.register(requestUserEmail, request);
+
+        return id != null
+                ? ResponseEntity.ok(
                 BoardRegisterResponse.builder()
-                        .boardId(service.register(requestUserEmail, request))
+                        .id(id)
+                        .posted(true)
+                        .message("게시물 등록이 완료됐습니다.")
                         .build()
-        );
+        )
+                : ResponseEntity.badRequest().build();
     }
 
 
