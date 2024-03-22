@@ -33,4 +33,7 @@ public class ViewController {
     public String getBoardListView(@Nullable @PathVariable("pageNumber") Integer pageNumber) {
         return "board/boardList";
     }
+
+    @GetMapping("/board/new")
+    public String newBoard() { return "board/newBoard"; }
 }

@@ -1,11 +1,10 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
+
 <thymeleaf th:replace="~{fragment/htmlHead}"></thymeleaf>
   <script defer src="/js/tokenCheck.js"></script>
   <script defer src="/js/indexDOM.js"></script>
   <script defer src="/js/tokenValidationTest.js"></script>
   <script defer src="/js/fetchWithToken.js"></script>
+<thymeleaf th:replace="~{fragment/scriptsAfterDOM}"></thymeleaf>
   <title>Home</title>
 </head>
 <body>
@@ -19,6 +18,4 @@
     <div class="mb-3" id="test-jwt-area"></div>
   </div>
 
-</body>
-
-</html>
+<thymeleaf th:replace="~{fragment/footer}"></thymeleaf>

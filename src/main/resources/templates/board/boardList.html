@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+
 <thymeleaf th:replace="~{fragment/htmlHead}"></thymeleaf>
   <script defer src="/js/tokenCheck.js"></script>
   <script defer src="/js/fetchWithToken.js"></script>
@@ -12,10 +10,12 @@
 <body>
   <div th:replace="~{fragment/header :: header}"></div>
 
-  <div class="container mb-3" id="board-list-container"></div>
+  <div class="container mb-3" id="board-list-container">
+
+    <div th:replace="~{fragment/boardHeader}"></div>
+
+  </div>
 
   <div class="container mb-3" id="pagination-container"></div>
 
-</body>
-
-</html>
+<thymeleaf th:replace="~{fragment/footer}"></thymeleaf>

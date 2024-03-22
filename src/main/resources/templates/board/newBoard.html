@@ -1,12 +1,11 @@
 
 <thymeleaf th:replace="~{fragment/htmlHead}"></thymeleaf>
   <script defer src="/js/tokenCheck.js"></script>
-  <script defer src="/js/board/boardFetch.js"></script>
-  <script defer src="/js/board/boardModifyDOM.js"></script>
+  <script defer src="/js/board/newBoardFetch.js"></script>
+  <script defer src="/js/board/newBoardDOM.js"></script>
   <script defer src="/js/fetchWithToken.js"></script>
-  <title>Board Modify</title>
+  <title>New Board</title>
 </head>
-
 <body>
   <div th:replace="~{fragment/header :: header}"></div>
 
@@ -45,5 +44,6 @@
 
     </div>
   </div>
+
 
 <thymeleaf th:replace="~{fragment/footer}"></thymeleaf>
