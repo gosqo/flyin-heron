@@ -32,7 +32,12 @@ public class BoardController {
             @PathVariable("id") Long id,
             HttpServletRequest servletRequest
     ) {
-        log.info("GET /api/v1/board/{} with token: \n{}", id, servletRequestUtility.extractJwtFromHeader(servletRequest));
+        String authHeader = servletRequest.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            log.info("GET /api/v1/board/{} with token: \n{}", id, servletRequestUtility.extractJwtFromHeader(servletRequest));
+        }
+
+        log.info("GET /api/v1/board/{} without token.", id);
         Board entity = service.get(id);
 
         return entity != null
@@ -61,7 +66,6 @@ public class BoardController {
     }
 
     @PutMapping("/{id}")
-    @PatchMapping("/{id}")
     public ResponseEntity<BoardUpdateResponse> updateBoard(
             HttpServletRequest servletRequest,
             @PathVariable("id") Long id,

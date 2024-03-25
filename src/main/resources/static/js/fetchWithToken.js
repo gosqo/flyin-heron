@@ -24,7 +24,7 @@ async function fetchWithToken(url, options) {
 
         } catch (error) { console.log('Error: ', error); }
 
-        const refreshedTokens = await refreshTokenRequest(refresh_token);
+        const refreshedTokens = await refreshTokenRequest(localStorage.getItem('refresh_token'));
         localStorage.setItem('access_token', `Bearer ${refreshedTokens.access_token}`);
         localStorage.setItem('refresh_token', `Bearer ${refreshedTokens.refresh_token}`);
 

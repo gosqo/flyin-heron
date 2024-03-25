@@ -9,9 +9,17 @@ async function getBoard(boardId) {
 
     try {
 
-        const data = await fetchWithToken(url, options);
-        console.log(data);
-        return data;
+        const response = await fetch(url, options);
+        if (response.status === 404) {
+
+            location.href = '/error/404';
+
+        } else {
+
+            const data = await response.json();
+            console.log(data);
+            return data;
+        }
 
     } catch (error) {
         console.error('Error ' + error);

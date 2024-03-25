@@ -11,6 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 @Controller
 public class ViewController {
 
+    @GetMapping("/error/404")
+    public String errorCode404() {
+        return "error/404";
+    }
+
     @GetMapping("/")
     public String getHome() {
         log.info("request to \"/\" ... ");
@@ -35,5 +40,7 @@ public class ViewController {
     }
 
     @GetMapping("/board/new")
-    public String newBoard() { return "board/boardNew"; }
+    public String newBoard() {
+        return "board/boardNew";
+    }
 }

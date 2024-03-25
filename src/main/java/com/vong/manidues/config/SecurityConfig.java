@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,21 +25,23 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
 
-    private final String[] WHITE_LIST_URLS = {
-            "/api/v1/auth/**"
+    private final String[] WHITE_LIST_URLS_NON_MEMBER_GET = {
+            "/"
             , "/favicon.ico"
-            , "/login"
-            , "/logout"
-            , "/error"
+            , "/error/**"
             , "/img/**"
             , "/js/**"
             , "/css/**"
-            , "/member"
+            , "/login"
             , "/signUp"
-            , "/"
+            , "/api/v1/boards/**"
+            , "/api/v1/board/**"
             , "/board/**"
-            , "/error/**"
             , "/boards/**"
+    };
+    private final String[] WHITE_LIST_URLS_NON_MEMBER_POST = {
+            "/member"
+            , "/api/v1/auth/authenticate"
     };
 
     @Bean
@@ -56,7 +59,8 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(WHITE_LIST_URLS).permitAll()
+                        .requestMatchers(HttpMethod.GET, WHITE_LIST_URLS_NON_MEMBER_GET).permitAll()
+                        .requestMatchers(HttpMethod.POST, WHITE_LIST_URLS_NON_MEMBER_POST).permitAll()
                         .anyRequest().authenticated()
                 )
 

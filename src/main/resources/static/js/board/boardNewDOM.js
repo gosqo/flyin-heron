@@ -7,7 +7,13 @@ window.addEventListener('load', async () => {
     // console.log(userEmail);
     const userId = decodedJwt.id;
     // console.log(userId);
-
+    
+    // fragment/boardHeader button control
+    const goBackButton = document.querySelector('#go-back-btn');
+    goBackButton.addEventListener('click', () => {
+        history.back();
+    });
+    
     // buttons DOM
     if (userId) {
         // submit Button

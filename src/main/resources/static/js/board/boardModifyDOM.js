@@ -10,6 +10,12 @@ window.addEventListener('load', async () => {
     const userId = decodedJwt.id;
     console.log(userId);
 
+    // fragment/boardHeader button control
+    const goBackButton = document.querySelector('#go-back-btn');
+    goBackButton.addEventListener('click', () => {
+        history.back();
+    });
+
     // fetch board {id}
     const boardData = await getBoard(boardId);
     console.log(boardData);
@@ -43,10 +49,24 @@ window.addEventListener('load', async () => {
     
             cancelButton.id = 'cancel-btn';
             cancelButton.className = 'btn btn-secondary';
-            cancelButton.textContent = 'cancel';
+            cancelButton.textContent = 'Cancel';
     
             buttonsArea.append(cancelButton);
     
+        }
+
+        // cancel button click event
+        const cancelButton = document.querySelector('#cancel-btn');
+        if (cancelButton) {
+            cancelButton.addEventListener(
+                'click',
+                () => {
+                    const confirmation = confirm('수정을 취소하시겠습니까?\n 확인을 클릭 시, 수정 내용을 저장하지 않고 목록으로 이동합니다.');
+                if (confirmation) {
+                    location.href = `/board/${boardId}`;
+                }
+                }
+            )
         }
     
         // modify board fetch.

@@ -1,4 +1,5 @@
 window.addEventListener('load', async () => {
+    
     const path = window.location.pathname.split('/');
     const uriPageNumber = path[path.length - 1] === 'boards'
             ? 1
@@ -10,6 +11,19 @@ window.addEventListener('load', async () => {
     const boardPageTotalPages = boardPage.totalPages;
     const boardPageNumber = boardPage.number;
     console.log(boardPageNumber);
+
+    if (tokenCheck()) {
+        const boardListHeader = document.querySelector('#board-list-header');
+
+        const newBoardButton = createElement('button', 'btn btn-primary', 'register-board');
+        // const newBoardButton = document.createElement('button');
+        // newBoardButton.className = 'btn btn-primary';
+        // newBoardButton.id = "register-board";
+        newBoardButton.textContent = 'New Board';
+        newBoardButton.onclick = () => { self.location.href = '/board/new' };
+        
+        boardListHeader.append(newBoardButton);
+    }
 
     boardPageContent.forEach(board => {
         console.log(board);
@@ -26,8 +40,9 @@ function createPageItem(targetNumber, boardPageNumber) {
     const pageItem = document.createElement('li');
     pageItem.className = 'page-item';
     
-        const pageLink = document.createElement('a');
-        pageLink.className = 'page-link';
+        const pageLink = createElement('a', 'page-link');
+        // const pageLink = document.createElement('a');
+        // pageLink.className = 'page-link';
         pageLink.href = `/boards/${targetNumber + 1}`;
         pageLink.textContent = targetNumber + 1;
 

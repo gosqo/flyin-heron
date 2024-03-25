@@ -1,10 +1,9 @@
-
 <thymeleaf th:replace="~{fragment/htmlHead}"></thymeleaf>
-  <script defer src="/js/tokenCheck.js"></script>
-  <script defer src="/js/board/boardFetch.js"></script>
-  <script defer src="/js/board/boardModifyDOM.js"></script>
-  <script defer src="/js/fetchWithToken.js"></script>
-  <title>Board Modify</title>
+<script defer src="/js/tokenCheck.js"></script>
+<script defer src="/js/board/boardFetch.js"></script>
+<script defer src="/js/board/boardModifyDOM.js"></script>
+<script defer src="/js/fetchWithToken.js"></script>
+<title>Board Modify</title>
 </head>
 
 <body>
@@ -12,12 +11,9 @@
 
   <div class="container">
 
-    <div class="mt-4 row">
-      <div class="mb-3">
-        <button class="btn btn-secondary" id="go-to-list" onclick="window.history.back();">뒤로 가기</button>
-      </div>
-      <h2>Hello, you're watching /board/<span id="board-id"></span>/modify</h2>
-    </div>
+    <div th:replace="~{fragment/boardHeader}"></div>
+    <h2>Hello, you're watching /board/<span id="board-id"></span>/modify</h2>
+
     <form id="form">
       <div class="mb-3">
         <label class="form-label" for="board-title">title
@@ -46,4 +42,4 @@
     </div>
   </div>
 
-<thymeleaf th:replace="~{fragment/footer}"></thymeleaf>
+  <thymeleaf th:replace="~{fragment/footer}"></thymeleaf>
