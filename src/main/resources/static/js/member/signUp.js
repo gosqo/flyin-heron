@@ -31,7 +31,12 @@ submitButton.addEventListener('click', async (event) => {
 
             self.location = '/login';
 
-        } else {
+        } else if (response.status === 401) {
+
+            const result = await response.json();
+            alert(result.additionalMessage);
+
+        } else if (response.status === 400) {
 
             const result = await response.json();
             alert(result.errors[0].defaultMessage);

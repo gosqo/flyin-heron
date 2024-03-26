@@ -14,8 +14,8 @@ import java.io.IOException;
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     /**
-     * 1. 액세스 토큰 없이 JwtAuthenticationFilter 를 거칠 때 호출 (페이지 최초 방문, js에 작성한 비동기 통신 아님.)
-     *
+     * 1. 액세스 토큰 없이 JwtAuthenticationFilter 를 거칠 때 호출 (페이지 최초 방문)
+     * 2. 회원가입 시, validation 에러를 잡은 후, 추가적으로 이곳으로 호출이 이어지는 이유?
      */
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
@@ -23,7 +23,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         String message = authException.getMessage();
         HttpResponseWithBody responseWithBody = new HttpResponseWithBody();
 
-//        another message case: Full authentication is required to access this resource
         if (message.equals("Bad credentials")) {
             responseWithBody.jsonResponse(response, 400, "아이디 혹은 비밀번호를 확인해주세요.");
 
