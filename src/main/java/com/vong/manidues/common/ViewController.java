@@ -1,5 +1,7 @@
 package com.vong.manidues.common;
 
+import com.vong.manidues.config.trackingip.RequestTracker;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
@@ -11,14 +13,25 @@ import org.springframework.web.bind.annotation.PathVariable;
 @Controller
 public class ViewController {
 
-    @GetMapping("/error/404")
-    public String errorCode404() {
-        return "error/404";
-    }
-
     @GetMapping("/")
-    public String getHome() {
-        log.info("request to \"/\" ... ");
+    public String getHome(HttpServletRequest request) {
+
+        String authHeader = request.getHeader("Authorization");
+        String requestedRemoteAddress = request.getRemoteAddr();
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+
+            RequestTracker.trackRequest(requestedRemoteAddress, request);
+            log.info("\nrequest to \"/\" from {} count is: {}\nrequested User-Agent is: {}\nrequested Locale is: {}\n",
+                    requestedRemoteAddress,
+                    RequestTracker.getRequestCount(requestedRemoteAddress),
+                    RequestTracker.getUserAgent(requestedRemoteAddress),
+                    request.getLocale()
+            );
+
+        }
+        RequestTracker.clearExpiredRequests();
+
         return "index";
     }
 

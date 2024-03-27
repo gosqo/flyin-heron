@@ -23,10 +23,11 @@ public class TokenExceptionTestController {
     public ResponseEntity<Object> tokenValidationTest(HttpServletRequest request) {
         String authHeader = request.getHeader("authorization");
         String jwt = authHeader.substring(7);
-        log.info("request to /tokenValidationTest\n token is {}", authHeader);
         Map<String, String> map = new HashMap<>();
         map.put("email", jwtService.extractUserEmail(jwt));
         map.put("expiration", jwtService.extractClaim(jwt, Claims::getExpiration).toString());
-        return ResponseEntity.ok(map);
+        log.info("request to \"/tokenValidationTest\"\n requested email is: {}",
+                map.get("email"));
+        return ResponseEntity.status(200).body(map);
     }
 }
