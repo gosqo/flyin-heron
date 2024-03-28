@@ -27,7 +27,7 @@ public class Member implements UserDetails {
 
     @Column(
             nullable = false
-            , length = 20
+            , length = 50
             , unique = true
     )
     private String email;
@@ -39,7 +39,7 @@ public class Member implements UserDetails {
     private String password;
 
     @Column(
-            length = 30
+            length = 20
             , nullable = false
             , unique = true
     )

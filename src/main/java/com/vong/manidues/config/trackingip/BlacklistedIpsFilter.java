@@ -25,9 +25,13 @@ public class BlacklistedIpsFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
         String requestedIpAddress = request.getRemoteAddr();
+        String requestedUserAgent = request.getHeader("User-Agent");
 
-        if (blacklistedIps.getBlacklistedIps().contains(requestedIpAddress)) {
-            log.warn("\nRequest from blacklisted ip. IP address is: {}", requestedIpAddress);
+        if (blacklistedIps.getBlacklistedIps().contains(requestedIpAddress) || requestedUserAgent.equals("null")) {
+            log.warn("""
+
+                    Request from blacklisted ip. IP address is: {}
+                    requested User-Agent is: {}""", requestedIpAddress, requestedUserAgent);
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
