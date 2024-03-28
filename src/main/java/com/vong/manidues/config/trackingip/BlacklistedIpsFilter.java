@@ -27,14 +27,38 @@ public class BlacklistedIpsFilter extends OncePerRequestFilter {
         String requestedIpAddress = request.getRemoteAddr();
         String requestedUserAgent = request.getHeader("User-Agent");
 
-        if (blacklistedIps.getBlacklistedIps().contains(requestedIpAddress) || requestedUserAgent.equals("null")) {
+        if (requestedUserAgent.equals("null") ||
+                requestedUserAgent.isBlank() ||
+                requestedUserAgent.isEmpty()
+        ) {
             log.warn("""
 
-                    Request from blacklisted ip. IP address is: {}
-                    requested User-Agent is: {}""", requestedIpAddress, requestedUserAgent);
+
+                        Request from User-Agent null or empty. IP address is: {}
+                    requested User-Agent is: {}
+                    """, requestedIpAddress, requestedUserAgent);
+
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
+
+        if (blacklistedIps.getBlacklistedIps().contains(requestedIpAddress)) {
+            log.warn("""
+
+
+                        Request from blacklisted ip. IP address is: {}
+                    requested User-Agent is: {}
+                    listed size is: {}
+                    """,
+                    requestedIpAddress,
+                    requestedUserAgent,
+                    blacklistedIps.getBlacklistedIps().size()
+            );
+
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         filterChain.doFilter(request, response);
 
     }
