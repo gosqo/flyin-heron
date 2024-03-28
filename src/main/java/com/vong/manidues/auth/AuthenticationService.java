@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -47,19 +48,32 @@ public class AuthenticationService {
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         // TODO Authentication, AuthenticationManager,
         //  UsernamePasswordAuthenticationToken 객체에 대한 학습(구조, 흐름)
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
+
+        String accessToken = null;
+        String refreshToken = null;
+        try {
+
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+        } catch (AuthenticationException ex) {
+            log.info("\n{}", ex.getMessage());
+        }
 
         Member member = memberRepository.findByEmail(request.getEmail())
-                .orElseThrow();
-        String accessToken = jwtService.generateAccessToken(member);
-        String refreshToken = jwtService.generateRefreshToken(member);
+                .orElse(null);
 
-        saveMemberToken(member, refreshToken);
+        if (member != null) {
+
+            accessToken = jwtService.generateAccessToken(member);
+            refreshToken = jwtService.generateRefreshToken(member);
+
+            saveMemberToken(member, refreshToken);
+
+        }
 
         return AuthenticationResponse.builder()
                 .accessToken(accessToken)

@@ -9,12 +9,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoResourceFoundException.class)
     public String handleNoResourceFoundException(NoResourceFoundException ex) {
-        return "/error/404";
+        return "error/404";
     }
 
     @ExceptionHandler(RuntimeException.class)
     public String handleInternalServerError(RuntimeException ex) {
-        return "/error/500";
+        return "error/500";
     }
 
 }

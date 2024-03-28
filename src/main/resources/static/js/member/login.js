@@ -42,13 +42,14 @@ window.addEventListener('load', () =>{
                 
             } else {
                 const result = await response.json();
-    
+                console.log(result); 
+                
                 if (result.message.includes('Validation')) {
                     alert(result.errors[0].defaultMessage);
     
                 } else {
                     console.log(result);
-                    alert(result.additionalMessage);
+                    alert(result.message);
     
                 }
     

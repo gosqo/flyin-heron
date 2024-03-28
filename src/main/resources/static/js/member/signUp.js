@@ -41,6 +41,11 @@ submitButton.addEventListener('click', async (event) => {
             const result = await response.json();
             alert(result.errors[0].defaultMessage);
 
+        } else {
+
+            const result = await response.json();
+            alert(result.message);
+            
         }
     } catch (error) {
         console.error(error);
