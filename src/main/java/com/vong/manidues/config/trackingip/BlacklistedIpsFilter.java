@@ -31,7 +31,7 @@ public class BlacklistedIpsFilter extends OncePerRequestFilter {
         String requestedIpAddress = request.getRemoteAddr();
         String requestedUserAgent = request.getHeader("User-Agent");
 
-        if (requestedIpAddress == null ||
+        if (requestedUserAgent == null ||
                 requestedUserAgent.equals("null") ||
                 requestedUserAgent.isBlank() ||
                 requestedUserAgent.isEmpty()
