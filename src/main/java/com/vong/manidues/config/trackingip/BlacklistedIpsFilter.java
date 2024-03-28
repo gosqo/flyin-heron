@@ -6,17 +6,21 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class BlacklistedIpsFilter extends OncePerRequestFilter {
 
-    private final BlacklistedIps blacklistedIps;
+    @Value("${blacklisted-ips-list}")
+    private List<String> blacklistedIps;
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -27,7 +31,8 @@ public class BlacklistedIpsFilter extends OncePerRequestFilter {
         String requestedIpAddress = request.getRemoteAddr();
         String requestedUserAgent = request.getHeader("User-Agent");
 
-        if (requestedUserAgent.equals("null") ||
+        if (requestedIpAddress == null ||
+                requestedUserAgent.equals("null") ||
                 requestedUserAgent.isBlank() ||
                 requestedUserAgent.isEmpty()
         ) {
@@ -42,7 +47,7 @@ public class BlacklistedIpsFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (blacklistedIps.getBlacklistedIps().contains(requestedIpAddress)) {
+        if (blacklistedIps.contains(requestedIpAddress)) {
             log.warn("""
 
 
@@ -52,7 +57,7 @@ public class BlacklistedIpsFilter extends OncePerRequestFilter {
                     """,
                     requestedIpAddress,
                     requestedUserAgent,
-                    blacklistedIps.getBlacklistedIps().size()
+                    blacklistedIps.size()
             );
 
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
