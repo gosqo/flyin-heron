@@ -9,20 +9,25 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/member")
 @Slf4j
 public class MemberController {
 
     private final MemberService service;
 
-    @PostMapping("/member")
+    @PostMapping("/")
     public ResponseEntity<Object> register(
             @Valid @RequestBody MemberRegisterRequest request
     ) {
-        log.info("request 'POST' /member " + request);
+        log.info("""
+                request POST to "api/v1/member"
+                """
+        );
         return service.register(request)
                 ? ResponseEntity.ok("회원가입에 성공했습니다.")
                 : ResponseEntity.status(400)

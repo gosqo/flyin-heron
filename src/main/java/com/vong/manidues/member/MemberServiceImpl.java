@@ -19,13 +19,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public boolean register(MemberRegisterRequest request) {
 
-        if (memberRepository.findByEmail(request.getEmail()).isPresent() ||
-        memberRepository.findByNickname(request.getNickname()).isPresent()
-        ) {
-            return false;
-        }
-
-        if (!request.getPassword().equals(request.getPasswordCheck())) {
+        if (!isValidInputs(request)) {
             return false;
         }
 
@@ -33,13 +27,32 @@ public class MemberServiceImpl implements MemberService {
 
         try {
 
-            memberRepository.save(member);
+            Member storedMember = memberRepository.save(member);
+            log.info("""
+                            Member register succeeded.
+                                Registered member email is: {}
+                            """,
+                    storedMember.getEmail()
+            );
+
         } catch (DataIntegrityViolationException ex) {
-            log.info("DataIntegrityViolationException occurs,\n{}", ex.getMessage());
+            log.info("""
+                            DataIntegrityViolationException occurs on method register() in memberService,
+                                message is: {}
+                            """,
+                    ex.getMessage()
+            );
             return false;
         }
 
         return true;
+    }
+
+    private boolean isValidInputs(MemberRegisterRequest request) {
+
+        return memberRepository.findByEmail(request.getEmail()).isEmpty() &&
+                memberRepository.findByNickname(request.getNickname()).isEmpty() &&
+                request.getPassword().equals(request.getPasswordCheck());
     }
 
 }

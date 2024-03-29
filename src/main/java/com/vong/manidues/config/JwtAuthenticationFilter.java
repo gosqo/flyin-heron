@@ -70,7 +70,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken); // SecurityContext 안에 Authentication 타입으로 담긴다.
             }
         } catch (ExpiredJwtException | SignatureException | MalformedJwtException | DecodingException e) {
-            log.info("caught error: {}\n token is: {}", e.getMessage(), jwt);
+            if (e instanceof ExpiredJwtException) {
+
+                log.info(e.getMessage());
+
+            } else {
+
+                log.info("""
+                                Auth Service caught error: {}
+                                    Ip address is: {}
+                                    User-Agent is: {}
+                                """,
+                        e.getMessage(),
+                        request.getRemoteAddr(),
+                        request.getHeader("User-Agent")
+                );
+
+            }
             response.setStatus(401);
         }
 

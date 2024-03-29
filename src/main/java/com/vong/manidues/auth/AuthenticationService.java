@@ -59,8 +59,14 @@ public class AuthenticationService {
                             request.getPassword()
                     )
             );
+
         } catch (AuthenticationException ex) {
-            log.info("\n{}", ex.getMessage());
+            log.info("""
+                            Auth Service caught Exception.
+                                {}
+                            """,
+                    ex.getMessage()
+            );
         }
 
         Member member = memberRepository.findByEmail(request.getEmail())
@@ -82,7 +88,7 @@ public class AuthenticationService {
     }
 
     /**
-     *     액세스 토큰 갱신(refresh) 및 발급.
+     * 액세스 토큰 갱신(refresh) 및 발급.
      * <pre>
      *     클라이언트는 요청헤더에 리프레시 토큰을 담습니다.
      *     리프레시 토큰이 만료, 위조된 경우 401 상태코드로 응답합니다.
@@ -98,7 +104,7 @@ public class AuthenticationService {
      *       갱신되거나 기존의 refresh_token 을 모두 브라우저에 저장합니다.
      *       응답은 json 형태입니다.
      * </pre>
-     * */
+     */
     public AuthenticationResponse refreshToken(
             HttpServletRequest request,
             HttpServletResponse response) throws IOException {
@@ -137,7 +143,12 @@ public class AuthenticationService {
                     saveMemberToken(member, renewedRefreshToken);
 
                     // 기존의 리프레시 토큰은 삭제.
-                    log.info("deleted token count: {}", tokenRepository.deleteByToken(refreshToken));
+                    log.info("""
+                                                                        
+                                    deleted token count: {}
+                                    """,
+                            tokenRepository.deleteByToken(refreshToken)
+                    );
 
                     return AuthenticationResponse.builder()
                             .accessToken(accessToken)
@@ -153,8 +164,26 @@ public class AuthenticationService {
                         .build();
             }
         } catch (ExpiredJwtException | SignatureException | MalformedJwtException e) {
-            log.info("caught error: {}", e.getMessage());
+            if (e instanceof ExpiredJwtException) {
+
+                log.info(e.getMessage());
+
+            } else {
+
+                log.info("""
+                                Auth Service caught error: {}
+                                    Ip address is: {}
+                                    User-Agent is: {}
+                                """,
+                        e.getMessage(),
+                        request.getRemoteAddr(),
+                        request.getHeader("User-Agent")
+                );
+
+            }
+
             responseWithBody.jsonResponse(response, 401, "인증정보가 필요합니다.");
+
         }
 
         return null;

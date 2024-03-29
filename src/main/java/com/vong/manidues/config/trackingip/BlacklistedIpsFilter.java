@@ -32,16 +32,20 @@ public class BlacklistedIpsFilter extends OncePerRequestFilter {
         String requestedUserAgent = request.getHeader("User-Agent");
 
         if (requestedUserAgent == null ||
-                requestedUserAgent.equals("null") ||
                 requestedUserAgent.isBlank() ||
-                requestedUserAgent.isEmpty()
+                requestedUserAgent.isEmpty() ||
+                !requestedUserAgent.toLowerCase().contains("mozilla") ||
+                requestedUserAgent.toLowerCase().contains("python")
         ) {
             log.warn("""
 
 
-                        Request from User-Agent null or empty. IP address is: {}
-                    requested User-Agent is: {}
-                    """, requestedIpAddress, requestedUserAgent);
+                                Request from abnormal User-Agent. IP address is: {}
+                                requested User-Agent is: {}
+                            """,
+                    requestedIpAddress,
+                    requestedUserAgent
+            );
 
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return;
@@ -51,10 +55,10 @@ public class BlacklistedIpsFilter extends OncePerRequestFilter {
             log.warn("""
 
 
-                        Request from blacklisted ip. IP address is: {}
-                    requested User-Agent is: {}
-                    listed size is: {}
-                    """,
+                                Request from blacklisted ip. IP address is: {}
+                                requested User-Agent is: {}
+                                listed size is: {}
+                            """,
                     requestedIpAddress,
                     requestedUserAgent,
                     blacklistedIps.size()

@@ -12,14 +12,15 @@ submitButton.addEventListener('click', async (event) => {
         body[key] = value;
     });
 
-    const url = '/member'
+    const url = 'api/v1/member';
     const requestInit = {
         headers: {
             "Content-Type": 'application/json',
         },
         method:'POST',
         body: JSON.stringify(body),
-    }
+    };
+    
     try {
         const response = await fetch(url, requestInit);
         console.log(response);

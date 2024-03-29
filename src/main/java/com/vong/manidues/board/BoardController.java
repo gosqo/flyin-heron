@@ -6,8 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,24 +18,32 @@ public class BoardController {
     private final BoardService service;
     private final ServletRequestUtility servletRequestUtility;
 
-    @GetMapping("/")
-    public ResponseEntity<BoardListWithPageGetResponse> getBoardList(
-            @PageableDefault Pageable pageable
-    ) {
-        return ResponseEntity.ok(new BoardListWithPageGetResponse().fromEntityList(service.getBoardPage(pageable).getContent()));
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<BoardGetResponse> getBoard(
             @PathVariable("id") Long id,
             HttpServletRequest servletRequest
     ) {
         String authHeader = servletRequest.getHeader("Authorization");
+
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            log.info("GET /api/v1/board/{} with token: \n{}", id, servletRequestUtility.extractJwtFromHeader(servletRequest));
+
+            log.info("""
+                            Request GET to "/api/v1/board/{}"
+                            Client email is: {}
+                            """,
+                    id,
+                    servletRequestUtility.extractEmailFromHeader(servletRequest));
+
+        } else {
+
+            log.info("""
+                            request GET to "/api/v1/board/{}"
+                            """,
+                    id
+            );
+
         }
 
-        log.info("GET /api/v1/board/{} without token.", id);
         Board entity = service.get(id);
 
         return entity != null
@@ -93,7 +99,12 @@ public class BoardController {
         String requestUserEmail = servletRequestUtility
                 .extractEmailFromHeader(servletRequest);
 
-        log.info("request to POST /api/v1/board/ Email is : {}", requestUserEmail);
+        log.info("""
+                        request POST to "/api/v1/board/"
+                        Email is : {}
+                        """,
+                requestUserEmail
+        );
 
         Long id = service.register(requestUserEmail, request);
 

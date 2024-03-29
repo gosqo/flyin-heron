@@ -22,12 +22,26 @@ public class ViewController {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
 
             RequestTracker.trackRequest(requestedRemoteAddress, request);
-            log.info("\nrequest to \"/\" from {} count is: {}\nrequested User-Agent is: {}\nrequested Locale is: {}\n",
-                    requestedRemoteAddress,
-                    RequestTracker.getRequestCount(requestedRemoteAddress),
+            log.info("""
+                                request to "/" from {} count is: {}
+                                requested User-Agent is: {}
+                                requested Locale is: {}
+                            """,
+                    requestedRemoteAddress, RequestTracker.getRequestCount(requestedRemoteAddress),
                     RequestTracker.getUserAgent(requestedRemoteAddress),
                     request.getLocale()
             );
+
+            if (RequestTracker.getRequestCount(requestedRemoteAddress) > 10) {
+                log.info("""
+                                    This client has more than 10 attempts to hit "/" in an hour.
+                                    RequestTracker is like:
+                                    {}
+                                """,
+                        RequestTracker.getRequestMap()
+                );
+
+            }
 
         }
         RequestTracker.clearExpiredRequests();

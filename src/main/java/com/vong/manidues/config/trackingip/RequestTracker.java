@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.Instant;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,6 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RequestTracker {
 
     private static final ConcurrentHashMap<String, RequestInfo> requestMap = new ConcurrentHashMap<>();
+
+    public static String getRequestMap() {
+        return requestMap.toString();
+    }
 
     public static void trackRequest(String ipAddress, HttpServletRequest request) {
         requestMap.put(ipAddress, new RequestInfo(
@@ -41,6 +46,7 @@ public class RequestTracker {
     @NoArgsConstructor
     @AllArgsConstructor
     @Getter
+    @ToString
     private static class RequestInfo {
 
         private Instant requestTime;
