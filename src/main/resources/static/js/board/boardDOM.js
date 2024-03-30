@@ -100,7 +100,7 @@ window.addEventListener('load', async () => {
             
                                 const data = await fetchWithToken(url, options);
                                 alert(data.message);
-                                self.location.href = '/';
+                                location.replace(`/boards`);
             
                             } catch (error) {
                                 console.error('Error ' + error);

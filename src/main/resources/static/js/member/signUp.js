@@ -12,7 +12,7 @@ submitButton.addEventListener('click', async (event) => {
         body[key] = value;
     });
 
-    const url = 'api/v1/member';
+    const url = '/api/v1/member/';
     const requestInit = {
         headers: {
             "Content-Type": 'application/json',
@@ -30,7 +30,7 @@ submitButton.addEventListener('click', async (event) => {
             const result = await response.text()
             alert(result);
 
-            self.location = '/login';
+            location.replace('/login');
 
         } else if (response.status === 401) {
 

@@ -38,7 +38,7 @@ window.addEventListener('load', () =>{
     
                 alert('sign in success.');
     
-                self.location = '/';
+                location.replace('/');
                 
             } else {
                 const result = await response.json();

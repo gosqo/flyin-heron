@@ -2,6 +2,7 @@ package com.vong.manidues.member.dto;
 
 import com.vong.manidues.member.Member;
 import com.vong.manidues.member.Role;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -18,7 +19,7 @@ public class MemberRegisterRequest {
     @Pattern(
             regexp =
                     "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$",
-            message = "올바른 형식의 Email 을 입력해주세요."
+            message = "올바른 형식의 영문 Email 을 입력해주세요."
     )
     @Size(
             min = 6
@@ -49,7 +50,17 @@ public class MemberRegisterRequest {
             , max = 20
             , message = "닉네임은 2 ~ 20 자리로 입력해주세요."
     )
+    @Pattern(
+            regexp =
+                    "^[A-Za-z\\d-_./]{2,20}$",
+            message = "닉네임은 2 ~ 20 자리, 영/한문과 특수문자{'-', '_', '.'} 을 사용해 구성할 수 있습니다."
+    )
     private String nickname;
+
+    @AssertTrue(message = "비밀번호가 일치하지 않습니다.")
+    private boolean isPasswordMatch() {
+        return password.equals(passwordCheck);
+    }
 
     public Member toEntity(String password) {
         return Member.builder()

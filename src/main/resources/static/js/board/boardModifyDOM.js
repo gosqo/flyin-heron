@@ -4,11 +4,11 @@ window.addEventListener('load', async () => {
     const buttonsArea = document.querySelector('#buttons-area')
     const accessToken = localStorage.getItem('access_token');
     const decodedJwt = parseJwt(accessToken);
-    console.log(decodedJwt);
+    // console.log(decodedJwt);
     const userEmail = decodedJwt.sub;
-    console.log(userEmail);
+    // console.log(userEmail);
     const userId = decodedJwt.id;
-    console.log(userId);
+    // console.log(userId);
 
     // fragment/boardHeader button control
     const goBackButton = document.querySelector('#go-back-btn');
@@ -63,7 +63,7 @@ window.addEventListener('load', async () => {
                 () => {
                     const confirmation = confirm('수정을 취소하시겠습니까?\n 확인을 클릭 시, 수정 내용을 저장하지 않고 목록으로 이동합니다.');
                 if (confirmation) {
-                    location.href = `/board/${boardId}`;
+                    location.replace(`/board/${boardId}`);
                 }
                 }
             )
@@ -91,7 +91,7 @@ window.addEventListener('load', async () => {
                         console.log(data);
                         if (data.updated === true) {
                             alert(data.message);
-                            self.location.href = `/board/${data.id}`;
+                            location.replace(`/board/${data.id}`);
                         } else {
                             // TODO 서버에서 예외 핸들링 및 응답 메세지 작성. 
                             // input value request Object validation 등

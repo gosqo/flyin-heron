@@ -28,4 +28,6 @@ public class GlobalRestExceptionHandler {
                 );
     }
 
+    // NoSuchElementException DB 조회 관련 에러 처리.
+
 }
