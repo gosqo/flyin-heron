@@ -20,6 +20,17 @@ public class BlacklistedIpsFilter extends OncePerRequestFilter {
 
     @Value("${blacklisted-ips-list}")
     private List<String> blacklistedIps;
+    private String[] whiteListUserAgent = {
+            "mozilla"
+            , "postman"
+    };
+
+    private boolean isWhiteListUserAgent(String userAgent) {
+        for (String whiteUserAgent : whiteListUserAgent) {
+            if (userAgent.toLowerCase().contains(whiteUserAgent)) return true;
+        }
+        return false;
+    }
 
     @Override
     protected void doFilterInternal(
@@ -32,10 +43,8 @@ public class BlacklistedIpsFilter extends OncePerRequestFilter {
         String requestedUserAgent = request.getHeader("User-Agent");
 
         if (requestedUserAgent == null ||
-                requestedUserAgent.isBlank() ||
-                requestedUserAgent.isEmpty() ||
-                !requestedUserAgent.toLowerCase().contains("mozilla") ||
-                requestedUserAgent.toLowerCase().contains("python")
+                requestedUserAgent.isBlank() || // if String empty or contains only white space --> true.
+                !isWhiteListUserAgent(requestedUserAgent)
         ) {
             log.warn("""
 

@@ -23,6 +23,7 @@ public class ViewController {
 
             RequestTracker.trackRequest(requestedRemoteAddress, request);
             log.info("""
+                           
                                 request to "/" from {} count is: {}
                                 requested User-Agent is: {}
                                 requested Locale is: {}
@@ -34,6 +35,7 @@ public class ViewController {
 
             if (RequestTracker.getRequestCount(requestedRemoteAddress) > 10) {
                 log.info("""
+                               
                                     This client has more than 10 attempts to hit "/" in an hour.
                                     RequestTracker is like:
                                     {}
