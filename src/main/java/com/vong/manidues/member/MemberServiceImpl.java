@@ -19,7 +19,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public boolean register(MemberRegisterRequest request) {
 
-        if (!isValidInputs(request)) {
+        if (!isNotDuplicated(request)) {
             return false;
         }
 
@@ -48,11 +48,10 @@ public class MemberServiceImpl implements MemberService {
         return true;
     }
 
-    private boolean isValidInputs(MemberRegisterRequest request) {
+    private boolean isNotDuplicated(MemberRegisterRequest request) {
 
         return memberRepository.findByEmail(request.getEmail()).isEmpty() &&
-                memberRepository.findByNickname(request.getNickname()).isEmpty() &&
-                request.getPassword().equals(request.getPasswordCheck());
+                memberRepository.findByNickname(request.getNickname()).isEmpty();
     }
 
 }

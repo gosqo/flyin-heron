@@ -52,11 +52,4 @@ public class Board {
     public void updateContent(String content) {
         this.content = content;
     }
-
-//    @PrePersist
-//    @PreUpdate
-//    private void updateFieldWriter() {
-//        this.writer = this.member.getNickname();
-//    }
-
 }

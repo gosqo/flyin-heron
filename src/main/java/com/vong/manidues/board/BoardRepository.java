@@ -46,6 +46,4 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
              WHERE b.content LIKE %:keyword%
             """)
     List<Board> findAllByKeywordLikeContent(@Param("keyword") String keyword);
-
-
 }

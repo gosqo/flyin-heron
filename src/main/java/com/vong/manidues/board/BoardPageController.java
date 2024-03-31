@@ -48,5 +48,4 @@ public class BoardPageController {
                         .fromEntityPage(service.getBoardPage(pageRequest))
         );
     }
-
 }

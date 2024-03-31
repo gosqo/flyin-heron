@@ -25,7 +25,7 @@ public class MemberController {
             @Valid @RequestBody MemberRegisterRequest request
     ) {
         log.info("""
-                request POST to "api/v1/member"
+                request POST to "/api/v1/member/"
                 """
         );
         return service.register(request)

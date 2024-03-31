@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class BoardDTO {
 
-
     private String title;
     private String content;
     private String writer;
@@ -45,5 +44,4 @@ public class BoardDTO {
                 ", \n\tupdateDate = " + updateDate +
                 "\n}";
     }
-
 }

@@ -47,9 +47,7 @@ public class BoardController {
         Board entity = service.get(id);
 
         return entity != null
-                ? ResponseEntity.ok(
-                new BoardGetResponse().fromEntity(entity)
-        )
+                ? ResponseEntity.ok(new BoardGetResponse().fromEntity(entity))
                 : ResponseEntity.notFound().build();
     }
 
@@ -63,11 +61,11 @@ public class BoardController {
 
         return service.delete(id, requestUserEmail)
                 ? ResponseEntity.ok(
-                BoardDeleteResponse.builder()
-                        .isDeleted(true)
-                        .message("삭제되었습니다.")
-                        .build()
-        )
+                        BoardDeleteResponse.builder()
+                                .isDeleted(true)
+                                .message("삭제되었습니다.")
+                                .build()
+                )
                 : ResponseEntity.badRequest().build();
     }
 
@@ -87,7 +85,7 @@ public class BoardController {
                         .isUpdated(true)
                         .message("해당 게시물의 수정이 처리됐습니다.")
                         .build()
-        )
+                )
                 : ResponseEntity.badRequest().build();
     }
 
@@ -115,9 +113,7 @@ public class BoardController {
                         .posted(true)
                         .message("게시물 등록이 완료됐습니다.")
                         .build()
-        )
+                )
                 : ResponseEntity.badRequest().build();
     }
-
-
 }
