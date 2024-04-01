@@ -27,6 +27,7 @@ public class BoardPageController {
             @PathVariable("pageNumber") int pageNumber,
             HttpServletRequest request
     ) {
+
         String requestedIpAddress = request.getRemoteAddr();
 
         log.info("""

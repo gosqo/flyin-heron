@@ -42,9 +42,9 @@ public class BlacklistedIpsFilter extends OncePerRequestFilter {
         String requestedIpAddress = request.getRemoteAddr();
         String requestedUserAgent = request.getHeader("User-Agent");
 
-        if (requestedUserAgent == null ||
-                requestedUserAgent.isBlank() || // if String empty or contains only white space --> true.
-                !isWhiteListUserAgent(requestedUserAgent)
+        if (requestedUserAgent == null
+                || requestedUserAgent.isBlank()
+                || !isWhiteListUserAgent(requestedUserAgent)
         ) {
             log.warn("""
 
@@ -78,6 +78,5 @@ public class BlacklistedIpsFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-
     }
 }

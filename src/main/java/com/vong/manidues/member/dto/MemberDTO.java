@@ -27,5 +27,4 @@ public class MemberDTO {
                 .registerDate(member.getRegisterDate())
                 .build();
     }
-
 }

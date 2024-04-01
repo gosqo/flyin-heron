@@ -17,16 +17,15 @@ public class BoardPageResponse {
     private Page<BoardGetResponse> boardPage;
 
     public BoardPageResponse fromEntityPage(Page<Board> entityPage) {
+
         BoardGetResponse boardGetResponse = new BoardGetResponse();
-        ;
+
         return BoardPageResponse.builder()
                 .boardPage(new PageImpl<BoardGetResponse>(
-                        entityPage.get().map(boardGetResponse::fromEntity).toList()
-                        , entityPage.getPageable()
-                        , entityPage.getTotalElements()
-                        )
-                )
+                        entityPage.get().map(boardGetResponse::fromEntity).toList(),
+                        entityPage.getPageable(),
+                        entityPage.getTotalElements()
+                ))
                 .build();
     }
-
 }

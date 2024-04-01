@@ -18,7 +18,6 @@ public class GlobalRestExceptionHandler {
 
         log.info("\ngetFieldsErrors(): {}\n", validExceptionMessage);
 
-
         return ResponseEntity
                 .status(ex.getStatusCode().value())
                 .body(JsonResponseBody.builder()

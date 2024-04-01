@@ -18,7 +18,11 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
      * 2. 회원가입 시, validation 에러를 잡은 후, 추가적으로 이곳으로 호출이 이어지는 이유?
      */
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+    public void commence(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            AuthenticationException authException
+    ) throws IOException, ServletException {
 
         String message = authException.getMessage();
         HttpResponseWithBody responseWithBody = new HttpResponseWithBody();

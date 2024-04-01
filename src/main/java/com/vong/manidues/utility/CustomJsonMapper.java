@@ -9,7 +9,6 @@ import java.io.IOException;
 public class CustomJsonMapper {
 
     public String mapToJsonString(Object obj) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(obj);
+        return new ObjectMapper().writeValueAsString(obj);
     }
 }

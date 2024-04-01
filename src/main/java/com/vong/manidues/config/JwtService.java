@@ -54,6 +54,7 @@ public class JwtService {
     ) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("id", memberRepository.findByEmail(userDetails.getUsername()).orElseThrow().getId());
+
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .addClaims(claims)
@@ -62,15 +63,6 @@ public class JwtService {
                 .setExpiration(new Date(System.currentTimeMillis() + expiration ))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
-    }
-    
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUserEmail(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
-    }
-
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
     }
 
     private Claims extractAllClaims(String token) {
@@ -91,7 +83,7 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
-    private Date extractExpiration(String token) {
+    public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 

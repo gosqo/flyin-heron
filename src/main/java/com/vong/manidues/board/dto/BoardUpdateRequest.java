@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardUpdateRequest {
-
     private String title;
     private String content;
-
 }

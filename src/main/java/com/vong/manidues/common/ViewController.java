@@ -23,28 +23,26 @@ public class ViewController {
 
             RequestTracker.trackRequest(requestedRemoteAddress, request);
             log.info("""
-                           
+                                                       
                                 request to "/" from {} count is: {}
                                 requested User-Agent is: {}
                                 requested Locale is: {}
                             """,
-                    requestedRemoteAddress, RequestTracker.getRequestCount(requestedRemoteAddress),
+                    requestedRemoteAddress,
+                    RequestTracker.getRequestCount(requestedRemoteAddress),
                     RequestTracker.getUserAgent(requestedRemoteAddress),
                     request.getLocale()
             );
 
             if (RequestTracker.getRequestCount(requestedRemoteAddress) > 10) {
                 log.info("""
-                               
-                                    This client has more than 10 attempts to hit "/" in an hour.
-                                    RequestTracker is like:
-                                    {}
-                                """,
-                        RequestTracker.getRequestMap()
+                                                       
+                            This client has more than 10 attempts to hit "/" in an hour.
+                            RequestTracker is like:
+                            {}
+                        """, RequestTracker.getRequestMap()
                 );
-
             }
-
         }
         RequestTracker.clearExpiredRequests();
 
@@ -53,13 +51,19 @@ public class ViewController {
 
     @GetMapping("/board/{id}")
     public String getBoard(@NotNull @PathVariable("id") Long id) {
-        log.info("request to board id: {}", id);
+        log.info("""
+                request GET to "/board/{}"
+                """, id
+        );
         return "board/board";
     }
 
     @GetMapping("/board/{id}/modify")
     public String modifyBoard(@NotNull @PathVariable("id") Long id) {
-        log.info("request to board id: {}", id);
+        log.info("""
+                request to "/board/{}/modify"
+                """, id
+        );
         return "board/boardModify";
     }
 

@@ -36,61 +36,63 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
 
-        // 헤더 인가가 비었거나, 'Bearer ' 로 시작하지 않는다면 다음 필터로.
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 헤더 인가에 토큰이 있고, 'Bearer ' 로 시작하면,
-        jwt = authHeader.substring(7); // 'Bearer ' 자르고
+        jwt = authHeader.substring(7);
+
         try {
-            userEmail = jwtService.extractUserEmail(jwt);// 토큰에서 userEmail 추출;
-            // userEmail 이 null 이 아니고, 시큐리티 컨텍스트 홀더에 인증이 null
-            // (요청 헤더에 토큰을 담은 최초의 요청일 시(SecurityContextHolder.SecurityContext.Authentication == null), SecurityContextHolder 에 해당 토큰의 Authentication 을 추가)
+            userEmail = jwtService.extractUserEmail(jwt);
+
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
-                // Principal, Credential, Authorities 매개변수로 UsernamePasswordAuthenticationToken 타입 인스턴스 authToken 생성.
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken( // Authentication 의 구현체 UsernamePasswordAuthenticationToken
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
-                        userDetails.getAuthorities() // userDetails 객체의 getAuthorities()
+                        userDetails.getAuthorities()
                 );
 
-                // UsernamePasswordAuthenticationToken 인스턴스인 authToken 에 요청 정보를 매개변수로 전달 해 Details 세팅
                 authToken.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // authToken 을 SecurityContextHolder 에 세팅하고
-                SecurityContextHolder.getContext().setAuthentication(authToken); // SecurityContext 안에 Authentication 타입으로 담긴다.
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
-        } catch (ExpiredJwtException | SignatureException | MalformedJwtException | DecodingException e) {
-            if (e instanceof ExpiredJwtException) {
-
-                log.info(e.getMessage());
-
-            } else {
+        } catch (ExpiredJwtException | SignatureException | MalformedJwtException | DecodingException ex) {
+            if (ex instanceof ExpiredJwtException) {
 
                 log.info("""
-                                Auth Service caught error: {}
+                                {}
+                                response with 401, client will request to "/api/v1/auth/refresh-token" with refreshToken.
+                                """,
+                        ex.getMessage()
+                );
+                response.setStatus(401);
+
+            } else { // ExpiredJwtException 외의 에러는 조작된 것으로 간주. response 400
+
+                log.warn("""
+                                JWT Auth Filter caught error: {}
+                                    === Guess that client's Token has been manipulated. ===
                                     Ip address is: {}
                                     User-Agent is: {}
                                 """,
-                        e.getMessage(),
+                        ex.getMessage(),
                         request.getRemoteAddr(),
                         request.getHeader("User-Agent")
                 );
 
+                response.setStatus(400);
             }
-            response.setStatus(401);
         }
 
-        // 다음 필터로 넘김?
         filterChain.doFilter(request, response);
     }
 }

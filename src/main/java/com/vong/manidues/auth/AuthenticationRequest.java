@@ -14,6 +14,7 @@ public class AuthenticationRequest {
 
     @NotBlank(message = "Email 을 입력해주세요.")
     private String email;
+
     @NotBlank(message = "비밀번호를 입력해주세요.")
     private String password;
 }

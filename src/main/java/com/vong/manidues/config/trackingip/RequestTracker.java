@@ -23,8 +23,8 @@ public class RequestTracker {
                 requestMap.getOrDefault(
                         ipAddress,
                         new RequestInfo()
-                ).getRequestCount() + 1
-                , request.getHeader("User-Agent")
+                ).getRequestCount() + 1,
+                request.getHeader("User-Agent")
         ));
     }
 
@@ -48,10 +48,8 @@ public class RequestTracker {
     @Getter
     @ToString
     private static class RequestInfo {
-
         private Instant requestTime;
         private int requestCount;
         private String userAgent;
-
     }
 }

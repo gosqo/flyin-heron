@@ -46,11 +46,10 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        // TODO Authentication, AuthenticationManager,
-        //  UsernamePasswordAuthenticationToken 객체에 대한 학습(구조, 흐름)
 
         String accessToken = null;
         String refreshToken = null;
+
         try {
 
             authenticationManager.authenticate(
@@ -59,7 +58,6 @@ public class AuthenticationService {
                             request.getPassword()
                     )
             );
-
         } catch (AuthenticationException ex) {
             log.info("""
                             Auth Service caught Exception.
@@ -78,7 +76,6 @@ public class AuthenticationService {
             refreshToken = jwtService.generateRefreshToken(member);
 
             saveMemberToken(member, refreshToken);
-
         }
 
         return AuthenticationResponse.builder()
@@ -123,10 +120,12 @@ public class AuthenticationService {
 
         // refreshToken 의 유효성에 대한 try / catch
         try {
-            userEmail = jwtService.extractUserEmail(refreshToken);// extract the userEmail from refreshToken
-            if (userEmail != null) {
-                Member member = this.memberRepository.findByEmail(userEmail).orElseThrow();
 
+            userEmail = jwtService.extractUserEmail(refreshToken);// extract the userEmail from refreshToken
+
+            if (userEmail != null) {
+
+                Member member = this.memberRepository.findByEmail(userEmail).orElseThrow();
                 String accessToken = jwtService.generateAccessToken(member);
 
                 refreshTokenExpiration = jwtService
@@ -137,6 +136,7 @@ public class AuthenticationService {
                 gapToExpiration = ChronoUnit.DAYS.between(today, refreshTokenExpiration);
 
                 if (gapToExpiration <= 7) {
+
                     String renewedRefreshToken = jwtService.generateRefreshToken(member);
 
                     // 만료기간이 7 일 이하로 남아 새로 갱신한 리프레시 토큰을 디비에 저장.
@@ -164,6 +164,7 @@ public class AuthenticationService {
                         .build();
             }
         } catch (ExpiredJwtException | SignatureException | MalformedJwtException e) {
+
             if (e instanceof ExpiredJwtException) {
 
                 log.info(e.getMessage());
@@ -179,11 +180,9 @@ public class AuthenticationService {
                         request.getRemoteAddr(),
                         request.getHeader("User-Agent")
                 );
-
             }
 
             responseWithBody.jsonResponse(response, 401, "인증정보가 필요합니다.");
-
         }
 
         return null;

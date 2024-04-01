@@ -42,6 +42,7 @@ public class SecurityConfig {
             , "/board/**"
             , "/boards/**"
     };
+
     private final String[] WHITE_LIST_URLS_NON_MEMBER_POST = {
             "/api/v1/member/"
             , "/api/v1/auth/authenticate"
@@ -51,8 +52,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        log.info("=== filterChain(HttpSecurity http) invoked.");
 
         http
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -85,11 +84,7 @@ public class SecurityConfig {
                                         (request, response, authentication) ->
                                                 SecurityContextHolder.clearContext()
                                 )
-                )
-
-        ;
-
+                );
         return http.build();
     }
-
 }

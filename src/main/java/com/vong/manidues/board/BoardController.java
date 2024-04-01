@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/v1/board")
+@RequestMapping("/api/v1/board")
 @RequiredArgsConstructor
 @Slf4j
 public class BoardController {
@@ -41,7 +41,6 @@ public class BoardController {
                             """,
                     id
             );
-
         }
 
         Board entity = service.get(id);
@@ -56,6 +55,7 @@ public class BoardController {
             HttpServletRequest servletRequest,
             @PathVariable("id") Long id
     ) {
+
         String requestUserEmail = servletRequestUtility
                 .extractEmailFromHeader(servletRequest);
 
@@ -75,6 +75,7 @@ public class BoardController {
             @PathVariable("id") Long id,
             @RequestBody BoardUpdateRequest request
     ) {
+
         String requestUserEmail = servletRequestUtility
                 .extractEmailFromHeader(servletRequest);
 

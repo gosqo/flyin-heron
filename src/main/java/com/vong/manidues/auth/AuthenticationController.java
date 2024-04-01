@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("api/v1/auth")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 @Slf4j
 public class AuthenticationController {
@@ -40,11 +40,11 @@ public class AuthenticationController {
         return response.getAccessToken() != null
                 ? ResponseEntity.status(200).body(response)
                 : ResponseEntity.status(400).body(
-                JsonResponseBody.builder()
-                        .statusCode(400)
-                        .message("인증에 실패했습니다.")
-                        .build()
-        );
+                        JsonResponseBody.builder()
+                                .statusCode(400)
+                                .message("인증에 실패했습니다.")
+                                .build()
+                );
     }
 
     @PostMapping("/refresh-token")
@@ -52,7 +52,6 @@ public class AuthenticationController {
             HttpServletRequest request,
             HttpServletResponse response
     ) throws IOException {
-
 
         log.info("""
                         request to /api/v1/auth/refresh-token

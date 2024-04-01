@@ -16,13 +16,10 @@ public class HttpResponseWithBody {
             int statusCode,
             @Nullable String additionalMessage
     ) throws IOException {
-
-        CustomJsonMapper jsonMapper = new CustomJsonMapper();
-
         response.setStatus(statusCode);
         response.setContentType(MediaType.APPLICATION_JSON.toString());
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().println(jsonMapper.mapToJsonString(
+        response.getWriter().println(new CustomJsonMapper().mapToJsonString(
                 JsonResponseBody.builder()
                         .statusCode(statusCode)
                         .message(HttpStatus.valueOf(statusCode).getReasonPhrase())

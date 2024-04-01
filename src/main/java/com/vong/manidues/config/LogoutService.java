@@ -19,6 +19,7 @@ import java.util.List;
 @Slf4j
 public class LogoutService implements LogoutHandler {
 
+    private final JwtService jwtService;
     private final TokenRepository tokenRepository;
     private final HttpResponseWithBody responseWithBody;
 
@@ -51,8 +52,12 @@ public class LogoutService implements LogoutHandler {
             return;
         }
 
-        log.info("logout method on service layer called with refresh token: {}", authHeader);
         refreshToken = authHeader.substring(7);
+        log.info("""
+                logout method on service layer called.
+                    user email is: {}
+                """, jwtService.extractUserEmail(refreshToken)
+        );
 
         List<Token> storedTokens = tokenRepository.findAllByToken(refreshToken).stream().toList();
 
@@ -64,15 +69,14 @@ public class LogoutService implements LogoutHandler {
             } catch (IOException e) {
                 log.info(e.getMessage());
             }
-
         } else { // refreshToken entity 가 존재한다면
 
             if (storedTokens.size() > 1) {
                 log.warn(" === Duplicated refresh token detected on database. Check the logic related to saving refresh token on database. ===");
             }
 
-            // database 에서 해당 refreshToken 을 모두 삭제합니다.
             int deletedTokenCount = tokenRepository.deleteByToken(refreshToken);
+
             log.info("Deleted token count is: {}", deletedTokenCount);
 
             try {

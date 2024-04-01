@@ -19,7 +19,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public boolean register(MemberRegisterRequest request) {
 
-        if (!isNotDuplicated(request)) {
+        if (isDuplicated(request)) {
             return false;
         }
 
@@ -34,7 +34,6 @@ public class MemberServiceImpl implements MemberService {
                             """,
                     storedMember.getEmail()
             );
-
         } catch (DataIntegrityViolationException ex) {
             log.info("""
                             DataIntegrityViolationException occurs on method register() in memberService,
@@ -44,14 +43,11 @@ public class MemberServiceImpl implements MemberService {
             );
             return false;
         }
-
         return true;
     }
 
-    private boolean isNotDuplicated(MemberRegisterRequest request) {
-
-        return memberRepository.findByEmail(request.getEmail()).isEmpty() &&
-                memberRepository.findByNickname(request.getNickname()).isEmpty();
+    private boolean isDuplicated(MemberRegisterRequest request) {
+        return memberRepository.findByEmail(request.getEmail()).isPresent() &&
+                memberRepository.findByNickname(request.getNickname()).isPresent();
     }
-
 }

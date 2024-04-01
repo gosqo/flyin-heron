@@ -24,10 +24,8 @@ public class MemberController {
     public ResponseEntity<Object> register(
             @Valid @RequestBody MemberRegisterRequest request
     ) {
-        log.info("""
-                request POST to "/api/v1/member/"
-                """
-        );
+        log.info("request POST to \"/api/v1/member/\"");
+
         return service.register(request)
                 ? ResponseEntity.ok("회원가입에 성공했습니다.")
                 : ResponseEntity.status(400)
