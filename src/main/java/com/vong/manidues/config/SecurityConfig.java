@@ -44,7 +44,7 @@ public class SecurityConfig {
     };
 
     private final String[] WHITE_LIST_URLS_NON_MEMBER_POST = {
-            "/api/v1/member/"
+            "/api/v1/member/**"
             , "/api/v1/auth/authenticate"
             , "/error"
             , "/error/**"
