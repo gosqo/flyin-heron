@@ -41,8 +41,11 @@ public class MemberController {
     }
 
     @PostMapping("/isPresentEmail")
-    public ResponseEntity<Object> isPresentEmail(@Valid @RequestBody IsPresentRequest request) {
-        boolean doesEmailPresent = repository.findByEmail(request.getValueToCheck()).isPresent();
+    public ResponseEntity<Object> isPresentEmail(
+            @Valid @RequestBody IsPresentRequest request
+    ) {
+        boolean doesEmailPresent =
+                repository.findByEmail(request.getValueToCheck()).isPresent();
 
         log.info("""
                         request to /isPresentEmail with email: {}
@@ -66,8 +69,11 @@ public class MemberController {
     }
 
     @PostMapping("/isPresentNickname")
-    public ResponseEntity<Object> isPresentNickname(@Valid @RequestBody IsPresentRequest request) {
-        boolean doesNicknamePresent = repository.findByNickname(request.getValueToCheck()).isPresent();
+    public ResponseEntity<Object> isPresentNickname(
+            @Valid @RequestBody IsPresentRequest request
+    ) {
+        boolean doesNicknamePresent =
+                repository.findByNickname(request.getValueToCheck()).isPresent();
 
         log.info("""
                         request to /isPresentNickname with email: {}
