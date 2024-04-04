@@ -51,7 +51,6 @@ public class AuthenticationService {
         String refreshToken = null;
 
         try {
-
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getEmail(),
@@ -71,6 +70,12 @@ public class AuthenticationService {
                 .orElse(null);
 
         if (member != null) {
+            log.info("""
+                            authenticate success.
+                                Member Email is: {}
+                            """,
+                    member.getEmail()
+            );
 
             accessToken = jwtService.generateAccessToken(member);
             refreshToken = jwtService.generateRefreshToken(member);
@@ -141,14 +146,8 @@ public class AuthenticationService {
 
                     // 만료기간이 7 일 이하로 남아 새로 갱신한 리프레시 토큰을 디비에 저장.
                     saveMemberToken(member, renewedRefreshToken);
-
                     // 기존의 리프레시 토큰은 삭제.
-                    log.info("""
-                                                                        
-                                    deleted token count: {}
-                                    """,
-                            tokenRepository.deleteByToken(refreshToken)
-                    );
+                    tokenRepository.deleteByToken(refreshToken);
 
                     return AuthenticationResponse.builder()
                             .accessToken(accessToken)
@@ -164,13 +163,9 @@ public class AuthenticationService {
                         .build();
             }
         } catch (ExpiredJwtException | SignatureException | MalformedJwtException e) {
-
             if (e instanceof ExpiredJwtException) {
-
                 log.info(e.getMessage());
-
             } else {
-
                 log.info("""
                                 Auth Service caught error: {}
                                     Ip address is: {}
@@ -181,10 +176,9 @@ public class AuthenticationService {
                         request.getHeader("User-Agent")
                 );
             }
-
-            responseWithBody.jsonResponse(response, 401, "인증정보가 필요합니다.");
+            responseWithBody.jsonResponse(
+                    response, 400, "인증정보가 필요합니다.");
         }
-
         return null;
     }
 }

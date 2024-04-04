@@ -1,19 +1,18 @@
 async function getBoardList(pageNumber) {
     // TODO page control.
     const url = `/api/v1/boards/${pageNumber}`;
-    let options = {
-        headers: {
-            'Authorization': localStorage.getItem('access_token')
-        },
-    };
 
     try {
+        const response = await fetch(url);
+        console.log(response);
 
-        const response = await fetch(url, options);
-        const data = await response.json();
-        console.log(data);
-        return data;
-
+        if (response.status === 404) {
+            location.href = '/error/404';
+        } else {
+            const data = await response.json();
+            console.log(data);
+            return data;
+        }
     } catch (error) {
         console.error('Error ' + error);
     }

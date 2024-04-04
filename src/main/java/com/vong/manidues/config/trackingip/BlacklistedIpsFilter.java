@@ -20,13 +20,13 @@ public class BlacklistedIpsFilter extends OncePerRequestFilter {
 
     @Value("${blacklisted-ips-list}")
     private List<String> blacklistedIps;
-    private String[] whiteListUserAgent = {
+    private final String[] WHITE_LIST_USER_AGENTS = {
             "mozilla"
             , "postman"
     };
 
     private boolean isWhiteListUserAgent(String userAgent) {
-        for (String whiteUserAgent : whiteListUserAgent) {
+        for (String whiteUserAgent : WHITE_LIST_USER_AGENTS) {
             if (userAgent.toLowerCase().contains(whiteUserAgent)) return true;
         }
         return false;
@@ -39,44 +39,43 @@ public class BlacklistedIpsFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String requestedIpAddress = request.getRemoteAddr();
-        String requestedUserAgent = request.getHeader("User-Agent");
+        String requestIp = request.getRemoteAddr();
+        String requestUserAgent = request.getHeader("User-Agent");
 
-        if (requestedUserAgent == null
-                || requestedUserAgent.isBlank()
-                || !isWhiteListUserAgent(requestedUserAgent)
+        if (requestUserAgent == null
+                || requestUserAgent.isBlank()
+                || !isWhiteListUserAgent(requestUserAgent)
         ) {
             log.warn("""
 
 
                                 Request from abnormal User-Agent. IP address is: {}
-                                requested User-Agent is: {}
+                                request User-Agent is: {}
                             """,
-                    requestedIpAddress,
-                    requestedUserAgent
+                    requestIp,
+                    requestUserAgent
             );
 
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
-        if (blacklistedIps.contains(requestedIpAddress)) {
+        if (blacklistedIps.contains(requestIp)) {
             log.warn("""
 
 
                                 Request from blacklisted ip. IP address is: {}
-                                requested User-Agent is: {}
+                                request User-Agent is: {}
                                 listed size is: {}
                             """,
-                    requestedIpAddress,
-                    requestedUserAgent,
+                    requestIp,
+                    requestUserAgent,
                     blacklistedIps.size()
             );
 
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
-
         filterChain.doFilter(request, response);
     }
 }

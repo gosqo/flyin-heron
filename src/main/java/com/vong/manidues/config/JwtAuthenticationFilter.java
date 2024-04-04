@@ -88,11 +88,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         request.getRemoteAddr(),
                         request.getHeader("User-Agent")
                 );
-
                 response.setStatus(400);
             }
         }
-
         filterChain.doFilter(request, response);
     }
 }

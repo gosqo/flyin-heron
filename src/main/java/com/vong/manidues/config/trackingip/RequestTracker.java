@@ -11,29 +11,34 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class RequestTracker {
 
-    private static final ConcurrentHashMap<String, RequestInfo> requestMap = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, RequestInfo> requestMap =
+            new ConcurrentHashMap<>();
 
     public static String getRequestMap() {
         return requestMap.toString();
     }
 
-    public static void trackRequest(String ipAddress, HttpServletRequest request) {
-        requestMap.put(ipAddress, new RequestInfo(
+    public static void trackRequest(HttpServletRequest request) {
+        String requestIp = request.getRemoteAddr();
+        String requestUserAgent = request.getHeader("User-Agent");
+        int requestCount = requestMap.getOrDefault(
+                requestIp, new RequestInfo()).getRequestCount() + 1;
+
+        requestMap.put(requestIp, new RequestInfo(
                 Instant.now(),
-                requestMap.getOrDefault(
-                        ipAddress,
-                        new RequestInfo()
-                ).getRequestCount() + 1,
-                request.getHeader("User-Agent")
+                requestCount,
+                requestUserAgent
         ));
     }
 
     public static int getRequestCount(String ipAddress) {
-        return requestMap.getOrDefault(ipAddress, new RequestInfo()).getRequestCount();
+        return requestMap.getOrDefault(
+                ipAddress, new RequestInfo()).getRequestCount();
     }
 
     public static String getUserAgent(String ipAddress) {
-        return requestMap.getOrDefault(ipAddress, new RequestInfo()).getUserAgent();
+        return requestMap.getOrDefault(
+                ipAddress, new RequestInfo()).getUserAgent();
     }
 
     public static void clearExpiredRequests() {

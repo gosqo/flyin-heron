@@ -55,8 +55,11 @@ public class MemberRegisterRequest {
     private String nickname;
 
     @AssertTrue(message = "비밀번호가 일치하지 않습니다.")
-    private boolean isPasswordMatch() {
-        return password.equals(passwordCheck);
+    public boolean isPasswordMatch() {
+        String password = this.getPassword();
+        String passwordCheck = this.getPasswordCheck();
+        return password != null
+                && password.equals(passwordCheck);
     }
 
     public Member toEntity(String password) {

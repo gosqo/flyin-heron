@@ -70,7 +70,6 @@ public class LogoutService implements LogoutHandler {
                 log.info(e.getMessage());
             }
         } else { // refreshToken entity 가 존재한다면
-
             if (storedTokens.size() > 1) {
                 log.warn(" === Duplicated refresh token detected on database. Check the logic related to saving refresh token on database. ===");
             }

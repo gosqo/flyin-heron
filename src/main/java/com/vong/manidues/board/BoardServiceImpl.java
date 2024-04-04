@@ -21,7 +21,9 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Page<Board> getBoardPage(Pageable pageable) {
-        return boardRepository.findAll(pageable);
+        Page<Board> foundPage = boardRepository.findAll(pageable);
+        if (foundPage.getTotalPages() - 1 < pageable.getPageNumber()) return null;
+        return foundPage;
     }
 
     @Override

@@ -10,13 +10,11 @@ public class MemberViewController {
 
     @GetMapping("/login")
     public String viewLogin() {
-        log.info("request to \"/login\" ... ");
         return "member/login";
     }
 
     @GetMapping("/signUp")
     public String viewSigunUp() {
-        log.info("request to \"/signUp\" ... ");
         return "member/signUp";
     }
 }

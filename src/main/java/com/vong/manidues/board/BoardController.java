@@ -20,34 +20,13 @@ public class BoardController {
 
     @GetMapping("/{id}")
     public ResponseEntity<BoardGetResponse> getBoard(
-            @PathVariable("id") Long id,
-            HttpServletRequest servletRequest
+            @PathVariable("id") Long id
     ) {
-        String authHeader = servletRequest.getHeader("Authorization");
-
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-
-            log.info("""
-                            Request GET to "/api/v1/board/{}"
-                            Client email is: {}
-                            """,
-                    id,
-                    servletRequestUtility.extractEmailFromHeader(servletRequest));
-
-        } else {
-
-            log.info("""
-                            request GET to "/api/v1/board/{}"
-                            """,
-                    id
-            );
-        }
-
         Board entity = service.get(id);
 
         return entity != null
                 ? ResponseEntity.ok(new BoardGetResponse().fromEntity(entity))
-                : ResponseEntity.notFound().build();
+                : ResponseEntity.status(404).build();
     }
 
     @DeleteMapping("/{id}")
@@ -55,7 +34,6 @@ public class BoardController {
             HttpServletRequest servletRequest,
             @PathVariable("id") Long id
     ) {
-
         String requestUserEmail = servletRequestUtility
                 .extractEmailFromHeader(servletRequest);
 
@@ -66,7 +44,7 @@ public class BoardController {
                                 .message("삭제되었습니다.")
                                 .build()
                 )
-                : ResponseEntity.badRequest().build();
+                : ResponseEntity.status(400).build();
     }
 
     @PutMapping("/{id}")
@@ -75,19 +53,18 @@ public class BoardController {
             @PathVariable("id") Long id,
             @RequestBody BoardUpdateRequest request
     ) {
-
         String requestUserEmail = servletRequestUtility
                 .extractEmailFromHeader(servletRequest);
 
         return service.update(id, requestUserEmail, request)
                 ? ResponseEntity.ok(
-                BoardUpdateResponse.builder()
-                        .id(id)
-                        .isUpdated(true)
-                        .message("해당 게시물의 수정이 처리됐습니다.")
-                        .build()
+                        BoardUpdateResponse.builder()
+                                .id(id)
+                                .isUpdated(true)
+                                .message("해당 게시물의 수정이 처리됐습니다.")
+                                .build()
                 )
-                : ResponseEntity.badRequest().build();
+                : ResponseEntity.status(400).build();
     }
 
     @PostMapping("")
@@ -97,24 +74,16 @@ public class BoardController {
     ) {
         String requestUserEmail = servletRequestUtility
                 .extractEmailFromHeader(servletRequest);
-
-        log.info("""
-                        request POST to "/api/v1/board/"
-                        Email is : {}
-                        """,
-                requestUserEmail
-        );
-
         Long id = service.register(requestUserEmail, request);
 
         return id != null
                 ? ResponseEntity.ok(
-                BoardRegisterResponse.builder()
-                        .id(id)
-                        .posted(true)
-                        .message("게시물 등록이 완료됐습니다.")
-                        .build()
+                        BoardRegisterResponse.builder()
+                                .id(id)
+                                .posted(true)
+                                .message("게시물 등록이 완료됐습니다.")
+                                .build()
                 )
-                : ResponseEntity.badRequest().build();
+                : ResponseEntity.status(400).build();
     }
 }

@@ -13,14 +13,12 @@ window.addEventListener('load', async () => {
 
     // fetch board {id}
     if (boardData !== '' && boardData !== undefined) {
-        
         document.querySelector('#board-id').textContent = boardData.boardId;
         document.querySelector('#board-title').textContent = boardData.title;
         document.querySelector('#board-writer').textContent = boardData.writer;
         // TODO add boardHits on response entity(on server). then unlock below.
         // document.querySelector('#board-hits').textContent = boardData.hits;
-        
-        // console.log(gapBetweenDateTimes(boardData.updateDate, boardData.registerDate));
+
         document.querySelector('#board-date').textContent = 
                 gapBetweenDateTimes(boardData.updateDate, boardData.registerDate) === 0
                         ? formatDate(boardData.registerDate )

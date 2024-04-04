@@ -55,6 +55,11 @@ window.addEventListener('load', () => {
         const form = document.querySelector('#form');
         const formData = new FormData(form);
         const body = {};
+        
+        formData.forEach((value, key) => {
+            body[key] = value;
+        });
+
         const url = '/api/v1/member/';
         const options = {
             headers: {
@@ -64,17 +69,13 @@ window.addEventListener('load', () => {
             body: JSON.stringify(body)
         };
 
-        formData.forEach((value, key) => {
-            body[key] = value;
-        });
-
         await fetchSubmit(url, options);
     });
 });
 
-async function fetchSubmit() {
+async function fetchSubmit(url, options) {
     try {
-        const response = await fetch(url, requestInit);
+        const response = await fetch(url, options);
         console.log(response);
 
         if (response.status === 200) {

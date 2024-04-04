@@ -2,9 +2,9 @@ package com.vong.manidues.board;
 
 import com.vong.manidues.board.dto.BoardPageResponse;
 import com.vong.manidues.utility.ServletRequestUtility;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -24,29 +24,19 @@ public class BoardPageController {
 
     @GetMapping("/{pageNumber}")
     public ResponseEntity<BoardPageResponse> getBoardList(
-            @PathVariable("pageNumber") int pageNumber,
-            HttpServletRequest request
+            @PathVariable("pageNumber") int pageNumber
     ) {
-
-        String requestedIpAddress = request.getRemoteAddr();
-
-        log.info("""
-                        Request to boards with pageNumber: {}
-                            Requested ip: {}
-                        """,
-                pageNumber,
-                requestedIpAddress
-        );
-
         pageNumber = pageNumber - 1;
         int pageSize = 3;
         Sort sort = Sort.by(Sort.Direction.DESC, "registerDate");
 
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sort);
 
-        return ResponseEntity.ok(
-                new BoardPageResponse()
-                        .fromEntityPage(service.getBoardPage(pageRequest))
-        );
+        Page<Board> foundPage = service.getBoardPage(pageRequest);
+
+        return foundPage != null
+                ? ResponseEntity.status(200).body(new BoardPageResponse()
+                        .fromEntityPage(foundPage))
+                : ResponseEntity.status(404).build();
     }
 }

@@ -27,15 +27,13 @@ public class MemberController {
     public ResponseEntity<Object> register(
             @Valid @RequestBody MemberRegisterRequest request
     ) {
-        log.info("request POST to \"/api/v1/member/\"");
-
         return service.register(request)
                 ? ResponseEntity.ok("회원가입에 성공했습니다.")
                 : ResponseEntity.status(400)
                 .body(
                         JsonResponseBody.builder()
                                 .statusCode(400)
-                                .message("각 입력란의 양식에 맞춰 입력해주시기 바랍니다.")
+                                .message("중복 확인 메세지를 확인해주시기 바랍니다.")
                                 .build()
                 );
     }
@@ -44,18 +42,7 @@ public class MemberController {
     public ResponseEntity<Object> isPresentEmail(
             @Valid @RequestBody IsPresentRequest request
     ) {
-        boolean doesEmailPresent =
-                repository.findByEmail(request.getValueToCheck()).isPresent();
-
-        log.info("""
-                        request to /isPresentEmail with email: {}
-                        does email present on DB?: {}
-                        """,
-                request.getValueToCheck(),
-                doesEmailPresent
-                );
-
-        return doesEmailPresent
+        return repository.findByEmail(request.getValueToCheck()).isPresent()
                 ? ResponseEntity.status(409).body(
                         JsonResponseBody.builder()
                                 .message("이미 가입한 이메일 주소입니다.")
@@ -72,18 +59,7 @@ public class MemberController {
     public ResponseEntity<Object> isPresentNickname(
             @Valid @RequestBody IsPresentRequest request
     ) {
-        boolean doesNicknamePresent =
-                repository.findByNickname(request.getValueToCheck()).isPresent();
-
-        log.info("""
-                        request to /isPresentNickname with email: {}
-                        does nickname present on DB?: {}
-                        """,
-                request.getValueToCheck(),
-                doesNicknamePresent
-        );
-
-        return doesNicknamePresent
+        return repository.findByNickname(request.getValueToCheck()).isPresent()
                 ? ResponseEntity.status(409).body(
                         JsonResponseBody.builder()
                                 .message("이미 존재하는 닉네임입니다.")
