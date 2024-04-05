@@ -10,7 +10,12 @@ window.addEventListener('load', () => {
     // 서버에 요청.
     isPresentNicknameButton.addEventListener('click', async (event) => {
         event.preventDefault();
-        const valueToCheck = document.querySelector('input[name=nickname]').value;
+        const targetElement = document.querySelector('input[name=nickname]');
+        const checkMessage = document.querySelector(
+            `#${targetElement.name}IsPresentCheckMessage`);
+        if (checkMessage) checkMessage.remove();
+
+        const valueToCheck = targetElement.value;
         const url = '/api/v1/member/isPresentNickname';
         const options = {
             headers: {
@@ -20,18 +25,19 @@ window.addEventListener('load', () => {
             body: JSON.stringify({"valueToCheck": valueToCheck})
         };
 
-        try {
-            const response = await fetch(url, options);
-            const data = await response.json();
-            alert(data.message);
-        } catch (error) {
-            console.error('Error: ', error);
-        }
+        const isPresentResultMessage = await fetchAndReturnMessage(url, options);
+        const isPassed = isPresentResultMessage === '사용 가능한 닉네임입니다.';
+        addResultMessageIsPresent(targetElement, isPassed, isPresentResultMessage);
     });
 
     isPresentEmailButton.addEventListener('click', async (event) => {
         event.preventDefault();
-        const valueToCheck = document.querySelector('input[name=email]').value;
+        const targetElement = document.querySelector('input[name=email]');
+        const checkMessage = document.querySelector(
+            `#${targetElement.name}IsPresentCheckMessage`);
+        if (checkMessage) checkMessage.remove();
+
+        const valueToCheck = targetElement.value;
         const url = '/api/v1/member/isPresentEmail';
         const options = {
             headers: {
@@ -41,13 +47,9 @@ window.addEventListener('load', () => {
             body: JSON.stringify({"valueToCheck": valueToCheck})
         };
 
-        try {
-            const response = await fetch(url, options);
-            const data = await response.json();
-            alert(data.message);
-        } catch (error) {
-            console.error('Error: ', error);
-        }
+        const isPresentResultMessage= await fetchAndReturnMessage(url, options);
+        const isPassed = isPresentResultMessage === '사용 가능한 이메일 주소입니다.';
+        addResultMessageIsPresent(targetElement, isPassed, isPresentResultMessage);
     });
 
     submitButton.addEventListener('click', async (event) => {
@@ -72,6 +74,41 @@ window.addEventListener('load', () => {
         await fetchSubmit(url, options);
     });
 });
+
+function addResultMessageIsPresent(targetElement, flag, resultMessage) {
+    const messageElement = document.querySelector(`#${targetElement.name}ResultMessageIsPresent`);
+    if (messageElement) messageElement.remove();
+
+    const message = document.createElement('p');
+    message.id = `${targetElement.name}ResultMessageIsPresent`;
+    message.textContent = resultMessage;
+    if (flag) {
+        message.style.color ='green';
+    } else {
+        message.style.color ='red';
+    }
+    targetElement.closest('div').append(message);
+}
+
+// async function fetchAndAlertMessage(url, options) {
+//     try {
+//         const response = await fetch(url, options);
+//         const data = await response.json();
+//         alert(data.message);
+//     } catch (error) {
+//         console.error('Error: ', error);
+//     }
+// }
+
+async function fetchAndReturnMessage(url, options) {
+    try {
+        const response = await fetch(url, options);
+        const data = await response.json();
+        return data.message;
+    } catch (error) {
+        console.error('Error: ', error);
+    }
+}
 
 async function fetchSubmit(url, options) {
     try {

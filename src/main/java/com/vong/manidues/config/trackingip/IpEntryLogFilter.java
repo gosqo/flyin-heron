@@ -23,7 +23,7 @@ public class IpEntryLogFilter extends OncePerRequestFilter {
         String requestUserAgent = request.getHeader("User-Agent");
         String requestURI = request.getRequestURI();
         String requestMethod = request.getMethod();
-        String requestServletPath = request.getServletPath();
+        String requestConnection = request.getHeader("Connection");
 
         if (requestURI.startsWith("/css/")
          || requestURI.startsWith("/js/")
@@ -41,13 +41,13 @@ public class IpEntryLogFilter extends OncePerRequestFilter {
                             User-Agent: {}
                             Method: {}
                             URI: {}
-                            ServletPath: {}
+                            Connection: {}
                         """
                 , requestIp
                 , requestUserAgent
                 , requestMethod
                 , requestURI
-                , requestServletPath
+                , requestConnection
         );
 
         if (RequestTracker.getRequestCount(requestIp) > 10) {
