@@ -46,7 +46,6 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-
         String accessToken = null;
         String refreshToken = null;
 
@@ -61,9 +60,15 @@ public class AuthenticationService {
             log.info("""
                             Auth Service caught Exception.
                                 {}
-                            """,
-                    ex.getMessage()
+                                {}
+                            """
+                    , ex.getClass().getName()
+                    , ex.getMessage()
             );
+            return AuthenticationResponse.builder()
+                    .accessToken(null)
+                    .refreshToken(null)
+                    .build();
         }
 
         Member member = memberRepository.findByEmail(request.getEmail())
@@ -76,7 +81,6 @@ public class AuthenticationService {
                             """,
                     member.getEmail()
             );
-
             accessToken = jwtService.generateAccessToken(member);
             refreshToken = jwtService.generateRefreshToken(member);
 
