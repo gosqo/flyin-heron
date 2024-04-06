@@ -24,61 +24,54 @@ window.addEventListener('load', () => {
 
     addValidationTo(
         emailInput,
-        emailRegex,
+        isValidEmail,
         matchedMessage,
         notMatchedEmail
     );
 
     addValidationTo(
         passwordInput,
-        passwordRegex,
+        isValidPassword,
         matchedMessage,
         notMatchedPassword
     );
 
     addValidationTo(
         passwordCheckInput,
-        null,
+        isValidPasswordCheckFlag,
         matchedPasswordCheckMessage,
         notMatchedPasswordCheck
     );
 
     addValidationTo(
         nicknameInput,
-        nicknameRegex,
+        isValidNickname,
         matchedMessage,
-        notMatchedNickname
+        notMatchedNickname,
     );
 
-    addMessageIfValid(emailInput);
-    addMessageIfValid(nicknameInput);
+    addCheckMessageIfValid(emailInput);
+    addCheckMessageIfValid(nicknameInput);
 
     // Event Listeners
-    // 사용자에게 중복 확인 요청 메세지. (isPresent)
-    //   입력 이벤트, 입력값의 검증 결과가 참인 경우 ()
-    function addMessageIfValid(targetElement) {
-        // 입력후 캐릿이 떠나면(blur), 
+    // 유효한 값 입력 후, 중복 확인 요청 메세지를 더함.
+    function addCheckMessageIfValid(targetElement) {
         targetElement.addEventListener('blur', () => {
-            // 중복확인한 내역이 있으면 리턴
             const resultMessageIsPresent = document.querySelector(
                 `#${targetElement.name}ResultMessageIsPresent`);
-            if (resultMessageIsPresent) {
-                return;
-            }
-            // 매 이벤트 발생마다 할당하는 변수.
+            if (resultMessageIsPresent) return;
+
             const validationMessageElement =
                 document.querySelector(`#${targetElement.name}ValidationMessage`);
             const isPresentCheckMessage = document.createElement('p');
             isPresentCheckMessage.id = `${targetElement.name}IsPresentCheckMessage`;
             isPresentCheckMessage.textContent = `${targetElement.name} 중복 확인을 해주세요.`;
     
-            const isPresentCheckMessageElement =
-                document.querySelector(
-                    `#${targetElement.name}IsPresentCheckMessage`);
-            // 이전에 존재하는 isPresentCheckMessageElement 가 있으면 삭제.
-            if (isPresentCheckMessageElement) isPresentCheckMessageElement.remove();
-            // 해당 인풋 이름의 ValidationMessage 식별자가 존재하고, 
-            // 해당 검증이 트루라면 중복확인을 클릭하도록 하는 메세지를 띄운다.
+            // const isPresentCheckMessageElement = document.querySelector(
+            //         `#${targetElement.name}IsPresentCheckMessage`);
+            // if (isPresentCheckMessageElement) isPresentCheckMessageElement.remove();
+            removeElementIfPresent(targetElement, 'IsPresentCheckMessage');
+            
             if (validationMessageElement
                 && validationMessageElement.style.color === 'green'
             ) validationMessageElement.closest('div').append(isPresentCheckMessage);
@@ -87,63 +80,80 @@ window.addEventListener('load', () => {
     
     // 이메일, 닉네임이 유일한 값인지 확인. (구현되있음 fetch in signUp.js)
     // 통신 결과에 따라 중복확인 요청한 메세지를 사용 가능, 불가능(통신 결과)을 알리는 메시지로 대체.
-    
+    emailInput.addEventListener('input', () => {
+        isValidEmail = isValidValue(emailInput, emailRegex, 6, 50)
+            ? true : false;
+    }); 
+    passwordInput.addEventListener('input', () => {
+        isValidPassword = isValidValue(passwordInput, passwordRegex, 8, 20)
+            ? true : false;
+    }); 
+    passwordCheckInput.addEventListener('input', () => {
+        isValidPasswordCheckFlag = isValidPasswordCheck(passwordInput, passwordCheckInput, passwordRegex)
+            ? true : false;
+    }); 
+    nicknameInput.addEventListener('input', () => {
+        isValidNickname = isValidValue(nicknameInput, nicknameRegex, 2, 20)
+            ? true : false;
+    }); 
     
     /**
-     * input 요소에 검증 이벤트 리스너를 추가합니다.
+     * input 입력값에 따른 검증결과 메세지를 붙인다.
      * @param {HTMLInputElement} targetElement 이벤트 리스너를 추가할 요소.
-     * @param {RegExp} regex 정규표현식을 통해 검증한다면 해당 매개변수를 사용합니다. null 인 경우, 비밀번호 확인란의 검증이 이뤄집니다. 검증 요소가 추가된다면 추후 수정이 필요합니다.
+     * @param {boolean} flag 정규표현식을 통해 검증한다면 해당 매개변수를 사용합니다. null 인 경우, 비밀번호 확인란의 검증이 이뤄집니다. 검증 요소가 추가된다면 추후 수정이 필요합니다.
      * @param {string} matchedMessage 검증 성공 시 메세지 입니다.
      * @param {string} notMatchedMessage 검증 실패 시 메세지 입니다.
      */
-    function addValidationTo(targetElement, regex, matchedMessage, notMatchedMessage) {
+    function addValidationTo(targetElement, flag, matchedMessage, notMatchedMessage) {
         targetElement.addEventListener('input', () => {
-            const isPresentCheckMessage = document.querySelector(
-                `#${targetElement.name}IsPresentCheckMessage`);
-            if (isPresentCheckMessage) isPresentCheckMessage.remove();
+            // const isPresentCheckMessage = document.querySelector(
+            //     `#${targetElement.name}IsPresentCheckMessage`);
+            // if (isPresentCheckMessage) isPresentCheckMessage.remove();
+            removeElementIfPresent(targetElement, 'IsPresentCheckMessage');
             
-            const resultMessageIsPresent = document.querySelector(
-                `#${targetElement.name}ResultMessageIsPresent`);
-            if (resultMessageIsPresent) resultMessageIsPresent.remove();
+            // const resultMessageIsPresent = document.querySelector(
+            //     `#${targetElement.name}ResultMessageIsPresent`);
+            // if (resultMessageIsPresent) resultMessageIsPresent.remove();
+            removeElementIfPresent(targetElement, 'ResultMessageIsPresent');
 
-            const validationMessageElement =
-                document.querySelector(`#${targetElement.name}ValidationMessage`);
-            if (validationMessageElement) validationMessageElement.remove();
+            // const validationMessageElement = document.querySelector(
+            //     `#${targetElement.name}ValidationMessage`);
+            // if (validationMessageElement) validationMessageElement.remove();
+            removeElementIfPresent(targetElement, 'ValidationMessage');
     
-            const wrapper = targetElement.closest('div');
             const message = document.createElement('p');
             message.id = targetElement.name + 'ValidationMessage';
             message.style.margin = '0.7rem 0 0 0.4rem';
     
-            wrapper.append(message)
+            targetElement.closest('div').append(message)
     
-            if (regex !== null) {
-                if (regex.test(targetElement.value)) {
+            case (targetElement)
+                if (flag) {
                     message.textContent = matchedMessage;
                     message.style.color = 'green';
+                    flag = true;
                 } else {
                     message.textContent = notMatchedMessage;
                     message.style.color = 'red';
+                    flag = false;
                 }
-            } else {
-                if (validatePasswordCheck(passwordInput, passwordCheckInput, passwordRegex)) {
-                    message.textContent = matchedMessage;
-                    message.style.color = 'green';
-                } else {
-                    message.textContent = notMatchedMessage;
-                    message.style.color = 'red';
-                }
-            }
         });
     }
     
-    /**
-     * 비밀번호 확인란의 검증 함수입니다.
-     * @returns 비밀번호 입력란의 값이 유효하고, 비밀번호, 비밀번호 확인란의 값이 같다면 true 를 반환합니다.
-     */
-    function validatePasswordCheck(passwordInput, passwordCheckInput, passwordRegex) {
-        return passwordInput.value === passwordCheckInput.value
-            && passwordRegex.test(passwordInput.value);
-    }
 });
+
+/**
+ * 비밀번호 확인란의 검증 함수입니다.
+ * @returns 비밀번호 입력란의 값이 유효하고, 비밀번호, 비밀번호 확인란의 값이 같다면 true 를 반환합니다.
+ */
+function isValidPasswordCheck(passwordInput, passwordCheckInput, passwordRegex) {
+    return passwordInput.value === passwordCheckInput.value
+        && passwordRegex.test(passwordInput.value);
+}
+
+function isValidValue(targetElement, regex, minLength, maxLength) {
+    return regex.test(targetElement.value)
+    && targetElement.value.length >= minLength
+    && targetElement.value.length <= maxLength;
+}
 

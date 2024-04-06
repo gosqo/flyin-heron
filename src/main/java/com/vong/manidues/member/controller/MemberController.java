@@ -2,7 +2,8 @@ package com.vong.manidues.member.controller;
 
 import com.vong.manidues.member.MemberRepository;
 import com.vong.manidues.member.MemberService;
-import com.vong.manidues.member.dto.IsPresentRequest;
+import com.vong.manidues.member.dto.IsPresentEmailRequest;
+import com.vong.manidues.member.dto.IsPresentNicknameRequest;
 import com.vong.manidues.member.dto.MemberRegisterRequest;
 import com.vong.manidues.utility.JsonResponseBody;
 import jakarta.validation.Valid;
@@ -40,7 +41,7 @@ public class MemberController {
 
     @PostMapping("/isPresentEmail")
     public ResponseEntity<Object> isPresentEmail(
-            @Valid @RequestBody IsPresentRequest request
+            @Valid @RequestBody IsPresentEmailRequest request
     ) {
         return repository.findByEmail(request.getValueToCheck()).isPresent()
                 ? ResponseEntity.status(409).body(
@@ -57,7 +58,7 @@ public class MemberController {
 
     @PostMapping("/isPresentNickname")
     public ResponseEntity<Object> isPresentNickname(
-            @Valid @RequestBody IsPresentRequest request
+            @Valid @RequestBody IsPresentNicknameRequest request
     ) {
         return repository.findByNickname(request.getValueToCheck()).isPresent()
                 ? ResponseEntity.status(409).body(

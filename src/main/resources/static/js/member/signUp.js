@@ -1,19 +1,35 @@
+let isValidEmail = false;
+let isValidPassword = false;
+let isValidPasswordCheckFlag = false;
+let isValidNickname = false;
+let isUniqueEmail = false;
+let isUniqueNickname = false;
 // 윈도우가 로드될 때 수행할 일들.
 // 버튼 핸들링 관련, Node 변수 선언 및 할당.
 window.addEventListener('load', () => {
     const submitButton = document.querySelector('#submit-form-btn');
     const isPresentEmailButton = document.querySelector('#is-present-email-button');
     const isPresentNicknameButton = document.querySelector('#is-present-nickname-button');
-
+    const form = document.querySelector('#form');
+    
+    form.addEventListener('input', () => {
+        submitButton.disabled = isValidEmail === true
+            && isValidPassword === true
+            && isValidPasswordCheckFlag === true
+            && isValidNickname === true
+            && isUniqueEmail === true
+            && isUniqueNickname === true ? false : true;
+    }); 
     // 버튼이 클릭 이벤트를 수신했을 떄, 수행할 일들.
     // 해당 시점의 입력 값을 가져온다. (변수 선언 및 할당)
     // 서버에 요청.
     isPresentNicknameButton.addEventListener('click', async (event) => {
         event.preventDefault();
         const targetElement = document.querySelector('input[name=nickname]');
-        const checkMessage = document.querySelector(
-            `#${targetElement.name}IsPresentCheckMessage`);
-        if (checkMessage) checkMessage.remove();
+        // const checkMessage = document.querySelector(
+        //     `#${targetElement.name}IsPresentCheckMessage`);
+        // if (checkMessage) checkMessage.remove();
+        removeElementIfPresent(targetElement, 'IsPresentCheckMessage');
 
         const valueToCheck = targetElement.value;
         const url = '/api/v1/member/isPresentNickname';
@@ -33,9 +49,10 @@ window.addEventListener('load', () => {
     isPresentEmailButton.addEventListener('click', async (event) => {
         event.preventDefault();
         const targetElement = document.querySelector('input[name=email]');
-        const checkMessage = document.querySelector(
-            `#${targetElement.name}IsPresentCheckMessage`);
-        if (checkMessage) checkMessage.remove();
+        // const checkMessage = document.querySelector(
+        //     `#${targetElement.name}IsPresentCheckMessage`);
+        // if (checkMessage) checkMessage.remove();
+        removeElementIfPresent(targetElement, 'IsPresentCheckMessage');
 
         const valueToCheck = targetElement.value;
         const url = '/api/v1/member/isPresentEmail';
@@ -54,7 +71,6 @@ window.addEventListener('load', () => {
 
     submitButton.addEventListener('click', async (event) => {
         event.preventDefault();
-        const form = document.querySelector('#form');
         const formData = new FormData(form);
         const body = {};
         
@@ -75,17 +91,27 @@ window.addEventListener('load', () => {
     });
 });
 
-function addResultMessageIsPresent(targetElement, flag, resultMessage) {
-    const messageElement = document.querySelector(`#${targetElement.name}ResultMessageIsPresent`);
-    if (messageElement) messageElement.remove();
+function removeElementIfPresent(targetElement, appendingId) {
+    const target = document.querySelector(
+        `#${targetElement.name}${appendingId}`);
+    if (target) target.remove();
+}
+
+function addResultMessageIsPresent(targetElement, passingFlag, resultMessage, resultFlag) {
+    // const messageElement = document.querySelector(
+    //     `#${targetElement.name}ResultMessageIsPresent`);
+    // if (messageElement) messageElement.remove();
+    removeElementIfPresent(targetElement, 'ResultMessageIsPresent');
 
     const message = document.createElement('p');
     message.id = `${targetElement.name}ResultMessageIsPresent`;
     message.textContent = resultMessage;
-    if (flag) {
+    if (passingFlag) {
         message.style.color ='green';
+        resultFlag = true;
     } else {
         message.style.color ='red';
+        resultFlag = false;
     }
     targetElement.closest('div').append(message);
 }
