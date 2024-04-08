@@ -20,9 +20,10 @@ public class IpEntryLogFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
         String requestIp = request.getRemoteAddr();
-        String requestUserAgent = request.getHeader("User-Agent");
+        String requestProtocol = request.getProtocol();
         String requestURI = request.getRequestURI();
         String requestMethod = request.getMethod();
+        String requestUserAgent = request.getHeader("User-Agent");
         String requestConnection = request.getHeader("Connection");
 
         if (requestURI.startsWith("/css/")
@@ -38,15 +39,17 @@ public class IpEntryLogFilter extends OncePerRequestFilter {
 
                             === Request Info ===
                             Ip: {}
-                            User-Agent: {}
+                            Protocol: {}
                             Method: {}
                             URI: {}
+                            User-Agent: {}
                             Connection: {}
                         """
                 , requestIp
-                , requestUserAgent
+                , requestProtocol
                 , requestMethod
                 , requestURI
+                , requestUserAgent
                 , requestConnection
         );
 

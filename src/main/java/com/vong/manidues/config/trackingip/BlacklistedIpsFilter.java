@@ -49,7 +49,6 @@ public class BlacklistedIpsFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-
         String requestIp = request.getRemoteAddr();
         String requestUserAgent = request.getHeader("User-Agent");
         String requestConnection = request.getHeader("Connection");
