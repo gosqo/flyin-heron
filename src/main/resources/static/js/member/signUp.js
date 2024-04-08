@@ -1,6 +1,6 @@
 let isValidEmail = false;
 let isValidPassword = false;
-let isValidPasswordCheckFlag = false;
+let isValidPasswordCheck = false;
 let isValidNickname = false;
 let isUniqueEmail = false;
 let isUniqueNickname = false;
@@ -12,46 +12,10 @@ window.addEventListener('load', () => {
     const isPresentNicknameButton = document.querySelector('#is-present-nickname-button');
     const form = document.querySelector('#form');
     
-    form.addEventListener('input', () => {
-        submitButton.disabled = isValidEmail === true
-            && isValidPassword === true
-            && isValidPasswordCheckFlag === true
-            && isValidNickname === true
-            && isUniqueEmail === true
-            && isUniqueNickname === true ? false : true;
-    }); 
-    // 버튼이 클릭 이벤트를 수신했을 떄, 수행할 일들.
-    // 해당 시점의 입력 값을 가져온다. (변수 선언 및 할당)
-    // 서버에 요청.
-    isPresentNicknameButton.addEventListener('click', async (event) => {
-        event.preventDefault();
-        const targetElement = document.querySelector('input[name=nickname]');
-        // const checkMessage = document.querySelector(
-        //     `#${targetElement.name}IsPresentCheckMessage`);
-        // if (checkMessage) checkMessage.remove();
-        removeElementIfPresent(targetElement, 'IsPresentCheckMessage');
-
-        const valueToCheck = targetElement.value;
-        const url = '/api/v1/member/isPresentNickname';
-        const options = {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            method: 'POST',
-            body: JSON.stringify({"valueToCheck": valueToCheck})
-        };
-
-        const isPresentResultMessage = await fetchAndReturnMessage(url, options);
-        const isPassed = isPresentResultMessage === '사용 가능한 닉네임입니다.';
-        addResultMessageIsPresent(targetElement, isPassed, isPresentResultMessage);
-    });
-
     isPresentEmailButton.addEventListener('click', async (event) => {
         event.preventDefault();
         const targetElement = document.querySelector('input[name=email]');
-        // const checkMessage = document.querySelector(
-        //     `#${targetElement.name}IsPresentCheckMessage`);
-        // if (checkMessage) checkMessage.remove();
+        
         removeElementIfPresent(targetElement, 'IsPresentCheckMessage');
 
         const valueToCheck = targetElement.value;
@@ -66,7 +30,34 @@ window.addEventListener('load', () => {
 
         const isPresentResultMessage= await fetchAndReturnMessage(url, options);
         const isPassed = isPresentResultMessage === '사용 가능한 이메일 주소입니다.';
-        addResultMessageIsPresent(targetElement, isPassed, isPresentResultMessage);
+        addResultMessageIsPresent(targetElement, isPassed, isPresentResultMessage, isUniqueEmail);
+        if (isPassed) isUniqueEmail = true;
+        else isUniqueEmail = false;
+        activateSubmitIfClear();
+    });
+
+    isPresentNicknameButton.addEventListener('click', async (event) => {
+        event.preventDefault();
+        const targetElement = document.querySelector('input[name=nickname]');
+
+        removeElementIfPresent(targetElement, 'IsPresentCheckMessage');
+
+        const valueToCheck = targetElement.value;
+        const url = '/api/v1/member/isPresentNickname';
+        const options = {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            method: 'POST',
+            body: JSON.stringify({"valueToCheck": valueToCheck})
+        };
+
+        const isPresentResultMessage = await fetchAndReturnMessage(url, options);
+        const isPassed = isPresentResultMessage === '사용 가능한 닉네임입니다.';
+        addResultMessageIsPresent(targetElement, isPassed, isPresentResultMessage, isUniqueNickname);
+        if (isPassed) isUniqueNickname = true;
+        else isUniqueNickname = false;
+        activateSubmitIfClear();
     });
 
     submitButton.addEventListener('click', async (event) => {
@@ -89,7 +80,19 @@ window.addEventListener('load', () => {
 
         await fetchSubmit(url, options);
     });
+    
 });
+
+function activateSubmitIfClear() {
+    const submitButton = document.querySelector('#submit-form-btn');
+
+    submitButton.disabled = isValidEmail === true
+                && isValidPassword === true
+                && isValidPasswordCheck === true
+                && isValidNickname === true
+                && isUniqueEmail === true
+                && isUniqueNickname === true ? false : true;
+}
 
 function removeElementIfPresent(targetElement, appendingId) {
     const target = document.querySelector(
@@ -98,12 +101,9 @@ function removeElementIfPresent(targetElement, appendingId) {
 }
 
 function addResultMessageIsPresent(targetElement, passingFlag, resultMessage, resultFlag) {
-    // const messageElement = document.querySelector(
-    //     `#${targetElement.name}ResultMessageIsPresent`);
-    // if (messageElement) messageElement.remove();
     removeElementIfPresent(targetElement, 'ResultMessageIsPresent');
 
-    const message = document.createElement('p');
+    const message = document.createElement('small');
     message.id = `${targetElement.name}ResultMessageIsPresent`;
     message.textContent = resultMessage;
     if (passingFlag) {
@@ -113,18 +113,8 @@ function addResultMessageIsPresent(targetElement, passingFlag, resultMessage, re
         message.style.color ='red';
         resultFlag = false;
     }
-    targetElement.closest('div').append(message);
+    targetElement.closest('div').nextElementSibling.nextElementSibling.append(message);
 }
-
-// async function fetchAndAlertMessage(url, options) {
-//     try {
-//         const response = await fetch(url, options);
-//         const data = await response.json();
-//         alert(data.message);
-//     } catch (error) {
-//         console.error('Error: ', error);
-//     }
-// }
 
 async function fetchAndReturnMessage(url, options) {
     try {
