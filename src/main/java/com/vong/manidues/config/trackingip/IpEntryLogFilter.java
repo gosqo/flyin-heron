@@ -50,17 +50,15 @@ public class IpEntryLogFilter extends OncePerRequestFilter {
                 , requestConnection
         );
 
-        if (RequestTracker.getRequestCount(requestIp) > 10) {
+        if (RequestTracker.getRequestCount(requestIp) > 30) {
             log.info("""
                                                        
-                            This client has more than 10 requests in an hour.
+                            This client has more than 30 requests in an hour.
                             RequestTracker is like:
-                            {}
-                        """, RequestTracker.getRequestMap()
+                        {}""", RequestTracker.getRequestMap()
             );
         }
         RequestTracker.clearExpiredRequests();
-
         filterChain.doFilter(request, response);
     }
 }

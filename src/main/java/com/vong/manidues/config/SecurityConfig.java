@@ -1,6 +1,7 @@
 package com.vong.manidues.config;
 
 import com.vong.manidues.config.trackingip.BlacklistedIpsFilter;
+import com.vong.manidues.config.trackingip.IpEntryLogFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -22,9 +23,10 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 @Slf4j
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
+    private final IpEntryLogFilter ipEntryLogFilter;
     private final BlacklistedIpsFilter blacklistedIpsFilter;
+    private final JwtAuthenticationFilter jwtAuthFilter;
     private final LogoutHandler logoutHandler;
 
     private final String[] WHITE_LIST_URLS_NON_MEMBER_GET = {
@@ -69,6 +71,7 @@ public class SecurityConfig {
                 )
 
                 .authenticationProvider(authenticationProvider)
+                .addFilterBefore(ipEntryLogFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(blacklistedIpsFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->

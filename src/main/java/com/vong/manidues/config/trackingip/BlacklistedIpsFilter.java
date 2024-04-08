@@ -32,6 +32,17 @@ public class BlacklistedIpsFilter extends OncePerRequestFilter {
         return false;
     }
 
+    private boolean isAbnormalUserAgent(String userAgent) {
+        return userAgent == null
+                || userAgent.isBlank()
+                || !isWhiteListUserAgent(userAgent);
+    }
+
+    private boolean isAbnormalConnection(String connection) {
+        return connection == null
+                || !connection.equalsIgnoreCase("keep-alive");
+    }
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -41,19 +52,21 @@ public class BlacklistedIpsFilter extends OncePerRequestFilter {
 
         String requestIp = request.getRemoteAddr();
         String requestUserAgent = request.getHeader("User-Agent");
+        String requestConnection = request.getHeader("Connection");
 
-        if (requestUserAgent == null
-                || requestUserAgent.isBlank()
-                || !isWhiteListUserAgent(requestUserAgent)
+        if (isAbnormalUserAgent(requestUserAgent)
+                || isAbnormalConnection(requestConnection)
         ) {
             log.warn("""
 
-
-                                Request from abnormal User-Agent. IP address is: {}
-                                request User-Agent is: {}
-                            """,
-                    requestIp,
-                    requestUserAgent
+                                *** Abnormal request ***
+                                IP: {}
+                                User-Agent: {}
+                                Connection: {}
+                            """
+                    , requestIp
+                    , requestUserAgent
+                    , requestConnection
             );
 
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -63,14 +76,16 @@ public class BlacklistedIpsFilter extends OncePerRequestFilter {
         if (blacklistedIps.contains(requestIp)) {
             log.warn("""
 
-
-                                Request from blacklisted ip. IP address is: {}
-                                request User-Agent is: {}
+                                *** Request from blacklisted ip ***
+                                IP: {}
+                                User-Agent: {}
+                                Connection: {}
                                 listed size is: {}
-                            """,
-                    requestIp,
-                    requestUserAgent,
-                    blacklistedIps.size()
+                            """
+                    , requestIp
+                    , requestUserAgent
+                    , requestConnection
+                    , blacklistedIps.size()
             );
 
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);

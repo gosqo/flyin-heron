@@ -1,27 +1,74 @@
 package com.vong.manidues;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+import java.time.Instant;
+import java.util.concurrent.ConcurrentHashMap;
+
+@Slf4j
 public class Main {
     public static void main(String[] args) {
-        // 비밀번호 유효성을 검사할 정규표현식
-        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[~!@#$%^&*()+{}|:\"<>?`=\\[\\]\\-_\\\\;',./])[A-Za-z\\d~!@#$%^&*()+{}|:\"<>?`=\\[\\]\\-_\\\\;',./]{8,20}$";
+        RequestTracker.trackRequest("key1", "hello");
+        RequestTracker.trackRequest("key1", "hello2");
+        RequestTracker.trackRequest("key1", "hello3");
+        RequestTracker.trackRequest("key1", "hello");
+        RequestTracker.trackRequest("key2", "hello2");
+        RequestTracker.trackRequest("key2", "hello3");
+        log.info(RequestTracker.getRequestMap());
+        log.info(RequestTracker.requestMapToString());
 
-        // 테스트할 비밀번호
-        String password = "Test123!@#'\\-_.";
+    }
+}
 
-        // 패턴 객체 생성
-        Pattern pattern = Pattern.compile(passwordRegex);
+class RequestTracker {
+    private static final ConcurrentHashMap<String, RequestInfo> requestMap =
+            new ConcurrentHashMap<>();
 
-        // 패턴 객체를 사용하여 비밀번호 검사
-        Matcher matcher = pattern.matcher(password);
+    public static String getRequestMap() { return requestMap.toString(); }
 
-        // 비밀번호가 정규표현식과 일치하는지 확인
-        if (matcher.matches()) {
-            System.out.println("비밀번호가 유효합니다. " + password);
-        } else {
-            System.out.println("비밀번호가 유효하지 않습니다. " + password);
+    public static String requestMapToString() {
+        return """
+                
+                requestMap is like:
+                """ + RequestTracker.requestMap + """
+                """;
+    }
+
+    public static void trackRequest(String key, String name) {
+        int count = requestMap.getOrDefault(key, new RequestInfo())
+                .getNumber() + 1;
+        requestMap.put(key, new RequestInfo(name, count, Instant.now()));
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private static class RequestInfo {
+        private String name;
+        private int number;
+        private Instant time;
+
+        @Override
+        public String toString() {
+            return """
+                    
+                    RequestInfo(
+                        name=""" + this.name + """
+                    ,
+                        number=""" + this.number + """
+                    ,
+                        time=""" + this.time + """
+                    
+                    """;
+//                    "RequestInfo{" +
+//                    "name='" + name + '\'' +
+//                    ", number=" + number +
+//                    ", time=" + time +
+//                    '}';
         }
     }
 }
+

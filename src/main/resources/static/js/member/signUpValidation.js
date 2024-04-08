@@ -22,34 +22,6 @@ window.addEventListener('load', () => {
     const notMatchedPasswordCheck = '비밀번호와 일치하지 않습니다.\n비밀번호를 확인하거나 양식에 맞는 비밀번호 입력을 선행해주세요.';
     const notMatchedNickname = '닉네임은 2자 이상 20자 이하의의 한글, 영어로 사용할 수 있습니다.';
 
-    addValidationTo(
-        emailInput,
-        isValidEmail,
-        matchedMessage,
-        notMatchedEmail
-    );
-
-    addValidationTo(
-        passwordInput,
-        isValidPassword,
-        matchedMessage,
-        notMatchedPassword
-    );
-
-    addValidationTo(
-        passwordCheckInput,
-        isValidPasswordCheckFlag,
-        matchedPasswordCheckMessage,
-        notMatchedPasswordCheck
-    );
-
-    addValidationTo(
-        nicknameInput,
-        isValidNickname,
-        matchedMessage,
-        notMatchedNickname,
-    );
-
     addCheckMessageIfValid(emailInput);
     addCheckMessageIfValid(nicknameInput);
 
@@ -83,18 +55,42 @@ window.addEventListener('load', () => {
     emailInput.addEventListener('input', () => {
         isValidEmail = isValidValue(emailInput, emailRegex, 6, 50)
             ? true : false;
+        addValidationTo(
+            emailInput,
+            isValidEmail,
+            matchedMessage,
+            notMatchedEmail
+        );
     }); 
     passwordInput.addEventListener('input', () => {
         isValidPassword = isValidValue(passwordInput, passwordRegex, 8, 20)
             ? true : false;
+        addValidationTo(
+            passwordInput,
+            isValidPassword,
+            matchedMessage,
+            notMatchedPassword
+        );
     }); 
     passwordCheckInput.addEventListener('input', () => {
         isValidPasswordCheckFlag = isValidPasswordCheck(passwordInput, passwordCheckInput, passwordRegex)
             ? true : false;
+        addValidationTo(
+            passwordCheckInput,
+            isValidPasswordCheckFlag,
+            matchedPasswordCheckMessage,
+            notMatchedPasswordCheck
+        );
     }); 
     nicknameInput.addEventListener('input', () => {
         isValidNickname = isValidValue(nicknameInput, nicknameRegex, 2, 20)
             ? true : false;
+        addValidationTo(
+            nicknameInput,
+            isValidNickname,
+            matchedMessage,
+            notMatchedNickname,
+        );
     }); 
     
     /**
@@ -127,7 +123,6 @@ window.addEventListener('load', () => {
     
             targetElement.closest('div').append(message)
     
-            case (targetElement)
                 if (flag) {
                     message.textContent = matchedMessage;
                     message.style.color = 'green';
