@@ -59,6 +59,10 @@ public class Member implements UserDetails {
     @OneToMany(mappedBy = "member")
     private List<Board> boards;
 
+    void updatePassword(String changedPassword) {
+        this.password = changedPassword;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
