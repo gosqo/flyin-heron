@@ -10,12 +10,13 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Getter
 public class RequestTracker {
 
-    private static final ConcurrentHashMap<String, RequestInfo> requestMap =
+    public static final ConcurrentHashMap<String, RequestInfo> requestMap =
             new ConcurrentHashMap<>();
 
-    public static String getRequestMap() {
+    public static String getWholeRequestMap() {
         return """
                 requestMap:
                 \t""" + requestMap + """
@@ -25,18 +26,18 @@ public class RequestTracker {
 
     public static void trackRequest(HttpServletRequest request) {
         String requestIp = request.getRemoteAddr();
+        String userAgent = request.getHeader("User-Agent");
+        String connection = request.getHeader("Connection");
         Instant requestTime = requestMap.get(requestIp) == null
                 ? Instant.now()
                 : requestMap.get(requestIp).getRequestTime();
         int requestCount = requestMap.getOrDefault(
                 requestIp, new RequestInfo()).getRequestCount() + 1;
-        String requestUserAgent = request.getHeader("User-Agent");
-        String connection = request.getHeader("Connection");
 
         requestMap.put(requestIp, new RequestInfo(
                 requestTime,
                 requestCount,
-                requestUserAgent,
+                userAgent,
                 connection
         ));
     }
@@ -66,7 +67,7 @@ public class RequestTracker {
     @NoArgsConstructor
     @AllArgsConstructor
     @Getter
-    private static class RequestInfo {
+    public static class RequestInfo {
         private Instant requestTime;
         private int requestCount;
         private String userAgent;
@@ -76,15 +77,15 @@ public class RequestTracker {
         public String toString() {
             return """
                     =>
-                            Request time: """ + this.requestTime.atZone(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + """
+                        First request time:\s""" + this.requestTime.atZone(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + """
                     ,
-                            Request Count: """ + this.requestCount + """
+                        Request Count:\s""" + this.requestCount + """
                     ,
-                            User-Agent: """ + this.userAgent + """
+                        User-Agent:\s""" + this.userAgent + """
                     ,
-                            Connection: """ + this.connection + """
-                                        
-                    \t""";
+                        Connection:\s""" + this.connection + """
+                    
+                    """;
         }
     }
 }

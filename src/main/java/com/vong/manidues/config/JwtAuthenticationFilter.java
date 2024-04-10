@@ -36,7 +36,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
@@ -68,27 +67,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (ExpiredJwtException | SignatureException | MalformedJwtException | DecodingException ex) {
             if (ex instanceof ExpiredJwtException) {
 
+                response.setStatus(401);
                 log.info("""
                                 {}
-                                response with 401, client will request to "/api/v1/auth/refresh-token" with refreshToken.
+                                    response with 401, client will request to "/api/v1/auth/refresh-token" with refreshToken.
                                 """,
                         ex.getMessage()
                 );
-                response.setStatus(401);
 
             } else { // ExpiredJwtException 외의 에러는 조작된 것으로 간주. response 400
 
+                response.setStatus(400);
                 log.warn("""
                                 JWT Auth Filter caught error: {}
                                     === Guess that client's Token has been manipulated. ===
-                                    Ip address is: {}
-                                    User-Agent is: {}
-                                """,
-                        ex.getMessage(),
-                        request.getRemoteAddr(),
-                        request.getHeader("User-Agent")
+                                    {} {} {} {}
+                                    User-Agent: {}
+                                    Connection: {}
+                                """
+                        , ex.getMessage()
+                        , request.getRemoteAddr()
+                        , request.getProtocol()
+                        , request.getMethod()
+                        , request.getRequestURI()
+                        , request.getHeader("User-Agent")
+                        , request.getHeader("Connection")
                 );
-                response.setStatus(400);
             }
         }
         filterChain.doFilter(request, response);

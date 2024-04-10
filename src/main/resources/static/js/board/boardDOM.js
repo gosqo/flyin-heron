@@ -44,11 +44,6 @@ window.addEventListener('load', async () => {
                 modifyButton.className = 'btn btn-primary';
                 modifyButton.textContent = 'Modify';
         
-                modifyButton.addEventListener(
-                    'click',
-                    () => self.location.href = `/board/${boardId}/modify`
-                );
-        
                 buttonsArea.append(modifyButton);
         
                 // deleteButton
@@ -59,7 +54,6 @@ window.addEventListener('load', async () => {
                 deleteButton.textContent = 'delete';
         
                 buttonsArea.append(deleteButton);
-        
             }
         
             // get board modify view.

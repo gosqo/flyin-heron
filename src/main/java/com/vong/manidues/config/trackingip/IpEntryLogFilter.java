@@ -19,16 +19,15 @@ public class IpEntryLogFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        String requestIp = request.getRemoteAddr();
         String requestProtocol = request.getProtocol();
+        String requestIp = request.getRemoteAddr();
         String requestURI = request.getRequestURI();
         String requestMethod = request.getMethod();
-        String requestUserAgent = request.getHeader("User-Agent");
-        String requestConnection = request.getHeader("Connection");
 
         if (requestURI.startsWith("/css/")
-         || requestURI.startsWith("/js/")
+                || requestURI.startsWith("/js/")
                 || requestURI.startsWith("/img/")
+                || requestURI.equals("/favicon.ico")
         ) {
             filterChain.doFilter(request, response);
             return;
@@ -36,29 +35,19 @@ public class IpEntryLogFilter extends OncePerRequestFilter {
 
         RequestTracker.trackRequest(request);
         log.info("""
-
-                            === Request Info ===
-                            Ip: {}
-                            Protocol: {}
-                            Method: {}
-                            URI: {}
-                            User-Agent: {}
-                            Connection: {}
-                        """
+                        {} {} {} {}"""
                 , requestIp
                 , requestProtocol
                 , requestMethod
                 , requestURI
-                , requestUserAgent
-                , requestConnection
         );
 
         if (RequestTracker.getRequestCount(requestIp) > 30) {
             log.info("""
-                                                       
-                            This client has more than 30 requests in an hour.
-                            RequestTracker is like:
-                        {}""", RequestTracker.getRequestMap()
+                                                           
+                                More than 30 requests in an hour.
+                            {}"""
+                    , RequestTracker.requestMap.get(requestIp)
             );
         }
         RequestTracker.clearExpiredRequests();

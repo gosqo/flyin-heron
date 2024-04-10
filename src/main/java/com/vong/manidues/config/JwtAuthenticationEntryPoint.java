@@ -4,6 +4,7 @@ import com.vong.manidues.utility.HttpResponseWithBody;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
+@Slf4j
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     /**
@@ -23,7 +25,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             HttpServletResponse response,
             AuthenticationException authException
     ) throws IOException, ServletException {
-
         String message = authException.getMessage();
         HttpResponseWithBody responseWithBody = new HttpResponseWithBody();
 
@@ -32,9 +33,19 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         } else if (message.equals("Full authentication is required to access this resource")) {
             responseWithBody.jsonResponse(response, 401, "인증정보가 필요합니다.");
-
+            log.info("""
+                            
+                                Request to URI require authentication. response with {}
+                                {} {} {} {}
+                                AuthHeader: {}
+                            """
+                    , response.getStatus()
+                    , request.getRemoteAddr()
+                    , request.getProtocol()
+                    , request.getMethod()
+                    , request.getRequestURI()
+                    , request.getHeader("Authorization")
+            );
         }
-
-
     }
 }

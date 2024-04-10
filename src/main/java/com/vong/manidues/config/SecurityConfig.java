@@ -1,6 +1,6 @@
 package com.vong.manidues.config;
 
-import com.vong.manidues.config.trackingip.BlacklistedIpsFilter;
+import com.vong.manidues.config.trackingip.AbnormalRequestFilter;
 import com.vong.manidues.config.trackingip.IpEntryLogFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,11 +25,11 @@ public class SecurityConfig {
 
     private final AuthenticationProvider authenticationProvider;
     private final IpEntryLogFilter ipEntryLogFilter;
-    private final BlacklistedIpsFilter blacklistedIpsFilter;
+    private final AbnormalRequestFilter abnormalRequestFilter;
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final LogoutHandler logoutHandler;
 
-    private final String[] WHITE_LIST_URLS_NON_MEMBER_GET = {
+    public static final String[] WHITE_LIST_URIS_NON_MEMBER_GET = {
             "/"
             , "/favicon.ico"
             , "/error"
@@ -45,7 +45,7 @@ public class SecurityConfig {
             , "/boards/**"
     };
 
-    private final String[] WHITE_LIST_URLS_NON_MEMBER_POST = {
+    public static final String[] WHITE_LIST_URIS_NON_MEMBER_POST = {
             "/api/v1/member/**"
             , "/api/v1/auth/authenticate"
             , "/error"
@@ -65,14 +65,14 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.GET, WHITE_LIST_URLS_NON_MEMBER_GET).permitAll()
-                        .requestMatchers(HttpMethod.POST, WHITE_LIST_URLS_NON_MEMBER_POST).permitAll()
+                        .requestMatchers(HttpMethod.GET, WHITE_LIST_URIS_NON_MEMBER_GET).permitAll()
+                        .requestMatchers(HttpMethod.POST, WHITE_LIST_URIS_NON_MEMBER_POST).permitAll()
                         .anyRequest().authenticated()
                 )
 
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(ipEntryLogFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(blacklistedIpsFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(abnormalRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                         httpSecurityExceptionHandlingConfigurer
