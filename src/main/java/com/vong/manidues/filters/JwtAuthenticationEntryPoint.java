@@ -1,10 +1,12 @@
-package com.vong.manidues.config;
+package com.vong.manidues.filters;
 
 import com.vong.manidues.utility.HttpResponseWithBody;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -25,14 +27,13 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             HttpServletResponse response,
             AuthenticationException authException
     ) throws IOException, ServletException {
-        String message = authException.getMessage();
         HttpResponseWithBody responseWithBody = new HttpResponseWithBody();
 
-        if (message.equals("Bad credentials")) {
-            responseWithBody.jsonResponse(response, 400, "아이디 혹은 비밀번호를 확인해주세요.");
+        if (authException instanceof BadCredentialsException) {
+            responseWithBody.jsonResponse(response, 400, "아이디 혹은 비밀번호를 확인해주세요.", null);
 
-        } else if (message.equals("Full authentication is required to access this resource")) {
-            responseWithBody.jsonResponse(response, 401, "인증정보가 필요합니다.");
+        } else if (authException instanceof InsufficientAuthenticationException) {
+            responseWithBody.jsonResponse(response, 401, "인증정보가 필요합니다.", null);
             log.info("""
                             
                                 Request to URI require authentication. response with {}

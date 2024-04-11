@@ -1,6 +1,5 @@
 package com.vong.manidues.token;
 
-import com.vong.manidues.config.JwtService;
 import com.vong.manidues.utility.ServletRequestUtility;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +28,8 @@ public class TokenExceptionTestController {
         map.put("expiration", jwtService.extractExpiration(jwt).toString());
 
         log.info("""
-                        request to "/tokenValidationTest"
-                            requested email is: {}
-                        """,
-                map.get("email"));
+                        requesting member email is: {}"""
+                , map.get("email"));
 
         return ResponseEntity.status(200).body(map);
     }

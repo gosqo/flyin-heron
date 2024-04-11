@@ -1,4 +1,4 @@
-package com.vong.manidues.config.trackingip;
+package com.vong.manidues.filters.trackingip;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
@@ -58,7 +58,7 @@ public class RequestTracker {
     }
 
     public static void clearExpiredRequests() {
-        Instant oneHourAgo = Instant.now().minusSeconds(3600);
+        Instant oneHourAgo = Instant.now().minusSeconds(10);
         requestMap.entrySet().removeIf(
                 entry -> entry.getValue().getRequestTime().isBefore(oneHourAgo)
         );
@@ -84,6 +84,7 @@ public class RequestTracker {
                         User-Agent:\s""" + this.userAgent + """
                     ,
                         Connection:\s""" + this.connection + """
+                    
                     
                     """;
         }

@@ -16,7 +16,7 @@ public class GlobalRestExceptionHandler {
 
         String validExceptionMessage = ex.getFieldErrors().get(0).getDefaultMessage();
 
-        log.info("\ngetFieldsErrors(): {}\n", validExceptionMessage);
+        log.info("getFieldsErrors(): {}", validExceptionMessage);
 
         return ResponseEntity
                 .status(ex.getStatusCode().value())

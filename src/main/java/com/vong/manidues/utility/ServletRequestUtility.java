@@ -1,6 +1,6 @@
 package com.vong.manidues.utility;
 
-import com.vong.manidues.config.JwtService;
+import com.vong.manidues.token.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

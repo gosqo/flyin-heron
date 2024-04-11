@@ -1,4 +1,4 @@
-package com.vong.manidues.config;
+package com.vong.manidues.token;
 
 import com.vong.manidues.member.MemberRepository;
 import io.jsonwebtoken.Claims;

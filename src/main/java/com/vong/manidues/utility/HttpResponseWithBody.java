@@ -2,7 +2,6 @@ package com.vong.manidues.utility;
 
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +13,7 @@ public class HttpResponseWithBody {
     public void jsonResponse(
             HttpServletResponse response,
             int statusCode,
+            String message,
             @Nullable String additionalMessage
     ) throws IOException {
         response.setStatus(statusCode);
@@ -22,7 +22,7 @@ public class HttpResponseWithBody {
         response.getWriter().println(new CustomJsonMapper().mapToJsonString(
                 JsonResponseBody.builder()
                         .statusCode(statusCode)
-                        .message(HttpStatus.valueOf(statusCode).getReasonPhrase())
+                        .message(message)
                         .additionalMessage(additionalMessage)
                         .build()
         ));

@@ -1,7 +1,5 @@
-package com.vong.manidues.member.controller;
+package com.vong.manidues.member;
 
-import com.vong.manidues.member.MemberRepository;
-import com.vong.manidues.member.MemberService;
 import com.vong.manidues.member.dto.IsPresentEmailRequest;
 import com.vong.manidues.member.dto.IsPresentNicknameRequest;
 import com.vong.manidues.member.dto.MemberRegisterRequest;

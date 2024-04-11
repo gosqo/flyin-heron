@@ -1,5 +1,6 @@
-package com.vong.manidues.config;
+package com.vong.manidues.auth;
 
+import com.vong.manidues.token.JwtService;
 import com.vong.manidues.token.Token;
 import com.vong.manidues.token.TokenRepository;
 import com.vong.manidues.utility.HttpResponseWithBody;
@@ -54,9 +55,8 @@ public class LogoutService implements LogoutHandler {
 
         refreshToken = authHeader.substring(7);
         log.info("""
-                logout method on service layer called.
-                    user email is: {}
-                """, jwtService.extractUserEmail(refreshToken)
+                logout service called. request member email is: {}"""
+                , jwtService.extractUserEmail(refreshToken)
         );
 
         List<Token> storedTokens = tokenRepository.findAllByToken(refreshToken).stream().toList();
@@ -65,7 +65,7 @@ public class LogoutService implements LogoutHandler {
             log.info("user tried refresh token that does not exist on database.");
 
             try {
-                responseWithBody.jsonResponse(response, 400, "not exist on database");
+                responseWithBody.jsonResponse(response, 400, "올바른 요청이 아닙니다.", null);
             } catch (IOException e) {
                 log.info(e.getMessage());
             }
@@ -79,7 +79,7 @@ public class LogoutService implements LogoutHandler {
             log.info("Deleted token count is: {}", deletedTokenCount);
 
             try {
-                responseWithBody.jsonResponse(response, 200, "logout succeeded.");
+                responseWithBody.jsonResponse(response, 200, "logout succeeded.", null);
             } catch (IOException e) {
                 log.info(e.getMessage());
             }

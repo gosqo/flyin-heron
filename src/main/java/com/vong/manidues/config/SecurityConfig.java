@@ -1,7 +1,6 @@
 package com.vong.manidues.config;
 
-import com.vong.manidues.config.trackingip.AbnormalRequestFilter;
-import com.vong.manidues.config.trackingip.IpEntryLogFilter;
+import com.vong.manidues.filters.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +24,7 @@ public class SecurityConfig {
 
     private final AuthenticationProvider authenticationProvider;
     private final IpEntryLogFilter ipEntryLogFilter;
+    private final BlacklistFilter blacklistFilter;
     private final AbnormalRequestFilter abnormalRequestFilter;
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final LogoutHandler logoutHandler;
@@ -72,6 +72,7 @@ public class SecurityConfig {
 
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(ipEntryLogFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(blacklistFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(abnormalRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->

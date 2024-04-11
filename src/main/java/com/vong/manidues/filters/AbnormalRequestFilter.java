@@ -1,10 +1,11 @@
-package com.vong.manidues.config.trackingip;
+package com.vong.manidues.filters;
 
 import com.vong.manidues.config.SecurityConfig;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -12,9 +13,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class AbnormalRequestFilter extends OncePerRequestFilter {
 
+    private final FilterUtility filterUtility;
     private final String[] WHITE_LIST_USER_AGENTS = {
             "mozilla"
             , "postman"
@@ -38,7 +41,6 @@ public class AbnormalRequestFilter extends OncePerRequestFilter {
                 || !connection.equalsIgnoreCase("keep-alive");
     }
 
-    // 허용된 uri 에 대한 요청인가
     private boolean isUnregisteredURI(String requestURI, String[] whiteListURIs) {
         if (requestURI.equals("/")) return false;
 
@@ -58,43 +60,28 @@ public class AbnormalRequestFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        String requestProtocol = request.getProtocol();
         String requestIp = request.getRemoteAddr();
         String requestURI = request.getRequestURI();
         String requestMethod = request.getMethod();
         String userAgent = request.getHeader("User-Agent");
         String connection = request.getHeader("Connection");
         String authHeader = request.getHeader("Authorization");
-        
-        if (authHeader == null
-                || !authHeader.startsWith("Bearer ")) {
-            if (requestURI.startsWith("/css/")
-                    || requestURI.startsWith("/js/")
-                    || requestURI.startsWith("/img/")
-            ) {
-                filterChain.doFilter(request, response);
-                return;
-            }
+
+        if (filterUtility.startsWithOneOf(requestURI, filterUtility.RESOURCES_PERMITTED_TO_ALL_STARTS_WITH)
+                || requestURI.equals("/favicon.ico")
+        ) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
 
             if (isAbnormalUserAgent(userAgent)
                     || isAbnormalConnection(connection)
             ) {
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                log.warn("""
+                log.warn("*** Request from not allowed UA or Connection *** response with {}", response.getStatus());
 
-                                    *** Request from not allowed UA or Connection *** response with {}
-                                    {} {} {} {}
-                                    User-Agent: {}
-                                    Connection: {}
-                                """
-                        , response.getStatus()
-                        , requestIp
-                        , requestProtocol
-                        , requestMethod
-                        , requestURI
-                        , userAgent
-                        , connection
-                );
                 return;
             }
 
@@ -105,17 +92,8 @@ public class AbnormalRequestFilter extends OncePerRequestFilter {
                         SecurityConfig.WHITE_LIST_URIS_NON_MEMBER_GET)
                 ) {
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    log.warn("""
+                    log.warn("*** Request to URI not permitted all *** response with {}", response.getStatus());
 
-                                        *** Request to URI not permitted all *** response with {}
-                                        {} {} {} {}
-                                    """
-                            , response.getStatus()
-                            , requestIp
-                            , requestProtocol
-                            , requestMethod
-                            , requestURI
-                    );
                     return;
                 }
             }
@@ -126,17 +104,8 @@ public class AbnormalRequestFilter extends OncePerRequestFilter {
                         SecurityConfig.WHITE_LIST_URIS_NON_MEMBER_POST)
                 ) {
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    log.warn("""
+                    log.warn("*** Request to URI not permitted all *** response with {}", response.getStatus());
 
-                                        *** Request to URI not permitted all *** response with {}
-                                        {} {} {} {}
-                                    """
-                            , response.getStatus()
-                            , requestIp
-                            , requestProtocol
-                            , requestMethod
-                            , requestURI
-                    );
                     return;
                 }
             }

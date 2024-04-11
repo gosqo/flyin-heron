@@ -1,8 +1,8 @@
 package com.vong.manidues.auth;
 
-import com.vong.manidues.config.JwtService;
 import com.vong.manidues.member.Member;
 import com.vong.manidues.member.MemberRepository;
+import com.vong.manidues.token.JwtService;
 import com.vong.manidues.token.Token;
 import com.vong.manidues.token.TokenRepository;
 import com.vong.manidues.utility.HttpResponseWithBody;
@@ -76,10 +76,8 @@ public class AuthenticationService {
 
         if (member != null) {
             log.info("""
-                            authenticate success.
-                                Member Email is: {}
-                            """,
-                    member.getEmail()
+                            authenticate success. Member Email is: {}"""
+                    , member.getEmail()
             );
             accessToken = jwtService.generateAccessToken(member);
             refreshToken = jwtService.generateRefreshToken(member);
@@ -181,7 +179,7 @@ public class AuthenticationService {
                 );
             }
             responseWithBody.jsonResponse(
-                    response, 400, "인증정보가 필요합니다.");
+                    response, 400, "인증정보가 필요합니다.", null);
         }
         return null;
     }

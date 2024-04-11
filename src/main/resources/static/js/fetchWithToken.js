@@ -70,6 +70,11 @@ async function fetchWithToken(url, options) {
                 alert('Catch on retry in fetWithToken')
             });
 
+    } else if (response.status === 400) {
+
+        const data = await response.json();
+        alert(data.message);
+
     } else if (response.status === 404) {
 
         // alert('요청 자원이 존재하지 않습니다.');
@@ -88,7 +93,7 @@ async function fetchWithToken(url, options) {
     
         } catch (error) {
             console.error("Error: ", error);
-            alert('catch on first try in fetchWithToken');
+            alert('Catch on first try in fetchWithToken');
         }
         
     }
