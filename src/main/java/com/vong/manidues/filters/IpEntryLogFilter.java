@@ -27,7 +27,8 @@ public class IpEntryLogFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         String requestURI = request.getRequestURI();
 
-        if (filterUtility.startsWithOneOf(requestURI, filterUtility.RESOURCES_PERMITTED_TO_ALL_STARTS_WITH)
+        if (filterUtility.startsWithOneOf(requestURI,
+                filterUtility.RESOURCES_PERMITTED_TO_ALL_STARTS_WITH)
                 || requestURI.equals("/favicon.ico")
         ) {
             filterChain.doFilter(request, response);

@@ -41,17 +41,26 @@ public class AbnormalRequestFilter extends OncePerRequestFilter {
                 || !connection.equalsIgnoreCase("keep-alive");
     }
 
-    private boolean isUnregisteredURI(String requestURI, String[] whiteListURIs) {
-        if (requestURI.equals("/")) return false;
-
-        for (String registeredURI : whiteListURIs) {
+    private static boolean isUnregisteredURI(String requestURI, String[] registeredURIs) {
+        for (String registeredURI : registeredURIs) {
             if (registeredURI.equals("/")) continue;
             if (registeredURI.endsWith("/**"))
-                registeredURI = registeredURI.substring(0, registeredURI.lastIndexOf("/"));
+                registeredURI = registeredURI.substring(
+                        0, registeredURI.lastIndexOf("/")
+                );
             if (requestURI.startsWith(registeredURI)) return false;
         }
-
         return true;
+    }
+
+    private boolean isUnregisteredGetURI(String requestURI) {
+        if (requestURI.equals("/")) return false;
+
+        return isUnregisteredURI(requestURI, SecurityConfig.WHITE_LIST_URIS_NON_MEMBER_GET);
+    }
+
+    private boolean isUnregisteredPostURI(String requestURI) {
+        return isUnregisteredURI(requestURI, SecurityConfig.WHITE_LIST_URIS_NON_MEMBER_POST);
     }
 
     @Override
@@ -60,14 +69,14 @@ public class AbnormalRequestFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        String requestIp = request.getRemoteAddr();
         String requestURI = request.getRequestURI();
         String requestMethod = request.getMethod();
         String userAgent = request.getHeader("User-Agent");
         String connection = request.getHeader("Connection");
         String authHeader = request.getHeader("Authorization");
 
-        if (filterUtility.startsWithOneOf(requestURI, filterUtility.RESOURCES_PERMITTED_TO_ALL_STARTS_WITH)
+        if (filterUtility.startsWithOneOf(requestURI,
+                filterUtility.RESOURCES_PERMITTED_TO_ALL_STARTS_WITH)
                 || requestURI.equals("/favicon.ico")
         ) {
             filterChain.doFilter(request, response);
@@ -87,10 +96,7 @@ public class AbnormalRequestFilter extends OncePerRequestFilter {
 
             // 허용된 uri 에 대한 요청이 아니라면
             if (requestMethod.equalsIgnoreCase("get")) {
-                if (isUnregisteredURI(
-                        requestURI,
-                        SecurityConfig.WHITE_LIST_URIS_NON_MEMBER_GET)
-                ) {
+                if (isUnregisteredGetURI(requestURI)) {
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     log.warn("*** Request to URI not permitted all *** response with {}", response.getStatus());
 
@@ -99,10 +105,7 @@ public class AbnormalRequestFilter extends OncePerRequestFilter {
             }
 
             if (requestMethod.equalsIgnoreCase("post")) {
-                if (isUnregisteredURI(
-                        requestURI,
-                        SecurityConfig.WHITE_LIST_URIS_NON_MEMBER_POST)
-                ) {
+                if (isUnregisteredPostURI(requestURI)) {
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     log.warn("*** Request to URI not permitted all *** response with {}", response.getStatus());
 
