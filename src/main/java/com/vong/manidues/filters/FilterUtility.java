@@ -24,9 +24,9 @@ public class FilterUtility {
         log.info("""
                         {} "{} {} {}" {} {}"""
                 , request.getRemoteAddr()
-                , request.getProtocol()
                 , request.getMethod()
                 , request.getRequestURI()
+                , request.getProtocol()
                 , request.getHeader("User-Agent")
                 , request.getHeader("Connection")
         );

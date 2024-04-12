@@ -73,7 +73,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 log.info("""
                                 ExpiredJwtException. response with 401, normal client will request to "/api/v1/auth/refresh-token" with refreshToken."""
                 );
-
             } else { // ExpiredJwtException 외의 에러는 조작된 것으로 간주. response 400
                 HttpResponseWithBody responseWithBody = new HttpResponseWithBody();
                 responseWithBody.jsonResponse(response, 400
@@ -83,20 +82,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 log.warn("""
                                 {}
                                     *** Guess that client's Token has been manipulated. *** response with {}
-                                    {} {} {} {} {} {}
                                     {}"""
                         , ex.getMessage()
                         , response.getStatus()
-                        , request.getRemoteAddr()
-                        , request.getProtocol()
-                        , request.getMethod()
-                        , request.getRequestURI()
-                        , request.getHeader("User-Agent")
-                        , request.getHeader("Connection")
                         , authHeader
                 );
-                return;
             }
+            return;
         }
         filterChain.doFilter(request, response);
     }
