@@ -98,7 +98,7 @@ public class AbnormalRequestFilter extends OncePerRequestFilter {
             if (requestMethod.equalsIgnoreCase("get")) {
                 if (isUnregisteredGetURI(requestURI)) {
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    log.warn("*** Request to URI not permitted all *** response with {}", response.getStatus());
+                    log.warn("*** Request to unregistered URI *** response with {}", response.getStatus());
 
                     return;
                 }
@@ -107,7 +107,7 @@ public class AbnormalRequestFilter extends OncePerRequestFilter {
             if (requestMethod.equalsIgnoreCase("post")) {
                 if (isUnregisteredPostURI(requestURI)) {
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    log.warn("*** Request to URI not permitted all *** response with {}", response.getStatus());
+                    log.warn("*** Request to unregistered URI *** response with {}", response.getStatus());
 
                     return;
                 }

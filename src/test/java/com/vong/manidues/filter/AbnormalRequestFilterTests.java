@@ -14,30 +14,39 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Slf4j
-public class IpEntryLogFilterTests {
+public class AbnormalRequestFilterTests {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    public void normalRequest() throws Exception {
+    public void UnregisteredResourceRequest() throws Exception {
         MockHttpServletRequestBuilder request =
-                MockMvcRequestBuilders
-                        .request(HttpMethod.GET, "/")
+                MockMvcRequestBuilders.request(HttpMethod.GET, "/unregistered.")
                         .header("User-Agent", "Mozilla")
                         .header("Connection", "keep-alive");
 
         mockMvc.perform(request)
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
     @Test
-    public void requestFavicon() throws Exception {
+    public void AbnormalOrNullUserAgentRequest() throws Exception {
         MockHttpServletRequestBuilder request =
-                MockMvcRequestBuilders
-                        .request(HttpMethod.GET, "/favicon.ico");
+                MockMvcRequestBuilders.request(HttpMethod.GET, "/")
+                        .header("Connection", "keep-alive");
 
         mockMvc.perform(request)
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
+    @Test
+    public void AbnormalOrNullConnectionHeaderRequest() throws Exception {
+        MockHttpServletRequestBuilder request =
+                MockMvcRequestBuilders.request(HttpMethod.GET, "/")
+                        .header("User-Agent", "Mozilla");
+
+        mockMvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 }

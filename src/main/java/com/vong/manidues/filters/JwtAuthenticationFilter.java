@@ -52,26 +52,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             userEmail = jwtService.extractUserEmail(jwt);
 
-            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+            if (userEmail != null
+                    && SecurityContextHolder.getContext()
+                            .getAuthentication() == null
+            ) {
+                UserDetails userDetails =
+                        userDetailsService.loadUserByUsername(userEmail);
 
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
 
                 authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request));
+                        new WebAuthenticationDetailsSource()
+                                .buildDetails(request)
+                );
 
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                SecurityContextHolder.getContext()
+                        .setAuthentication(authToken);
             }
         } catch (ExpiredJwtException | SignatureException | MalformedJwtException | DecodingException ex) {
             if (ex instanceof ExpiredJwtException) {
 
                 response.setStatus(401);
                 log.info("""
-                                ExpiredJwtException. response with 401, normal client will request to "/api/v1/auth/refresh-token" with refreshToken."""
+                        ExpiredJwtException. response with 401, normal client will request to "/api/v1/auth/refresh-token" with refreshToken."""
                 );
             } else { // ExpiredJwtException 외의 에러는 조작된 것으로 간주. response 400
                 HttpResponseWithBody responseWithBody = new HttpResponseWithBody();
