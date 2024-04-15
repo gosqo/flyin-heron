@@ -21,10 +21,10 @@ public class AbnormalRequestFilterTests {
 
     @Test
     public void UnregisteredResourceRequest() throws Exception {
-        MockHttpServletRequestBuilder request =
-                MockMvcRequestBuilders.request(HttpMethod.GET, "/unregistered.")
-                        .header("User-Agent", "Mozilla")
-                        .header("Connection", "keep-alive");
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .request(HttpMethod.GET, "/unregistered.")
+                .header("User-Agent", "Mozilla")
+                .header("Connection", "keep-alive");
 
         mockMvc.perform(request)
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
@@ -32,9 +32,9 @@ public class AbnormalRequestFilterTests {
 
     @Test
     public void AbnormalOrNullUserAgentRequest() throws Exception {
-        MockHttpServletRequestBuilder request =
-                MockMvcRequestBuilders.request(HttpMethod.GET, "/")
-                        .header("Connection", "keep-alive");
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .request(HttpMethod.GET, "/")
+                .header("Connection", "keep-alive");
 
         mockMvc.perform(request)
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
@@ -42,9 +42,9 @@ public class AbnormalRequestFilterTests {
 
     @Test
     public void AbnormalOrNullConnectionHeaderRequest() throws Exception {
-        MockHttpServletRequestBuilder request =
-                MockMvcRequestBuilders.request(HttpMethod.GET, "/")
-                        .header("User-Agent", "Mozilla");
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .request(HttpMethod.GET, "/")
+                .header("User-Agent", "Mozilla");
 
         mockMvc.perform(request)
                 .andExpect(MockMvcResultMatchers.status().isForbidden());

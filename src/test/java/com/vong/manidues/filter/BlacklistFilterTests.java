@@ -26,10 +26,10 @@ public class BlacklistFilterTests {
     @Test
     @Order(1)
     public void checkTrackRequestWith71Requests() throws Exception {
-        MockHttpServletRequestBuilder request =
-                MockMvcRequestBuilders.request(HttpMethod.GET, "/")
-                        .header("User-Agent", "Mozilla")
-                        .header("Connection", "keep-alive");
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .request(HttpMethod.GET, "/")
+                .header("User-Agent", "Mozilla")
+                .header("Connection", "keep-alive");
 
         for (int i = 0; i < 71; i++) {
             log.info("{}", i);
@@ -43,10 +43,10 @@ public class BlacklistFilterTests {
     @Test
     @Order(2)
     public void afterBlacklistedRequest() throws Exception {
-        MockHttpServletRequestBuilder request =
-                MockMvcRequestBuilders.request(HttpMethod.GET, "/")
-                        .header("User-Agent", "Mozilla")
-                        .header("Connection", "keep-alive");
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .request(HttpMethod.GET, "/")
+                .header("User-Agent", "Mozilla")
+                .header("Connection", "keep-alive");
 
         for (int i = 0; i < 3; i++) {
             mockMvc.perform(request)
