@@ -1,17 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration scan="true" scanPeriod="60 seconds">
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
 
-    <property name="CONSOLE_LOG_PATTERN"
-              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %clr(%-5level) %cyan(%logger) - %msg%n"/>
+    <property name="LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %green(%-5level) %cyan(%logger:%5line) - %m%n"/>
+    <property name="FILE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger:%5line - %m%n"/>
+<!--              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-21thread] %clr(%-5level) ${PID:-} %cyan(%logger) - %msg%n"/>-->
+    <property name="LOG_CHARSET" value="UTF-8" />
+    <property name="LOG_FILE_PATH" value="./log" />
+    <timestamp key="BY_DATE" datePattern="yyyy-MM-dd" />
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>${LOG_CHARSET}</charset>
         </encoder>
+    </appender>
+
+    <appender name="FILE-INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- property 사용 -->
+        <file>${LOG_FILE_PATH}/info-${BY_DATE}.log</file>
+        <encoder>
+            <!-- property 사용 -->
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <charset>${LOG_CHARSET}</charset>
+            <outputPatternAsHeader>true</outputPatternAsHeader>
+        </encoder>
+
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- property 사용 -->
+            <fileNamePattern>${LOG_FILE_PATH}/info-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
     </appender>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE-INFO" />
     </root>
+
+<!--    <logger name="org.apache.coyote.http11.Http11Processor" level="TRACE" additivity="false">-->
+<!--        <appender-ref ref="CONSOLE" />-->
+<!--        <appender-ref ref="FILE-INFO" />-->
+<!--    </logger>-->
+
+<!--    <logger name="org.apache.coyote.http11.Http11InputBuffer" level="TRACE" additivity="false">-->
+<!--        <appender-ref ref="CONSOLE" />-->
+<!--        <appender-ref ref="FILE-INFO" />-->
+<!--    </logger>-->
 </configuration>
