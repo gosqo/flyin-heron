@@ -1,6 +1,8 @@
 package com.vong.manidues.member.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +11,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class IsPresentEmailRequest {
-    // TODO 닉네임과 이메일 검증 기준이 다르기 때문에 각각을 분리해야함.
     @NotBlank(message = "중복 확인할 값을 입력해주세요.")
-    private String valueToCheck;
+    @Pattern(
+            regexp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*[0-9a-zA-Z]+.[a-zA-Z]{2,3}$",
+            message = "올바른 형식의 영문 Email 을 입력해주세요."
+    )
+    @Size(
+            min = 6
+            , max = 50
+            , message = "이메일은 6 ~ 50 자리로 입력해주세요."
+    )
+    private String email;
 }

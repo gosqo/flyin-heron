@@ -25,7 +25,7 @@ window.addEventListener('load', () => {
                 'Content-Type': 'application/json',
             },
             method: 'POST',
-            body: JSON.stringify({"valueToCheck": valueToCheck})
+            body: JSON.stringify({"email": valueToCheck})
         };
 
         const isPresentResultMessage= await fetchAndReturnMessage(url, options);
@@ -49,7 +49,7 @@ window.addEventListener('load', () => {
                 'Content-Type': 'application/json',
             },
             method: 'POST',
-            body: JSON.stringify({"valueToCheck": valueToCheck})
+            body: JSON.stringify({"nickname": valueToCheck})
         };
 
         const isPresentResultMessage = await fetchAndReturnMessage(url, options);

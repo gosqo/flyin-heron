@@ -21,7 +21,6 @@ public class GlobalRestExceptionHandler {
         return ResponseEntity
                 .status(ex.getStatusCode().value())
                 .body(JsonResponseBody.builder()
-                        .statusCode(ex.getStatusCode().value())
                         .message(validExceptionMessage)
                         .build()
                 );

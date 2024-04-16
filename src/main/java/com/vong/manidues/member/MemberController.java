@@ -31,7 +31,6 @@ public class MemberController {
                 : ResponseEntity.status(400)
                 .body(
                         JsonResponseBody.builder()
-                                .statusCode(400)
                                 .message("중복 확인 메세지를 확인해주시기 바랍니다.")
                                 .build()
                 );
@@ -41,7 +40,7 @@ public class MemberController {
     public ResponseEntity<Object> isPresentEmail(
             @Valid @RequestBody IsPresentEmailRequest request
     ) {
-        return repository.findByEmail(request.getValueToCheck()).isPresent()
+        return repository.findByEmail(request.getEmail()).isPresent()
                 ? ResponseEntity.status(409).body(
                         JsonResponseBody.builder()
                                 .message("이미 가입한 이메일 주소입니다.")
@@ -58,7 +57,7 @@ public class MemberController {
     public ResponseEntity<Object> isPresentNickname(
             @Valid @RequestBody IsPresentNicknameRequest request
     ) {
-        return repository.findByNickname(request.getValueToCheck()).isPresent()
+        return repository.findByNickname(request.getNickname()).isPresent()
                 ? ResponseEntity.status(409).body(
                         JsonResponseBody.builder()
                                 .message("이미 존재하는 닉네임입니다.")

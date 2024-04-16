@@ -32,7 +32,6 @@ public class AuthenticationController {
                 ? ResponseEntity.status(200).body(response)
                 : ResponseEntity.status(400).body(
                         JsonResponseBody.builder()
-                                .statusCode(400)
                                 .message("인증에 실패했습니다.")
                                 .build()
                 );
