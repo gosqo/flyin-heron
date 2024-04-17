@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -127,7 +128,7 @@ public class AuthenticationService {
 
         // refreshToken 의 유효성에 대한 try / catch
         try {
-
+            tokenRepository.findByToken(refreshToken).orElseThrow(NoSuchElementException::new);
             userEmail = jwtService.extractUserEmail(refreshToken);// extract the userEmail from refreshToken
 
             if (userEmail != null) {
@@ -164,16 +165,28 @@ public class AuthenticationService {
                         .refreshToken(refreshToken)
                         .build();
             }
-        } catch (ExpiredJwtException | SignatureException | MalformedJwtException e) {
-            if (e instanceof ExpiredJwtException) {
-                log.info(e.getMessage());
+        } catch (NoSuchElementException ex) {
+            log.warn("""
+                            User tried refresh tokens with Token not exists on database.
+                            Token: {}"""
+                    , refreshToken
+            );
+            responseWithBody.jsonResponse(
+                    response,
+                    400,
+                    "서버에 인증정보가 존재하지 않습니다..",
+                    null
+            );
+        } catch (ExpiredJwtException | SignatureException | MalformedJwtException ex) {
+            if (ex instanceof ExpiredJwtException) {
+                log.info(ex.getMessage());
             } else {
                 log.info("""
                                 Auth Service caught error: {}
                                     Ip address is: {}
                                     User-Agent is: {}
                                 """,
-                        e.getMessage(),
+                        ex.getMessage(),
                         request.getRemoteAddr(),
                         request.getHeader("User-Agent")
                 );
@@ -181,7 +194,7 @@ public class AuthenticationService {
             responseWithBody.jsonResponse(
                     response,
                     400,
-                    "인증정보가 필요합니다.",
+                    "올바른 인증정보가 필요합니다.",
                     null
             );
         }

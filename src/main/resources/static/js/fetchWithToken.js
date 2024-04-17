@@ -25,6 +25,7 @@ async function fetchWithToken(url, options) {
         } catch (error) { console.log('Error: ', error); }
 
         const refreshedTokens = await refreshTokenRequest(localStorage.getItem('refresh_token'));
+
         localStorage.setItem('access_token', `Bearer ${refreshedTokens.access_token}`);
         localStorage.setItem('refresh_token', `Bearer ${refreshedTokens.refresh_token}`);
 
@@ -120,8 +121,8 @@ async function refreshTokenRequest(refreshToken) {
     const response = await fetch(url, options);
     console.log(response);
 
-    if (!response.ok) {
-        alert('인증 정보에 문제가 생겼습니다. 다시 로그인해주십시오.');
+    if (response.status !== 200) {
+        alert('인증 정보에 문제가 있습니다.\n로그아웃 후 다시 로그인해주십시오.');
         throw new Error('Failed to refresh access token');
     } else {
         const data = await response.json();

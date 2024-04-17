@@ -42,7 +42,9 @@ public class AuthenticationController {
             HttpServletRequest request,
             HttpServletResponse response
     ) throws IOException {
-        return ResponseEntity.ok(service.refreshToken(request, response));
+        AuthenticationResponse authResponse = service.refreshToken(request, response);
+        return authResponse != null
+                ? ResponseEntity.ok(authResponse)
+                : ResponseEntity.badRequest().build();
     }
-
 }

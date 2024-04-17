@@ -27,6 +27,7 @@ if (localStorage.getItem('access_token')) {
             const data = await fetchWithToken(url, options);
 
             // data 객체의 요소를 사용해 해당 함수(tokenValidationTest)의 역할을 수행.
+            if (data === undefined) return;
             const paragraph = document.createElement('p');
             document.querySelector('#test-jwt-area').append(paragraph);
             paragraph.textContent = data.email + " " + data.expiration;

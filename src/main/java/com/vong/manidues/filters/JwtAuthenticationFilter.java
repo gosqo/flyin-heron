@@ -90,9 +90,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         null
                 );
                 log.warn("""
-                                {}
+                                {} {}
                                     *** Guess that client's Token has been manipulated. *** response with {}
                                     {}"""
+                        , ex.getClass().getName()
                         , ex.getMessage()
                         , response.getStatus()
                         , authHeader
