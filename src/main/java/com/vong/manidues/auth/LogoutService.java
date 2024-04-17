@@ -65,7 +65,12 @@ public class LogoutService implements LogoutHandler {
             log.info("user tried refresh token that does not exist on database.");
 
             try {
-                responseWithBody.jsonResponse(response, 400, "올바른 요청이 아닙니다.", null);
+                responseWithBody.jsonResponse(
+                        response,
+                        400,
+                        "올바른 요청이 아닙니다.",
+                        null
+                );
             } catch (IOException e) {
                 log.info(e.getMessage());
             }
@@ -79,7 +84,12 @@ public class LogoutService implements LogoutHandler {
             log.info("Deleted token count is: {}", deletedTokenCount);
 
             try {
-                responseWithBody.jsonResponse(response, 200, "logout succeeded.", null);
+                responseWithBody.jsonResponse(
+                        response,
+                        200,
+                        "logout succeeded.",
+                        null
+                );
             } catch (IOException e) {
                 log.info(e.getMessage());
             }

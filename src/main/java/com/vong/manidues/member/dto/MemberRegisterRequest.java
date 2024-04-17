@@ -2,10 +2,7 @@ package com.vong.manidues.member.dto;
 
 import com.vong.manidues.member.Member;
 import com.vong.manidues.member.Role;
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 @AllArgsConstructor
@@ -16,8 +13,8 @@ import lombok.*;
 public class MemberRegisterRequest {
 
     @NotBlank(message = "Email 을 입력해주세요.")
-    @Pattern(
-            regexp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*[0-9a-zA-Z]+.[a-zA-Z]{2,3}$",
+    @Email(
+            regexp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*[.][a-zA-Z]{2,3}$",
             message = "올바른 형식의 영문 Email 을 입력해주세요."
     )
     @Size(
@@ -49,8 +46,8 @@ public class MemberRegisterRequest {
             , message = "닉네임은 2 ~ 20 자리로 입력해주세요."
     )
     @Pattern(
-            regexp = "^[A-Za-z가-힣\\d-_./]{2,20}$",
-            message = "닉네임은 2 ~ 20 자리, 영/한문과 특수문자{'-', '_', '.'} 을 사용해 구성할 수 있습니다."
+            regexp = "^[0-9A-Za-z가-힣-_./]{2,20}$",
+            message = "닉네임은 2 ~ 20 자리, 숫자, 영/한문과 특수문자{'-', '_', '.'} 을 사용해 구성할 수 있습니다."
     )
     private String nickname;
 

@@ -1,24 +1,18 @@
-if (localStorage.getItem('access_token')) {
-    const logoutButton = document.querySelector('#logoutButton');
-
-    if (logoutButton) {
-
-        logoutButton.addEventListener('click', (event) => {
-
-            event.preventDefault();
-
-            // 로그아웃 컨펌 받는다.
-            if (logoutConfirm()) {
-
-                // 컨펌 결과에 따라 퐽취, 엘스 리턴.
-                fetchLogout()
-
-            } else return;
-
-        });
-
+window.addEventListener('load', () => {
+    if (localStorage.getItem('access_token')) {
+        const logoutButton = document.querySelector('#logoutButton');
+    
+        if (logoutButton) {
+            logoutButton.addEventListener('click', (event) => {
+                event.preventDefault();
+    
+                if (logoutConfirm()) fetchLogout();
+                else return;
+    
+            });
+        }
     }
-}
+});
 
 function logoutConfirm() {
     const confirmation = confirm('로그아웃 하시겠습니까?');
@@ -35,25 +29,26 @@ async function fetchLogout() {
     };
 
     try {
-
         const data = await fetchWithToken(url, requestInit);
-        console.log(data);
 
-        if (data.statusCode === 200) {
-
+        if (data.status === 200) {
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
 
             alert('로그아웃했습니다.');
 
-            self.location = '/';
+            location = '/';
 
         } else {
+            alert('안전한 서비스 이용을 위해 강제 로그아웃을 진행합니다.');
 
-            alert('logout failed.');
+            if (localStorage.getItem('access_token')) 
+                localStorage.removeItem('access_token');
+            if (localStorage.getItem('refresh_token')) 
+                localStorage.removeItem('refresh_token');
 
+            location.reload();
         }
-
     } catch (error) {
         console.error("Error: ", error);
     }

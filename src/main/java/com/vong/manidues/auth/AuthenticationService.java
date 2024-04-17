@@ -179,7 +179,11 @@ public class AuthenticationService {
                 );
             }
             responseWithBody.jsonResponse(
-                    response, 400, "인증정보가 필요합니다.", null);
+                    response,
+                    400,
+                    "인증정보가 필요합니다.",
+                    null
+            );
         }
         return null;
     }

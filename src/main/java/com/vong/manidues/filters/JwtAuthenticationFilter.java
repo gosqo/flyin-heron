@@ -83,9 +83,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
             } else { // ExpiredJwtException 외의 에러는 조작된 것으로 간주. response 400
                 HttpResponseWithBody responseWithBody = new HttpResponseWithBody();
-                responseWithBody.jsonResponse(response, 400
-                        , "인증에 문제가 있습니다. \n안전한 사용을 위해, 로그아웃 후 다시 로그인 해주십시오."
-                        , null
+                responseWithBody.jsonResponse(
+                        response,
+                        400,
+                        "인증에 문제가 있습니다. \n안전한 사용을 위해, 로그아웃 후 다시 로그인 해주십시오.",
+                        null
                 );
                 log.warn("""
                                 {}

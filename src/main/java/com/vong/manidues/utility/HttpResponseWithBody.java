@@ -21,6 +21,7 @@ public class HttpResponseWithBody {
         response.setCharacterEncoding("UTF-8");
         response.getWriter().println(new CustomJsonMapper().mapToJsonString(
                 JsonResponseBody.builder()
+                        .status(statusCode)
                         .message(message)
                         .additionalMessage(additionalMessage)
                         .build()

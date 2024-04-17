@@ -74,17 +74,13 @@ async function fetchWithToken(url, options) {
 
         const data = await response.json();
         alert(data.message);
+        return data;
 
     } else if (response.status === 404) {
 
         // alert('요청 자원이 존재하지 않습니다.');
         self.location.href = '/error/404';
 
-    } else if (response.status === 500) {
-
-        self.location.href = '/error/500';
-
-        // access_token 의 만료, 여타 토큰 예외가 발생하지 않는 경우.
     } else {
         try {
             const data = await response.json();
