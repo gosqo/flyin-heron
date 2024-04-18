@@ -4,6 +4,7 @@ import com.vong.manidues.token.JwtService;
 import com.vong.manidues.token.Token;
 import com.vong.manidues.token.TokenRepository;
 import com.vong.manidues.utility.HttpResponseWithBody;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ public class LogoutService implements LogoutHandler {
      *       토큰 중복 저장의 warn 로그를 남깁니다.
      *   데이터베이스에서 해당 토큰 모두를 삭제합니다.
      *   사용자에게는 '정상적 처리'를 응답합니다. </pre>
-     * */
+     */
     @Override
     public void logout(
             HttpServletRequest request,
@@ -47,17 +48,36 @@ public class LogoutService implements LogoutHandler {
     ) {
         final String authHeader = request.getHeader("Authorization");
         final String refreshToken;
+        final String userEmail;
 
         // 클라이언트는 요청 헤더에 refresh_token 을 담아서 요청.
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            try {
+                response.sendError(400, "로그인 상태가 아닙니다.");
+            } catch (IOException e) {
+                log.info(e.getMessage());
+            }
             return;
         }
 
         refreshToken = authHeader.substring(7);
-        log.info("""
-                logout service called. request member email is: {}"""
-                , jwtService.extractUserEmail(refreshToken)
-        );
+
+        try {
+            userEmail = jwtService.extractUserEmail(refreshToken);
+
+            log.info("""
+                            logout service called. request member email is: {}"""
+                    , userEmail
+            );
+        } catch (JwtException ex) {
+            try {
+                response.sendError(400, "올바른 요청이 아닙니다.");
+            } catch (IOException nestedEx) {
+                log.info(nestedEx.getMessage());
+                throw new RuntimeException(nestedEx);
+            }
+            return;
+        }
 
         List<Token> storedTokens = tokenRepository.findAllByToken(refreshToken).stream().toList();
 
