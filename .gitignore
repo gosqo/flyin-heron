@@ -281,3 +281,6 @@ application.properties
 
 src/main/resources/config
 .gitmodules
+
+# nohup.out
+*.out
