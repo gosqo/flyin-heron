@@ -1,6 +1,6 @@
-package com.vong.manidues.filters;
+package com.vong.manidues.filter;
 
-import com.vong.manidues.filters.trackingip.RequestTracker;
+import com.vong.manidues.filter.trackingip.RequestTracker;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

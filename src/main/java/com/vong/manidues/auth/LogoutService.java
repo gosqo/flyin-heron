@@ -4,7 +4,6 @@ import com.vong.manidues.token.JwtService;
 import com.vong.manidues.token.Token;
 import com.vong.manidues.token.TokenRepository;
 import com.vong.manidues.utility.HttpResponseWithBody;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -62,22 +61,12 @@ public class LogoutService implements LogoutHandler {
 
         refreshToken = authHeader.substring(7);
 
-        try {
             userEmail = jwtService.extractUserEmail(refreshToken);
 
             log.info("""
                             logout service called. request member email is: {}"""
                     , userEmail
             );
-        } catch (JwtException ex) {
-            try {
-                response.sendError(400, "올바른 요청이 아닙니다.");
-            } catch (IOException nestedEx) {
-                log.info(nestedEx.getMessage());
-                throw new RuntimeException(nestedEx);
-            }
-            return;
-        }
 
         List<Token> storedTokens = tokenRepository.findAllByToken(refreshToken).stream().toList();
 

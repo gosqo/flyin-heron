@@ -1,4 +1,4 @@
-package com.vong.manidues.filters.trackingip;
+package com.vong.manidues.filter.trackingip;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -1,4 +1,4 @@
-package com.vong.manidues.filters;
+package com.vong.manidues.filter;
 
 import com.vong.manidues.utility.HttpResponseWithBody;
 import jakarta.servlet.ServletException;
@@ -41,7 +41,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             responseWithBody.jsonResponse(
                     response,
                     401,
-                    "인증정보가 필요합니다.",
+                    "인증정보가 필요합니다. -auth entry point",
                     null
             );
             log.info("""

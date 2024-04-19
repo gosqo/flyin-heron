@@ -1,6 +1,6 @@
 package com.vong.manidues.config;
 
-import com.vong.manidues.filters.*;
+import com.vong.manidues.filter.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 @Configuration
@@ -28,6 +29,7 @@ public class SecurityConfig {
     private final AbnormalRequestFilter abnormalRequestFilter;
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final LogoutHandler logoutHandler;
+    private final JwtExceptionFilter jwtExceptionFilter;
 
     public static final String[] WHITE_LIST_URIS_NON_MEMBER_GET = {
             "/"
@@ -71,6 +73,7 @@ public class SecurityConfig {
                 )
 
                 .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtExceptionFilter, LogoutFilter.class)
                 .addFilterBefore(ipEntryLogFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(blacklistFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(abnormalRequestFilter, UsernamePasswordAuthenticationFilter.class)

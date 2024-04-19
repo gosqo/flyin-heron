@@ -1,4 +1,4 @@
-package com.vong.manidues.filters.trackingip;
+package com.vong.manidues.filter.trackingip;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;

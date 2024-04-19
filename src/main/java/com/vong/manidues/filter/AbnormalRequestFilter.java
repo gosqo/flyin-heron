@@ -1,4 +1,4 @@
-package com.vong.manidues.filters;
+package com.vong.manidues.filter;
 
 import com.vong.manidues.config.SecurityConfig;
 import jakarta.servlet.FilterChain;
@@ -83,18 +83,16 @@ public class AbnormalRequestFilter extends OncePerRequestFilter {
             return;
         }
 
+        if (isAbnormalUserAgent(userAgent)
+                || isAbnormalConnection(connection)
+        ) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            log.warn("*** Request from not allowed UA or Connection *** response with {}", response.getStatus());
+
+            return;
+        }
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-
-            if (isAbnormalUserAgent(userAgent)
-                    || isAbnormalConnection(connection)
-            ) {
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                log.warn("*** Request from not allowed UA or Connection *** response with {}", response.getStatus());
-
-                return;
-            }
-
-            // 허용된 uri 에 대한 요청이 아니라면
             if (requestMethod.equalsIgnoreCase("get")) {
                 if (isUnregisteredGetURI(requestURI)) {
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);

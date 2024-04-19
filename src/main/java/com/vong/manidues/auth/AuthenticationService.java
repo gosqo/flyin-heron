@@ -7,9 +7,6 @@ import com.vong.manidues.token.Token;
 import com.vong.manidues.token.TokenRepository;
 import com.vong.manidues.utility.HttpResponseWithBody;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -92,6 +89,18 @@ public class AuthenticationService {
                 .build();
     }
 
+    private long getGapToExpiration(String refreshToken, LocalDate today) {
+        final LocalDate refreshTokenExpiration;
+
+        refreshTokenExpiration = jwtService
+                .extractClaim(refreshToken, Claims::getExpiration)
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+        return ChronoUnit.DAYS.between(today, refreshTokenExpiration);
+    }
+
     /**
      * 액세스 토큰 갱신(refresh) 및 발급.
      * <pre>
@@ -118,7 +127,6 @@ public class AuthenticationService {
         final String refreshToken;
         final String userEmail;
         final LocalDate today = LocalDate.now();
-        final LocalDate refreshTokenExpiration;
         final long gapToExpiration;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -136,30 +144,25 @@ public class AuthenticationService {
                 Member member = this.memberRepository.findByEmail(userEmail).orElseThrow();
                 String accessToken = jwtService.generateAccessToken(member);
 
-                refreshTokenExpiration = jwtService
-                        .extractClaim(refreshToken, Claims::getExpiration)
-                        .toInstant()
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDate();
-                gapToExpiration = ChronoUnit.DAYS.between(today, refreshTokenExpiration);
+                gapToExpiration = getGapToExpiration(refreshToken, today);
 
                 if (gapToExpiration <= 7) {
 
-                    String renewedRefreshToken = jwtService.generateRefreshToken(member);
+                    String reissuedRefreshToken = jwtService.generateRefreshToken(member);
 
                     // 만료기간이 7 일 이하로 남아 새로 갱신한 리프레시 토큰을 디비에 저장.
-                    saveMemberToken(member, renewedRefreshToken);
+                    saveMemberToken(member, reissuedRefreshToken);
                     // 기존의 리프레시 토큰은 삭제.
                     tokenRepository.deleteByToken(refreshToken);
 
+                    log.info("refreshed token been successfully issued with reissuedRefreshToken.");
                     return AuthenticationResponse.builder()
                             .accessToken(accessToken)
-                            .refreshToken(renewedRefreshToken)
+                            .refreshToken(reissuedRefreshToken)
                             .build();
                 }
 
-                // 기존의 리프레시 토큰을 반환하는 경우 디비에 해당 토큰이 이미 존재.
-                // 중복 자료가 발생하지 않도록
+                log.info("refreshed token been successfully issued.");
                 return AuthenticationResponse.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
@@ -175,26 +178,6 @@ public class AuthenticationService {
                     response,
                     400,
                     "서버에 인증정보가 존재하지 않습니다..",
-                    null
-            );
-        } catch (ExpiredJwtException | SignatureException | MalformedJwtException ex) {
-            if (ex instanceof ExpiredJwtException) {
-                log.info(ex.getMessage());
-            } else {
-                log.info("""
-                                Auth Service caught error: {}
-                                    Ip address is: {}
-                                    User-Agent is: {}
-                                """,
-                        ex.getMessage(),
-                        request.getRemoteAddr(),
-                        request.getHeader("User-Agent")
-                );
-            }
-            responseWithBody.jsonResponse(
-                    response,
-                    400,
-                    "올바른 인증정보가 필요합니다.",
                     null
             );
         }
