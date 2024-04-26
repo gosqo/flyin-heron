@@ -1,4 +1,4 @@
-package com.vong.manidues.common.exception;
+package com.vong.manidues.exception;
 
 import com.vong.manidues.utility.JsonResponseBody;
 import lombok.extern.slf4j.Slf4j;

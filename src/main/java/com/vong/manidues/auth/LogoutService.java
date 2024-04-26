@@ -60,15 +60,12 @@ public class LogoutService implements LogoutHandler {
         }
 
         refreshToken = authHeader.substring(7);
+        userEmail = jwtService.extractUserEmail(refreshToken);
 
-            userEmail = jwtService.extractUserEmail(refreshToken);
+        log.info("logout service called. request member email is: {}", userEmail);
 
-            log.info("""
-                            logout service called. request member email is: {}"""
-                    , userEmail
-            );
-
-        List<Token> storedTokens = tokenRepository.findAllByToken(refreshToken).stream().toList();
+        List<Token> storedTokens =
+                tokenRepository.findAllByToken(refreshToken).stream().toList();
 
         if (storedTokens.isEmpty()) { // refreshToken entity 가 존재하지 않는다면,
             log.info("user tried refresh token that does not exist on database.");

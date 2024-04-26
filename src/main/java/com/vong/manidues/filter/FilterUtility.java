@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class FilterUtility {
+
     final String[] RESOURCES_PERMITTED_TO_ALL_STARTS_WITH = {
             "/css/"
             , "/js/"
@@ -21,9 +22,11 @@ public class FilterUtility {
     }
 
     void logRequestInfo(HttpServletRequest request) {
+        String ipFormat = String.format("%-15s", request.getRemoteAddr());
+
         log.info("""
                         {} "{} {} {}" {} {}"""
-                , request.getRemoteAddr()
+                , ipFormat
                 , request.getMethod()
                 , request.getRequestURI()
                 , request.getProtocol()

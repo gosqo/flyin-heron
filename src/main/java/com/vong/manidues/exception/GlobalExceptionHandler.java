@@ -1,4 +1,4 @@
-package com.vong.manidues.common.exception;
+package com.vong.manidues.exception;
 
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
