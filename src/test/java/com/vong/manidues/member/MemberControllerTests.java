@@ -25,7 +25,7 @@ public class MemberControllerTests {
 
     // === tests for nickname validation ===
     @Test
-    public void testBlankNickname() throws Exception {
+    public void blankNickname() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .request(HttpMethod.POST, "/api/v1/member/isPresentNickname")
                 .header("User-Agent", "Mozilla")
@@ -39,7 +39,7 @@ public class MemberControllerTests {
     }
 
     @Test
-    public void testIsPresentNicknameWithAppropriateNicknames() throws Exception {
+    public void isPresentNicknameWithAppropriateNicknames() throws Exception {
         String[] appropriateNicknames = {
                 "helloWorld"
                 , "가나다라"
@@ -73,7 +73,7 @@ public class MemberControllerTests {
     }
 
     @Test
-    public void testIsPresentNicknameWithInappropriateNickname() throws Exception {
+    public void isPresentNicknameWithInappropriateNickname() throws Exception {
         String[] inappropriateNicknames = {
                 "helloWorldHelloWorldHelloWorld" // 20자 초과
                 , "h" // 2 자리 미만
@@ -106,7 +106,7 @@ public class MemberControllerTests {
 
     // === tests for email validation ===
     @Test
-    public void testBlankEmail() throws Exception {
+    public void blankEmail() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .request(HttpMethod.POST, "/api/v1/member/isPresentEmail")
                 .header("User-Agent", "Mozilla")
@@ -120,7 +120,7 @@ public class MemberControllerTests {
     }
 
     @Test
-    public void testIsPresentEmailWithAppropriateEmails() throws Exception {
+    public void isPresentEmailWithAppropriateEmails() throws Exception {
         String[] appropriateEmails = {
                 "helllo@world.cc"
                 , "hello@world00.com"
@@ -155,7 +155,7 @@ public class MemberControllerTests {
     }
 
     @Test
-    public void testIsPresentEmailWithInappropriateEmail() throws Exception {
+    public void isPresentEmailWithInappropriateEmail() throws Exception {
         String[] inappropriateEmails = {
                 "helllo@world..cc" // 마지막 . 이전에 영문 대소문자 혹은 숫자가 존재하지 않음.
                 , "hello@world00.commm" // 최상위 도메인 자리수 초과

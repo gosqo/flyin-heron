@@ -59,7 +59,7 @@ getBoardButton.textContent = 'Board List';
 
 getBoardButton.addEventListener(
     'click',
-    () => self.location.href = '/boards'
+    () => self.location.href = '/boards/'
 );
 
 buttonsArea.append(getBoardButton);

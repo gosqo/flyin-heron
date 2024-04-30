@@ -44,11 +44,17 @@ public class AbnormalRequestFilter extends OncePerRequestFilter {
     private static boolean isUnregisteredURI(String requestURI, String[] registeredURIs) {
         for (String registeredURI : registeredURIs) {
             if (registeredURI.equals("/")) continue;
-            if (registeredURI.endsWith("/**"))
+            if (registeredURI.endsWith("/**")) {
                 registeredURI = registeredURI.substring(
-                        0, registeredURI.lastIndexOf("/")
+                        0, registeredURI.lastIndexOf("/") + 1
                 );
-            if (requestURI.startsWith(registeredURI)) return false;
+            }
+
+            if (registeredURI.endsWith("/")) {
+                if (requestURI.startsWith(registeredURI)) return false;
+            } else {
+                if (requestURI.matches(registeredURI)) return false;
+            }
         }
         return true;
     }

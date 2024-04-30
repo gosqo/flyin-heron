@@ -16,5 +16,5 @@ public class GlobalExceptionHandler {
     public String handleInternalServerError(RuntimeException ex) {
         return "error/500";
     }
-
+    //MethodArgumentTypeMismatchException
 }

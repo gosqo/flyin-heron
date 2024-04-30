@@ -1,6 +1,5 @@
 package com.vong.manidues.common;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class ViewController {
 
     @GetMapping("/")
-    public String getHome(HttpServletRequest request) {
+    public String getHome() {
         return "index";
     }
 
@@ -27,7 +26,7 @@ public class ViewController {
         return "board/boardModify";
     }
 
-    @GetMapping(value = {"/boards", "/boards/{pageNumber}"})
+    @GetMapping(value = {"/boards/", "/boards/{pageNumber}"})
     public String getBoardListView(@Nullable @PathVariable("pageNumber") Integer pageNumber) {
         return "board/boardList";
     }

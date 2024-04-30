@@ -41,7 +41,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             responseWithBody.jsonResponse(
                     response,
                     401,
-                    "인증정보가 필요합니다. -auth entry point",
+                    "인증정보가 필요합니다.",
                     null
             );
             log.info("""

@@ -1,5 +1,6 @@
 package com.vong.manidues.filter;
 
+import com.vong.manidues.config.SecurityConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,87 @@ public class AbnormalRequestFilterTests {
     private MockMvc mockMvc;
 
     @Test
-    public void UnregisteredResourceRequest() throws Exception {
+    public void requestPostToRegisteredURI() throws Exception {
+        for (String uri : SecurityConfig.WHITE_LIST_URIS_NON_MEMBER_POST) {
+            MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                    .request(HttpMethod.POST, uri) // HTTP method POST
+                    .header("User-Agent", "Mozilla")
+                    .header("Connection", "keep-alive");
+
+            if (uri.equals("/error")) {
+                mockMvc.perform(request)
+                        .andExpect(MockMvcResultMatchers.status().isInternalServerError());
+                continue;
+            }
+            mockMvc.perform(request)
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+        }
+    }
+
+    @Test
+    public void requestGetToRegisteredURI() throws Exception {
+        for (String uri : SecurityConfig.WHITE_LIST_URIS_NON_MEMBER_GET) {
+            MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                    .request(HttpMethod.GET, uri) // HTTP method POST
+                    .header("User-Agent", "Mozilla")
+                    .header("Connection", "keep-alive");
+
+            if (uri.equals("/error")) {
+                mockMvc.perform(request)
+                        .andExpect(MockMvcResultMatchers.status().isInternalServerError());
+                continue;
+            }
+            mockMvc.perform(request)
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+        }
+    }
+
+    @Test
+    public void requestPostToRegisteredResourceExactlyMatches() throws Exception {
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .request(HttpMethod.POST, "/error") // HTTP method POST
+                .header("User-Agent", "Mozilla")
+                .header("Connection", "keep-alive");
+
+        mockMvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError());
+    }
+
+    @Test
+    public void requestGetToRegisteredResourceExactlyMatches() throws Exception {
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .request(HttpMethod.GET, "/error") // HTTP method GET
+                .header("User-Agent", "Mozilla")
+                .header("Connection", "keep-alive");
+
+        mockMvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError());
+    }
+
+    @Test
+    public void requestToRegisteredResourceMatchesTest() throws Exception {
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .request(HttpMethod.GET, "/errorasd") // starts with registered URI but not matching to it.
+                .header("User-Agent", "Mozilla")
+                .header("Connection", "keep-alive");
+
+        mockMvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
+    @Test
+    public void requestToRegisteredResourceUnderSlash() throws Exception {
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .request(HttpMethod.GET, "/api/v1/board/9999")
+                .header("User-Agent", "Mozilla")
+                .header("Connection", "keep-alive");
+
+        mockMvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    public void unregisteredResourceRequest() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .request(HttpMethod.GET, "/unregistered.")
                 .header("User-Agent", "Mozilla")
@@ -31,7 +112,7 @@ public class AbnormalRequestFilterTests {
     }
 
     @Test
-    public void AbnormalOrNullUserAgentRequest() throws Exception {
+    public void abnormalOrNullUserAgentRequest() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .request(HttpMethod.GET, "/")
                 .header("Connection", "keep-alive");
@@ -41,7 +122,7 @@ public class AbnormalRequestFilterTests {
     }
 
     @Test
-    public void AbnormalOrNullConnectionHeaderRequest() throws Exception {
+    public void abnormalOrNullConnectionHeaderRequest() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .request(HttpMethod.GET, "/")
                 .header("User-Agent", "Mozilla");
