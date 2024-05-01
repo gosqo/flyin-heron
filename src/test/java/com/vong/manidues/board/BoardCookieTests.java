@@ -1,45 +1,69 @@
 package com.vong.manidues.board;
 
+import com.vong.manidues.utility.mvc.MvcUtility;
 import jakarta.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpMethod;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.MvcResult;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureWebMvc
 @Slf4j
 public class BoardCookieTests {
+
     @Autowired
-    MockMvc mvc;
+    MockMvc mockMvc;
+
+    @Autowired
+    MvcUtility mvcUtil;
 
     @Test
     public void canSetCookie() throws Exception {
-        MockHttpServletRequestBuilder request0 = MockMvcRequestBuilders
-                .request(HttpMethod.GET, "/api/v1/board/1")
-                .cookie(new Cookie("BoardBeenViewed", "1"))
-                .header("User-Agent", "Mozilla")
-                .header("Connection", "keep-alive");
+        // first
+        String firstUri = "/api/v1/board/2";
+        Cookie firstRequestCookie = new Cookie("bbv", "1");
 
-        mvc.perform(request0).andExpect(MockMvcResultMatchers.status().isOk())
-                .andDo(MockMvcResultHandlers.print());
-        mvc.perform(request0).andExpect(MockMvcResultMatchers.status().isOk())
-                .andDo(MockMvcResultHandlers.print());
-
-        MockHttpServletRequestBuilder request1 = MockMvcRequestBuilders
-                .request(HttpMethod.GET, "/api/v1/board/2")
-                .header("User-Agent", "Mozilla")
-                .header("Connection", "keep-alive");
-
-        mvc.perform(request1).andExpect(MockMvcResultMatchers.status().isOk())
-                .andDo(MockMvcResultHandlers.print())
+        MvcResult firstRequestResult = mockMvc.perform(
+                        get(firstUri)
+                                .cookie(firstRequestCookie)
+                                .headers(MvcUtility.DEFAULT_HEADER)
+                )
+                .andExpectAll(
+                        status().isOk()
+                        , cookie().value("bbv", "1/2"))
+                .andDo(print())
                 .andReturn();
+
+        mvcUtil.logResultHeaders(firstRequestResult);
+
+        // second
+        Cookie secondRequestCookie = firstRequestResult.getResponse().getCookie("bbv");
+        String secondUri = "/api/v1/board/3";
+
+        MvcResult secondRequestResult = mockMvc.perform(
+                        get(secondUri)
+                                .headers(MvcUtility.DEFAULT_HEADER)
+                                .cookie(secondRequestCookie)
+                )
+                .andExpectAll(
+                        status().isOk()
+                        , cookie().value("bbv", "1/2/3"))
+                .andDo(print())
+                .andReturn();
+
+        mvcUtil.logResultHeaders(secondRequestResult);
     }
+
+
 }

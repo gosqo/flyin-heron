@@ -2,10 +2,13 @@ package com.vong.manidues.exception;
 
 import com.vong.manidues.utility.JsonResponseBody;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 @Slf4j
@@ -15,7 +18,6 @@ public class GlobalRestExceptionHandler {
     public ResponseEntity<Object> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException ex
     ) {
-
         String validExceptionMessage = ex.getFieldErrors().get(0).getDefaultMessage();
 
         log.info("getFieldsErrors(): {}", validExceptionMessage);
@@ -28,6 +30,20 @@ public class GlobalRestExceptionHandler {
                 );
     }
 
-    // NoSuchElementException DB 조회 관련 에러 처리.
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<Object> handleNoSuchElementException(
+            NoSuchElementException ex
+    ) {
+        log.info("cause.message(): {}", ex.getCause().getMessage());
+        log.info("cause.class(): {}", ex.getCause().getClass());
+        log.info("cause.localizedMessage(): {}", ex.getCause().getLocalizedMessage());
+        log.info("getMessage(): {}", ex.getMessage());
 
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(JsonResponseBody.builder()
+                        .message(ex.getMessage())
+                        .build()
+                );
+    }
 }

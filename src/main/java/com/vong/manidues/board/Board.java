@@ -3,6 +3,7 @@ package com.vong.manidues.board;
 import com.vong.manidues.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -32,6 +33,10 @@ public class Board {
     )
     private String content;
 
+    @Column(nullable = false)
+    @ColumnDefault("0")
+    private Long viewCount;
+
     @CreationTimestamp
     private LocalDateTime registerDate;
 
@@ -52,4 +57,6 @@ public class Board {
     public void updateContent(String content) {
         this.content = content;
     }
+
+    public void updateViewCount() { this.viewCount++; }
 }

@@ -2,7 +2,6 @@ package com.vong.manidues.board;
 
 import com.vong.manidues.board.dto.*;
 import com.vong.manidues.utility.ServletRequestUtility;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -11,8 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
-
 @RestController
 @RequestMapping("/api/v1/board")
 @RequiredArgsConstructor
@@ -20,42 +17,8 @@ import java.util.Collection;
 public class BoardController {
 
     private final BoardService service;
+    private final BoardRepository repository;
     private final ServletRequestUtility servletRequestUtility;
-
-    private void checkViewed(
-            HttpServletRequest request
-            , HttpServletResponse response
-            , Long id
-    ) {
-        // viewed flag, 쿠키에 해당 보드를 조회한 내역이 있는지. 반환 결과에 따라서 조회수 증가.
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equalsIgnoreCase("bbv")) { // bbv boardsBeenViewed
-                    String beenViewed = cookie.getValue();
-                    if (beenViewed.contains(id.toString())) return;
-                    else beenViewed += "[" + id + "]";
-
-                    cookie.setValue(beenViewed);
-                    cookie.setAttribute("Expires", cookie.getAttribute("Expires"));
-                    response.addCookie(cookie);
-                    return;
-                }
-            }
-        }
-        Cookie newCookie = new Cookie("bbv", "[" + id.toString() + "]");
-        newCookie.setMaxAge(60 * 60);
-        response.addCookie(newCookie);
-
-        Collection<String> responseHeaderNames = response.getHeaderNames();
-
-        for (String headerName : responseHeaderNames) {
-            log.info("{}: {}"
-                    , headerName
-                    , response.getHeader(headerName)
-            );
-        }
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<BoardGetResponse> getBoard(
@@ -63,9 +26,12 @@ public class BoardController {
             , HttpServletRequest request
             , HttpServletResponse response
     ) {
-        checkViewed(request, response, id);
+        Board entity = service.get(id); // throws NoSuchElementException
 
-        Board entity = service.get(id);
+        if (!service.hasViewed(id, request, response)) {
+            entity.updateViewCount();
+            repository.save(entity);
+        }
 
         return entity != null
                 ? ResponseEntity.ok(new BoardGetResponse().fromEntity(entity))
