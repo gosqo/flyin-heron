@@ -45,6 +45,7 @@ public class SecurityConfig {
             , "/api/v1/board/**"
             , "/board/**"
             , "/boards/**"
+            , "/api/v1/cookie/**"
     };
 
     public static final String[] WHITE_LIST_URIS_NON_MEMBER_POST = {
