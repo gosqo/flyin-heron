@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@DynamicInsert
 public class Board {
 
     @Id
@@ -33,8 +35,7 @@ public class Board {
     )
     private String content;
 
-    @Column(nullable = false)
-    @ColumnDefault("0")
+    @ColumnDefault(value = "0")
     private Long viewCount;
 
     @CreationTimestamp
