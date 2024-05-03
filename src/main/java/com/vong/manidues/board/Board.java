@@ -58,5 +58,5 @@ public class Board {
         this.content = content;
     }
 
-    public void updateViewCount() { this.viewCount++; }
+    public void addViewCount() { this.viewCount++; }
 }

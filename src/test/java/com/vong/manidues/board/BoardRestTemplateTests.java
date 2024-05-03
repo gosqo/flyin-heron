@@ -12,9 +12,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Objects;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Slf4j
@@ -23,19 +21,19 @@ public class BoardRestTemplateTests {
     @Autowired
     TestRestTemplate template;
 
-    private final HttpEntity<String> httpEntityWithoutBody = new HttpEntity<>(MvcUtility.DEFAULT_HEADER);
-
     @Test
     public void getBoard() throws Exception {
+        HttpEntity<String> request = new HttpEntity<>(MvcUtility.DEFAULT_HEADER);
+
         ResponseEntity<BoardGetResponse> response = template.exchange(
                 "/api/v1/board/1"
                         , HttpMethod.GET
-                        , httpEntityWithoutBody
+                        , request
                         , BoardGetResponse.class);
 
         log.info("\n{}\n{}"
-                , httpEntityWithoutBody.getHeaders()
-                , httpEntityWithoutBody.getBody()
+                , request.getHeaders()
+                , request.getBody()
         );
 
         log.info("\n{}\n{}\n{}"
@@ -44,19 +42,14 @@ public class BoardRestTemplateTests {
                 , response.getBody()
         );
 
-
-        if (response.getStatusCode() == HttpStatusCode.valueOf(200)) {
-            Long id = Objects.requireNonNull(response.getBody()).getBoardId();
-
-            assertEquals((Long) 1L, id);
-        } else {
-            log.info("Check response status above.");
-        }
-
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getBoardId()).isEqualTo(1L);
     }
+
     @Test
     public void templateTest() throws Exception {
-        String result = template.getRootUri();
-        log.info(result);
+        String rootUri = template.getRootUri();
+        log.info(rootUri);
     }
 }

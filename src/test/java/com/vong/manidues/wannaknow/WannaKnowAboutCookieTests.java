@@ -1,7 +1,7 @@
 package com.vong.manidues.wannaknow;
 
-import com.vong.manidues.board.BoardServiceImpl;
 import com.vong.manidues.utility.mvc.MvcUtility;
+import jakarta.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,23 +26,17 @@ public class WannaKnowAboutCookieTests {
     @Autowired
     MvcUtility mvcUtil;
 
-    @Autowired
-    BoardServiceImpl boardService;
-
     @Test
     public void sendHugeValueCookie() throws Exception {
+        Cookie cookie = mvcUtil.findCookieValueLimit();
+        log.info(cookie.getValue());
         MvcResult result = mockMvc.perform(
                         get("/api/v1/board/1")
                                 .headers(MvcUtility.DEFAULT_HEADER)
-                                .cookie(mvcUtil.findCookieValueLimit())
+                                .cookie(cookie)
                 )
                 .andExpectAll(status().isOk()
-                        , cookie().value(
-                                "bbv"
-                                , boardService
-                                .cutFirst500byte(mvcUtil.findCookieValueLimit().getValue())
-                                + "/1"
-                        )
+                        , cookie().value("bbv", cookie.getValue())
                 )
                 .andDo(print())
                 .andReturn();

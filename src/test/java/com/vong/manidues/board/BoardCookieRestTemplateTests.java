@@ -22,6 +22,28 @@ public class BoardCookieRestTemplateTests {
     TestRestTemplate template;
 
     @Test
+    public void initializeBbvCookie() throws Exception {
+        HttpHeaders requestHeaders = new HttpHeaders(MvcUtility.DEFAULT_HEADER);
+        HttpEntity<String> request = new HttpEntity<>(requestHeaders);
+
+        ResponseEntity<BoardGetResponse> response = template.exchange(
+                "/api/v1/board/1"
+                , HttpMethod.GET
+                , request
+                , BoardGetResponse.class
+        );
+
+        log.info("\n{}\n{}\n{}"
+                , response.getStatusCode()
+                , response.getHeaders()
+                , response.getBody()
+        );
+
+        assertThat(response.getHeaders().get("Set-Cookie")).isNotNull();
+        assertThat(response.getHeaders().get("Set-Cookie").get(0)).startsWith("bbv");
+    }
+
+    @Test
     public void canSetCookie() throws Exception {
         // first
         HttpHeaders requestHeaders = new HttpHeaders(MvcUtility.DEFAULT_HEADER);

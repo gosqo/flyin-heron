@@ -28,8 +28,9 @@ public class BoardController {
     ) {
         Board entity = service.get(id); // throws NoSuchElementException
 
-        if (!service.hasViewed(id, request, response)) {
-            entity.updateViewCount();
+        if (!service.hasViewed(id, request)) {
+            service.addValueCookieBbv(id, request, response);
+            entity.addViewCount();
             repository.save(entity);
         }
 

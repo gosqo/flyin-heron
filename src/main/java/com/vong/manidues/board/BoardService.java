@@ -24,6 +24,9 @@ public interface BoardService {
     Board get(Long id);
 
     boolean hasViewed(Long id
-            , HttpServletRequest request
-            , HttpServletResponse response);
+            , HttpServletRequest request);
+
+    void initializeCookieBbv(Long id, HttpServletResponse response);
+
+    void addValueCookieBbv(Long id, HttpServletRequest request, HttpServletResponse response);
 }
