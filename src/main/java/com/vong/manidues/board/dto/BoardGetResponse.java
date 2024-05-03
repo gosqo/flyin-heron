@@ -19,6 +19,7 @@ public class BoardGetResponse {
     private String title;
     private String content;
     private String writer;
+    private Long viewCount;
     private LocalDateTime registerDate;
     private LocalDateTime updateDate;
 
@@ -29,6 +30,7 @@ public class BoardGetResponse {
                 .title(entity.getTitle())
                 .content(entity.getContent())
                 .writer(entity.getMember().getNickname())
+                .viewCount(entity.getViewCount())
                 .registerDate(entity.getRegisterDate())
                 .updateDate(entity.getUpdateDate())
                 .build();
@@ -36,13 +38,18 @@ public class BoardGetResponse {
 
     @Override
     public String toString() {
-        return "\nBoardGetResponse{" +
-                "\n\ttitle = '" + title + '\'' +
-                ", \n\tcontent = '" + content + '\'' +
-                ", \n\twriter = '" + writer + '\'' +
-                ", \n\tregisterDate = " + registerDate +
-                ", \n\tupdateDate = " + updateDate +
-                "\n}";
+        return String.format("""
+                        BoardGetResponse{
+                            boardId = %d,
+                            writerId = %d,
+                            title = "%s",
+                            content = "%s",
+                            writer = "%s"
+                            viewCount = %d,
+                            registerDate = '%s',
+                            updateDate = '%s',
+                        """
+                , boardId, writerId, title, content, writer
+                , viewCount, registerDate.toString(), updateDate.toString());
     }
-
 }

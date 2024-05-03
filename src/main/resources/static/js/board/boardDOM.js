@@ -16,6 +16,7 @@ window.addEventListener('load', async () => {
         document.querySelector('#board-id').textContent = boardData.boardId;
         document.querySelector('#board-title').textContent = boardData.title;
         document.querySelector('#board-writer').textContent = boardData.writer;
+        document.querySelector('#board-hits').textContent = `조회 ${boardData.viewCount}`;
         // TODO add boardHits on response entity(on server). then unlock below.
         // document.querySelector('#board-hits').textContent = boardData.hits;
 
