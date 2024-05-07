@@ -25,6 +25,19 @@ public class GlobalExceptionHandler {
     }
     //MethodArgumentTypeMismatchException
 
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<Object> handleNullPointerException(
+            NullPointerException ex
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(JsonResponseBody.builder()
+                        .status(500)
+                        .message("Null pointer detected.")
+                        .build()
+                );
+    }
+
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<Object> handleNoSuchElementException(
             NoSuchElementException ex

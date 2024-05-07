@@ -6,6 +6,8 @@ async function getBoard(boardId) {
 
         if (response.status === 404) {
             location.href = '/error/404';
+        } else if (response.status === 500) {
+            location.href = '/error';
         } else {
             const data = await response.json();
             console.log(data);

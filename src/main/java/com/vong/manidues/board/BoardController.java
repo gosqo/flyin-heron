@@ -30,8 +30,10 @@ public class BoardController {
 
         if (!service.hasViewed(id, request)) {
             service.addValueCookieBbv(id, request, response);
-            entity.addViewCount();
-            repository.save(entity);
+            if (entity.getViewCount() != null) {
+                entity.addViewCount(); // throws NPException in previous version.
+                repository.save(entity);
+            }
         }
 
         return entity != null
