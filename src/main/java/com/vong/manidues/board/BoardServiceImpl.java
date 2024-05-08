@@ -102,6 +102,7 @@ public class BoardServiceImpl implements BoardService {
 
             storedBoard.updateTitle(request.getTitle());
             storedBoard.updateContent(request.getContent());
+            storedBoard.updateUpdateDate();
 
             boardRepository.save(storedBoard);
 
