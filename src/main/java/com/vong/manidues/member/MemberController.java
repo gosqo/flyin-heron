@@ -22,7 +22,7 @@ public class MemberController {
     private final MemberService service;
     private final MemberRepository repository;
 
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<Object> register(
             @Valid @RequestBody MemberRegisterRequest request
     ) {

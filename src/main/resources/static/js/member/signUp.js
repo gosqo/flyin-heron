@@ -69,7 +69,7 @@ window.addEventListener('load', () => {
             body[key] = value;
         });
 
-        const url = '/api/v1/member/';
+        const url = '/api/v1/member';
         const options = {
             headers: {
                 'Content-Type': 'application/json',

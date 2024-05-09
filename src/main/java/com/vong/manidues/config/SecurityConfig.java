@@ -50,6 +50,7 @@ public class SecurityConfig {
 
     public static final String[] WHITE_LIST_URIS_NON_MEMBER_POST = {
             "/api/v1/member/**"
+            , "/api/v1/member"
             , "/api/v1/auth/authenticate"
             , "/error"
             , "/error/**"
