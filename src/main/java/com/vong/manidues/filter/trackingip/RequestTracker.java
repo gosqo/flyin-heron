@@ -58,9 +58,9 @@ public class RequestTracker {
     }
 
     public static void clearExpiredRequests() {
-        Instant oneHourAgo = Instant.now().minusSeconds(10);
+        Instant tenSecondsAgo = Instant.now().minusSeconds(10);
         requestMap.entrySet().removeIf(
-                entry -> entry.getValue().getRequestTime().isBefore(oneHourAgo)
+                entry -> entry.getValue().getRequestTime().isBefore(tenSecondsAgo)
         );
     }
 

@@ -19,7 +19,7 @@ public class HttpResponseWithBody {
         response.setStatus(statusCode);
         response.setContentType(MediaType.APPLICATION_JSON.toString());
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().println(new CustomJsonMapper().mapToJsonString(
+        response.getWriter().println(new CustomJsonMapper().mapObjToString(
                 JsonResponseBody.builder()
                         .status(statusCode)
                         .message(message)

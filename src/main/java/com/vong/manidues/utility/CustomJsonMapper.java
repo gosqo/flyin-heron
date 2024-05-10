@@ -8,7 +8,7 @@ import java.io.IOException;
 @Component
 public class CustomJsonMapper {
 
-    public String mapToJsonString(Object obj) throws IOException {
+    public String mapObjToString(Object obj) throws IOException {
         return new ObjectMapper().writeValueAsString(obj);
     }
 }
