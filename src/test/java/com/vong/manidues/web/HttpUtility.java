@@ -1,4 +1,4 @@
-package com.vong.manidues.utility;
+package com.vong.manidues.web;
 
 import com.vong.manidues.token.TokenUtility;
 import lombok.RequiredArgsConstructor;

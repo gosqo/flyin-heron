@@ -20,10 +20,14 @@ import java.util.List;
 @Slf4j
 public class BoardRepositoryTests {
 
+    private final BoardRepository boardRepository;
+    private final MemberRepository memberRepository;
+
     @Autowired
-    private BoardRepository boardRepository;
-    @Autowired
-    private MemberRepository memberRepository;
+    public BoardRepositoryTests(BoardRepository boardRepository, MemberRepository memberRepository) {
+        this.boardRepository = boardRepository;
+        this.memberRepository = memberRepository;
+    }
 
     @Test
     public void paginationWithDTO() {

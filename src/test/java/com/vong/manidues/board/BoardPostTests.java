@@ -1,10 +1,8 @@
 package com.vong.manidues.board;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vong.manidues.board.dto.BoardRegisterRequest;
 import com.vong.manidues.board.dto.BoardRegisterResponse;
-import com.vong.manidues.member.MemberRepository;
-import com.vong.manidues.utility.HttpUtility;
+import com.vong.manidues.web.HttpUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,19 +19,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 public class BoardPostTests {
 
-    @Autowired
-    TestRestTemplate template;
+    private final TestRestTemplate template;
+    private final HttpUtility httpUtility;
+    private final BoardRepository boardRepository;
 
     @Autowired
-    HttpUtility httpUtility;
-
-    @Autowired
-    BoardRepository boardRepository;
-
-    @Autowired
-    MemberRepository memberRepository;
-
-    private final ObjectMapper mapper = new ObjectMapper();
+    public BoardPostTests(TestRestTemplate template, HttpUtility httpUtility, BoardRepository boardRepository) {
+        this.template = template;
+        this.httpUtility = httpUtility;
+        this.boardRepository = boardRepository;
+    }
 
     @Test
     public void boardPostNormally_ItShouldBeLike() {

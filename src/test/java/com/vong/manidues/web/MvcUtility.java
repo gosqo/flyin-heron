@@ -1,4 +1,4 @@
-package com.vong.manidues.utility.mvc;
+package com.vong.manidues.web;
 
 import jakarta.servlet.http.Cookie;
 import lombok.Getter;

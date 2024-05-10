@@ -1,6 +1,6 @@
 package com.vong.manidues.board;
 
-import com.vong.manidues.utility.mvc.MvcUtility;
+import com.vong.manidues.web.MvcUtility;
 import jakarta.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
