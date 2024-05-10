@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -17,9 +18,13 @@ public class MvcUtility {
 
     public static final HttpHeaders DEFAULT_HEADER = new HttpHeaders();
 
+    public static final HttpHeaders DEFAULT_POST_HEADER = new HttpHeaders(DEFAULT_HEADER);
+
     static {
         DEFAULT_HEADER.add("Connection", "keep-alive");
         DEFAULT_HEADER.add("User-Agent", "Mozilla");
+
+        DEFAULT_POST_HEADER.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
     }
 
     public void logResultHeaders(MvcResult requestResult) {
