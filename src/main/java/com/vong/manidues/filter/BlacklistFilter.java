@@ -29,10 +29,7 @@ public class BlacklistFilter extends OncePerRequestFilter {
         String requestIp = request.getRemoteAddr();
         String requestURI = request.getRequestURI();
 
-        if (filterUtility.startsWithOneOf(
-                requestURI, filterUtility.RESOURCES_PERMITTED_TO_ALL_STARTS_WITH)
-                || requestURI.equals("/favicon.ico")
-        ) {
+        if (filterUtility.isUriPermittedToAll(requestURI)) {
             filterChain.doFilter(request, response);
             return;
         }

@@ -1,7 +1,7 @@
 package com.vong.manidues.board;
 
 import com.vong.manidues.board.dto.*;
-import com.vong.manidues.utility.ServletRequestUtility;
+import com.vong.manidues.utility.AuthHeaderUtility;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -18,7 +18,7 @@ public class BoardController {
 
     private final BoardService service;
     private final BoardRepository repository;
-    private final ServletRequestUtility servletRequestUtility;
+    private final AuthHeaderUtility authHeaderUtility;
 
     @GetMapping("/{id}")
     public ResponseEntity<BoardGetResponse> getBoard(
@@ -46,7 +46,7 @@ public class BoardController {
             HttpServletRequest servletRequest,
             @PathVariable("id") Long id
     ) {
-        String requestUserEmail = servletRequestUtility
+        String requestUserEmail = authHeaderUtility
                 .extractEmailFromHeader(servletRequest);
 
         return service.delete(id, requestUserEmail)
@@ -65,7 +65,7 @@ public class BoardController {
             @PathVariable("id") Long id,
             @RequestBody BoardUpdateRequest request
     ) {
-        String requestUserEmail = servletRequestUtility
+        String requestUserEmail = authHeaderUtility
                 .extractEmailFromHeader(servletRequest);
 
         return service.update(id, requestUserEmail, request)
@@ -84,7 +84,7 @@ public class BoardController {
             HttpServletRequest servletRequest,
             @Valid @RequestBody BoardRegisterRequest request
     ) {
-        String requestUserEmail = servletRequestUtility
+        String requestUserEmail = authHeaderUtility
                 .extractEmailFromHeader(servletRequest);
         Long id = service.register(requestUserEmail, request);
 

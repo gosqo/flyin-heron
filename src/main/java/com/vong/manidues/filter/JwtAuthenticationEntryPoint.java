@@ -30,19 +30,17 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         HttpResponseWithBody responseWithBody = new HttpResponseWithBody();
 
         if (authException instanceof BadCredentialsException) {
-            responseWithBody.jsonResponse(
+            responseWithBody.setResponseWithBody(
                     response,
                     400,
-                    "아이디 혹은 비밀번호를 확인해주세요.",
-                    null
+                    "아이디 혹은 비밀번호를 확인해주세요."
             );
 
         } else if (authException instanceof InsufficientAuthenticationException) {
-            responseWithBody.jsonResponse(
+            responseWithBody.setResponseWithBody(
                     response,
                     401,
-                    "인증정보가 필요합니다.",
-                    null
+                    "인증정보가 필요합니다."
             );
             log.info("""
                             *** Request to URI require authentication. *** response with {}

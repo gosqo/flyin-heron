@@ -14,6 +14,11 @@ public class FilterUtility {
             , "/img/"
     };
 
+    boolean isUriPermittedToAll(String requestURI) {
+        return startsWithOneOf(requestURI, RESOURCES_PERMITTED_TO_ALL_STARTS_WITH)
+                || requestURI.equals("/favicon.ico");
+    }
+
     boolean startsWithOneOf(String requestURI, String[] array) {
         for (String uri : array) {
             if (requestURI.startsWith(uri)) return true;

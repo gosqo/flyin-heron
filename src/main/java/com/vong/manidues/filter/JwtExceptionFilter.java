@@ -1,6 +1,7 @@
 package com.vong.manidues.filter;
 
 import com.vong.manidues.token.JwtService;
+import com.vong.manidues.utility.AuthHeaderUtility;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -20,6 +21,7 @@ import java.io.IOException;
 public class JwtExceptionFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final AuthHeaderUtility authHeaderUtility;
 
     @Override
     public void doFilterInternal(
@@ -28,33 +30,47 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws IOException, ServletException {
         String authHeader = request.getHeader("Authorization");
-        String refreshToken;
+        String accessToken;
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeaderUtility.isNotAuthenticated(authHeader)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        refreshToken = authHeader.substring(7);
+        accessToken = authHeader.substring(7);
 
-        try {
-            jwtService.extractExpiration(refreshToken);
-        } catch (JwtException ex) {
-            if (ex instanceof ExpiredJwtException) {
-                log.info("expired token, normal user will request to POST /api/v1/auth/refresh-token)");
-                response.sendError(401, "토큰 만료.");
-            } else {
-                log.info("""
-                        *** manipulated token *** response with 400. {}
-                        authHeader: {}"""
-                        , ex.getClass()
-                        , authHeader
-                );
-                response.sendError(400, "조작된 토큰.");
-            }
-            return;
-        }
+        if (throwAnyJwtException(response, accessToken)) return;
 
         filterChain.doFilter(request, response);
+    }
+
+    private boolean throwAnyJwtException(
+            HttpServletResponse response
+            , String accessToken
+    ) throws IOException {
+
+        try {
+            jwtService.extractExpiration(accessToken);
+        } catch (JwtException ex) {
+
+            if (ex instanceof ExpiredJwtException) {
+                log.info("expired token, normal user will request to POST /api/v1/auth/refresh-token");
+                response.sendError(401, "토큰 만료.");
+
+                return true;
+            }
+
+            log.warn("""
+                            *** manipulated token *** response with 400. {}: {}
+                            tried token: {}"""
+                    , ex.getClass().getName()
+                    , ex.getMessage()
+                    , accessToken
+            );
+            response.sendError(400, "올바른 접근이 아닙니다. 로그아웃 후 다시 로그인 해주십시오.");
+
+            return true;
+        }
+        return false;
     }
 }

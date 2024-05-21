@@ -174,11 +174,10 @@ public class AuthenticationService {
                             Token: {}"""
                     , refreshToken
             );
-            responseWithBody.jsonResponse(
+            responseWithBody.setResponseWithBody(
                     response,
                     400,
-                    "서버에 인증정보가 존재하지 않습니다..",
-                    null
+                    "서버에 인증정보가 존재하지 않습니다.."
             );
         }
         return null;

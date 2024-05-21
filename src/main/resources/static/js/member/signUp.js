@@ -138,11 +138,6 @@ async function fetchSubmit(url, options) {
 
             location.replace('/login');
 
-        } else if (response.status === 401) {
-
-            const result = await response.json();
-            alert(result.additionalMessage);
-
         } else if (response.status === 400) {
 
             const result = await response.json();

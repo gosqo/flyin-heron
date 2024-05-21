@@ -3,6 +3,7 @@ package com.vong.manidues.auth;
 import com.vong.manidues.token.JwtService;
 import com.vong.manidues.token.Token;
 import com.vong.manidues.token.TokenRepository;
+import com.vong.manidues.utility.AuthHeaderUtility;
 import com.vong.manidues.utility.HttpResponseWithBody;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,9 +24,11 @@ public class LogoutService implements LogoutHandler {
     private final JwtService jwtService;
     private final TokenRepository tokenRepository;
     private final HttpResponseWithBody responseWithBody;
+    private final AuthHeaderUtility authHeaderUtility;
 
     /**
-     * 데이터베이스에서 refreshToken 에 일치하는 모든 토큰을 찾습니다. 조회 결과를 {@code List<Token>} 의 형식으로 받습니다.
+     * <p>정상정 요청이라면 사용자는 헤더에 리프레시 토큰을 담아 요청.
+     * <p>데이터베이스에서 refreshToken 에 일치하는 모든 토큰을 찾습니다. 조회 결과를 {@code List<Token>} 의 형식으로 받습니다.
      *
      * <pre>
      * {@code List<token>.isEmpty} 가 참이라면, (조회되는 토큰이 없는 상황)
@@ -45,24 +48,8 @@ public class LogoutService implements LogoutHandler {
             HttpServletResponse response,
             Authentication authentication
     ) {
-        final String authHeader = request.getHeader("Authorization");
-        final String refreshToken;
-        final String userEmail;
-
-        // 클라이언트는 요청 헤더에 refresh_token 을 담아서 요청.
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            try {
-                response.sendError(400, "로그인 상태가 아닙니다.");
-            } catch (IOException e) {
-                log.info(e.getMessage());
-            }
-            return;
-        }
-
-        refreshToken = authHeader.substring(7);
-        userEmail = jwtService.extractUserEmail(refreshToken);
-
-        log.info("logout service called. request member email is: {}", userEmail);
+        final String refreshToken = authHeaderUtility.extractJwtFromHeader(request);
+        final String userEmail = jwtService.extractUserEmail(refreshToken);
 
         List<Token> storedTokens =
                 tokenRepository.findAllByToken(refreshToken).stream().toList();
@@ -70,35 +57,32 @@ public class LogoutService implements LogoutHandler {
         if (storedTokens.isEmpty()) { // refreshToken entity 가 존재하지 않는다면,
             log.info("user tried refresh token that does not exist on database.");
 
-            try {
-                responseWithBody.jsonResponse(
-                        response,
-                        400,
-                        "올바른 요청이 아닙니다.",
-                        null
-                );
-            } catch (IOException e) {
-                log.info(e.getMessage());
-            }
-        } else { // refreshToken entity 가 존재한다면
-            if (storedTokens.size() > 1) {
-                log.warn(" === Duplicated refresh token detected on database. Check the logic related to saving refresh token on database. ===");
-            }
+            responseWith400(response);
+            return;
+        }
 
-            int deletedTokenCount = tokenRepository.deleteByToken(refreshToken);
+        int deletedTokenCount = tokenRepository.deleteByToken(refreshToken);
+        log.info("Deleted token count is: {}", deletedTokenCount);
 
-            log.info("Deleted token count is: {}", deletedTokenCount);
+        responseWith200(response);
+    }
 
-            try {
-                responseWithBody.jsonResponse(
-                        response,
-                        200,
-                        "logout succeeded.",
-                        null
-                );
-            } catch (IOException e) {
-                log.info(e.getMessage());
-            }
+    private void responseWith400(HttpServletResponse response) {
+        try {
+            response.sendError(400, "올바른 요청이 아닙니다.");
+        } catch (IOException e) {
+            log.info(e.getMessage());
+        }
+    }
+
+    private void responseWith200(HttpServletResponse response) {
+        try {
+            responseWithBody.setResponseWithBody(
+                    response
+                    , 200
+                    , "로그아웃 했습니다.");
+        } catch (IOException e) {
+            log.info(e.getMessage());
         }
     }
 }

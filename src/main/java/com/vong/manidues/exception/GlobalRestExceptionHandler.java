@@ -1,6 +1,6 @@
 package com.vong.manidues.exception;
 
-import com.vong.manidues.utility.JsonResponseBody;
+import com.vong.manidues.utility.JsonResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +24,7 @@ public class GlobalRestExceptionHandler {
 
         return ResponseEntity
                 .status(ex.getStatusCode().value())
-                .body(JsonResponseBody.builder()
+                .body(JsonResponse.builder()
                         .message(validExceptionMessage)
                         .build()
                 );
@@ -41,7 +41,7 @@ public class GlobalRestExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(JsonResponseBody.builder()
+                .body(JsonResponse.builder()
                         .message(ex.getMessage())
                         .build()
                 );

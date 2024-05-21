@@ -1,6 +1,7 @@
 package com.vong.manidues.filter;
 
 import com.vong.manidues.config.SecurityConfig;
+import com.vong.manidues.utility.AuthHeaderUtility;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +19,7 @@ import java.io.IOException;
 public class AbnormalRequestFilter extends OncePerRequestFilter {
 
     private final FilterUtility filterUtility;
+    private final AuthHeaderUtility authUtility;
     private final String[] WHITE_LIST_USER_AGENTS = {
             "mozilla"
             , "postman"
@@ -41,32 +43,26 @@ public class AbnormalRequestFilter extends OncePerRequestFilter {
                 || !connection.equalsIgnoreCase("keep-alive");
     }
 
-    private static boolean isUnregisteredURI(String requestURI, String[] registeredURIs) {
+    private static boolean isNotPermittedToAllURI(String requestURI, String[] registeredURIs) {
         for (String registeredURI : registeredURIs) {
-            if (registeredURI.equals("/")) continue;
+            if (requestURI.equals(registeredURI)) return false;
+
             if (registeredURI.endsWith("/**")) {
-                registeredURI = registeredURI.substring(
+                String trimmedURI = registeredURI.substring(
                         0, registeredURI.lastIndexOf("/") + 1
                 );
-            }
-
-            if (registeredURI.endsWith("/")) {
-                if (requestURI.startsWith(registeredURI)) return false;
-            } else {
-                if (requestURI.matches(registeredURI)) return false;
+                if (requestURI.startsWith(trimmedURI)) return false;
             }
         }
         return true;
     }
 
-    private boolean isUnregisteredGetURI(String requestURI) {
-        if (requestURI.equals("/")) return false;
-
-        return isUnregisteredURI(requestURI, SecurityConfig.WHITE_LIST_URIS_NON_MEMBER_GET);
+    private boolean isNotPermittedToAllGetURI(String requestURI) {
+        return isNotPermittedToAllURI(requestURI, SecurityConfig.WHITE_LIST_URIS_NON_MEMBER_GET);
     }
 
-    private boolean isUnregisteredPostURI(String requestURI) {
-        return isUnregisteredURI(requestURI, SecurityConfig.WHITE_LIST_URIS_NON_MEMBER_POST);
+    private boolean isNotPermittedToAllPostURI(String requestURI) {
+        return isNotPermittedToAllURI(requestURI, SecurityConfig.WHITE_LIST_URIS_NON_MEMBER_POST);
     }
 
     @Override
@@ -81,10 +77,7 @@ public class AbnormalRequestFilter extends OncePerRequestFilter {
         String connection = request.getHeader("Connection");
         String authHeader = request.getHeader("Authorization");
 
-        if (filterUtility.startsWithOneOf(requestURI,
-                filterUtility.RESOURCES_PERMITTED_TO_ALL_STARTS_WITH)
-                || requestURI.equals("/favicon.ico")
-        ) {
+        if (filterUtility.isUriPermittedToAll(requestURI)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -98,23 +91,21 @@ public class AbnormalRequestFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            if (requestMethod.equalsIgnoreCase("get")) {
-                if (isUnregisteredGetURI(requestURI)) {
-                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    log.warn("*** Request to unregistered URI *** response with {}", response.getStatus());
+        if (authUtility.isNotAuthenticated(authHeader)) {
+            if (requestMethod.equalsIgnoreCase("get")
+                    && isNotPermittedToAllGetURI(requestURI)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                log.warn("*** Request to unregistered URI *** response with {}", response.getStatus());
 
-                    return;
-                }
+                return;
             }
 
-            if (requestMethod.equalsIgnoreCase("post")) {
-                if (isUnregisteredPostURI(requestURI)) {
-                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    log.warn("*** Request to unregistered URI *** response with {}", response.getStatus());
+            if (requestMethod.equalsIgnoreCase("post")
+                    && isNotPermittedToAllPostURI(requestURI)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                log.warn("*** Request to unregistered URI *** response with {}", response.getStatus());
 
-                    return;
-                }
+                return;
             }
         }
         filterChain.doFilter(request, response);

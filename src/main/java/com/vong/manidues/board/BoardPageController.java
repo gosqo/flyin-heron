@@ -1,7 +1,6 @@
 package com.vong.manidues.board;
 
 import com.vong.manidues.board.dto.BoardPageResponse;
-import com.vong.manidues.utility.ServletRequestUtility;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class BoardPageController {
 
     private final BoardService service;
-    private final ServletRequestUtility servletRequestUtility;
 
     @GetMapping("/{pageNumber}")
     public ResponseEntity<BoardPageResponse> getBoardList(

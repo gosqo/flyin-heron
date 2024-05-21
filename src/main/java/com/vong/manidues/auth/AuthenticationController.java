@@ -1,6 +1,6 @@
 package com.vong.manidues.auth;
 
-import com.vong.manidues.utility.JsonResponseBody;
+import com.vong.manidues.utility.JsonResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -31,7 +31,7 @@ public class AuthenticationController {
         return response.getAccessToken() != null
                 ? ResponseEntity.status(200).body(response)
                 : ResponseEntity.status(400).body(
-                        JsonResponseBody.builder()
+                        JsonResponse.builder()
                                 .message("인증에 실패했습니다.")
                                 .build()
                 );

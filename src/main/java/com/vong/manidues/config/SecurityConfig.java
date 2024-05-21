@@ -46,6 +46,7 @@ public class SecurityConfig {
             , "/board/**"
             , "/boards/**"
             , "/api/v1/cookie/**"
+            , "/api/v1/exception"
     };
 
     public static final String[] WHITE_LIST_URIS_NON_MEMBER_POST = {
@@ -75,10 +76,10 @@ public class SecurityConfig {
                 )
 
                 .authenticationProvider(authenticationProvider)
+                .addFilterBefore(ipEntryLogFilter, LogoutFilter.class)
+                .addFilterBefore(blacklistFilter, LogoutFilter.class)
+                .addFilterBefore(abnormalRequestFilter, LogoutFilter.class)
                 .addFilterBefore(jwtExceptionFilter, LogoutFilter.class)
-                .addFilterBefore(ipEntryLogFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(blacklistFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(abnormalRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                         httpSecurityExceptionHandlingConfigurer

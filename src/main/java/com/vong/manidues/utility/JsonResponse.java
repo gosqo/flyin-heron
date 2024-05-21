@@ -7,8 +7,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class JsonResponseBody {
+public class JsonResponse {
     private int status;
     private String message;
-    private String additionalMessage;
 }

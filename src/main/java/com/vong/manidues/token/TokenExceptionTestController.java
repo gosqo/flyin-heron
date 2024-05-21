@@ -1,6 +1,6 @@
 package com.vong.manidues.token;
 
-import com.vong.manidues.utility.ServletRequestUtility;
+import com.vong.manidues.utility.AuthHeaderUtility;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,11 +17,11 @@ import java.util.Map;
 public class TokenExceptionTestController {
 
     private final JwtService jwtService;
-    private final ServletRequestUtility requestUtility;
+    private final AuthHeaderUtility authHeaderUtility;
 
     @RequestMapping("/tokenValidationTest")
     public ResponseEntity<Object> tokenValidationTest(HttpServletRequest request) {
-        String jwt = requestUtility.extractJwtFromHeader(request);
+        String jwt = authHeaderUtility.extractJwtFromHeader(request);
         Map<String, String> map = new HashMap<>();
 
         map.put("email", jwtService.extractUserEmail(jwt));

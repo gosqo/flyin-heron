@@ -77,7 +77,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private boolean isDuplicated(MemberRegisterRequest request) {
-        return memberRepository.findByEmail(request.getEmail()).isPresent() &&
-                memberRepository.findByNickname(request.getNickname()).isPresent();
+        return memberRepository.findByEmail(request.getEmail()).isPresent()
+                && memberRepository.findByNickname(request.getNickname()).isPresent();
     }
 }
