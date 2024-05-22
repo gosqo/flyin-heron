@@ -28,11 +28,6 @@ public class LogoutExceptionTests {
                 , Object.class
         );
 
-        log.info("result: {}\n{}\n{}"
-                , response.getStatusCode()
-                , response.getHeaders()
-                , response.getBody()
-        );
+        HttpUtility.logResponse(response);
     }
-
 }

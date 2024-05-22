@@ -1,5 +1,6 @@
 package com.vong.manidues.auth;
 
+import com.vong.manidues.exception.custom.DebugNeededException;
 import com.vong.manidues.member.Member;
 import com.vong.manidues.member.MemberRepository;
 import com.vong.manidues.token.JwtService;
@@ -14,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -34,71 +34,32 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final HttpResponseWithBody responseWithBody;
 
-    @SuppressWarnings("null")
-    private void saveMemberToken(Member savedMember, String jwtToken) {
-        Token token = Token.builder()
-                .member(savedMember)
-                .token(jwtToken)
-                .build();
-        tokenRepository.save(token);
-    }
-
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        String accessToken = null;
-        String refreshToken = null;
+        // throws BadCredentialsException if request can not be authenticated
+        // 해당 예외가 잡지 못하는 추가적인 예외가 있을지?
+        var authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
+        log.info("Authenticated: {}", authentication.isAuthenticated());
+        log.info("Principal: {}", authentication.getPrincipal());
+        log.info("Authorities: {}", authentication.getAuthorities());
 
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getEmail(),
-                            request.getPassword()
-                    )
-            );
-        } catch (AuthenticationException ex) {
-            log.info("""
-                            Auth Service caught Exception.
-                                {}
-                                {}
-                            """
-                    , ex.getClass().getName()
-                    , ex.getMessage()
-            );
-            return AuthenticationResponse.builder()
-                    .accessToken(null)
-                    .refreshToken(null)
-                    .build();
-        }
-
+        // authenticationManager.authenticate(Authentication) 을 통과하면 아래 예외는 던져지지 않음.
         Member member = memberRepository.findByEmail(request.getEmail())
-                .orElse(null);
+                .orElseThrow(() -> new DebugNeededException("인증 통과 후, 조회되지 않는 회원"));
 
-        if (member != null) {
-            log.info("""
-                            authenticate success. Member Email is: {}"""
-                    , member.getEmail()
-            );
-            accessToken = jwtService.generateAccessToken(member);
-            refreshToken = jwtService.generateRefreshToken(member);
+        String accessToken = jwtService.generateAccessToken(member);
+        String refreshToken = jwtService.generateRefreshToken(member);
 
-            saveMemberToken(member, refreshToken);
-        }
+        saveMemberToken(member, refreshToken);
 
         return AuthenticationResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
-    }
-
-    private long getGapToExpiration(String refreshToken, LocalDate today) {
-        final LocalDate refreshTokenExpiration;
-
-        refreshTokenExpiration = jwtService
-                .extractClaim(refreshToken, Claims::getExpiration)
-                .toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
-
-        return ChronoUnit.DAYS.between(today, refreshTokenExpiration);
     }
 
     /**
@@ -181,5 +142,26 @@ public class AuthenticationService {
             );
         }
         return null;
+    }
+
+    @SuppressWarnings("null")
+    private void saveMemberToken(Member member, String jwtToken) {
+        Token token = Token.builder()
+                .member(member)
+                .token(jwtToken)
+                .build();
+        tokenRepository.save(token);
+    }
+
+    private long getGapToExpiration(String refreshToken, LocalDate today) {
+        final LocalDate refreshTokenExpiration;
+
+        refreshTokenExpiration = jwtService
+                .extractClaim(refreshToken, Claims::getExpiration)
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+        return ChronoUnit.DAYS.between(today, refreshTokenExpiration);
     }
 }
