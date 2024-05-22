@@ -6,13 +6,11 @@ import com.vong.manidues.member.MemberRepository;
 import com.vong.manidues.token.JwtService;
 import com.vong.manidues.token.Token;
 import com.vong.manidues.token.TokenRepository;
-import com.vong.manidues.utility.HttpResponseWithBody;
+import com.vong.manidues.utility.AuthHeaderUtility;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -32,7 +30,7 @@ public class AuthenticationService {
     private final TokenRepository tokenRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private final HttpResponseWithBody responseWithBody;
+    private final AuthHeaderUtility authHeaderUtility;
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         // throws BadCredentialsException if request can not be authenticated
@@ -56,10 +54,7 @@ public class AuthenticationService {
 
         saveMemberToken(member, refreshToken);
 
-        return AuthenticationResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+        return buildAuthenticationResponse(accessToken, refreshToken);
     }
 
     /**
@@ -80,68 +75,47 @@ public class AuthenticationService {
      *       응답은 json 형태입니다.
      * </pre>
      */
-    public AuthenticationResponse refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    public AuthenticationResponse refreshToken(HttpServletRequest request)
+            throws IOException {
+        final String formerRefreshToken = authHeaderUtility.extractJwtFromHeader(request);
+        final String userEmail = jwtService.extractUserEmail(formerRefreshToken);
 
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        final String refreshToken;
-        final String userEmail;
-        final LocalDate today = LocalDate.now();
-        final long gapToExpiration;
+        tokenRepository.findByToken(formerRefreshToken).orElseThrow(
+                () -> new NoSuchElementException("데이터베이스에 존재하지 않는 리프레시 토큰.")
+        );
+        Member member = this.memberRepository.findByEmail(userEmail).orElseThrow(
+                () -> new NoSuchElementException("존재하지 않는 회원에 대한 조회.")
+        );
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return null;
+        if (needToReissue(formerRefreshToken)) {
+            String reissuedRefreshToken = jwtService.generateRefreshToken(member);
+
+            saveMemberToken(member, reissuedRefreshToken);
+            tokenRepository.deleteByToken(formerRefreshToken);
+
+            return buildAuthenticationResponse(member, reissuedRefreshToken);
         }
-        refreshToken = authHeader.substring(7);
+        return buildAuthenticationResponse(member, formerRefreshToken);
+    }
 
-        // refreshToken 의 유효성에 대한 try / catch
-        try {
-            tokenRepository.findByToken(refreshToken).orElseThrow(NoSuchElementException::new);
-            userEmail = jwtService.extractUserEmail(refreshToken);// extract the userEmail from refreshToken
+    private AuthenticationResponse buildAuthenticationResponse(
+            Member member
+            , String refreshToken
+    ) {
+        return AuthenticationResponse.builder()
+                .accessToken(jwtService.generateAccessToken(member))
+                .refreshToken(refreshToken)
+                .build();
+    }
 
-            if (userEmail != null) {
-
-                Member member = this.memberRepository.findByEmail(userEmail).orElseThrow();
-                String accessToken = jwtService.generateAccessToken(member);
-
-                gapToExpiration = getGapToExpiration(refreshToken, today);
-
-                if (gapToExpiration <= 7) {
-
-                    String reissuedRefreshToken = jwtService.generateRefreshToken(member);
-
-                    // 만료기간이 7 일 이하로 남아 새로 갱신한 리프레시 토큰을 디비에 저장.
-                    saveMemberToken(member, reissuedRefreshToken);
-                    // 기존의 리프레시 토큰은 삭제.
-                    tokenRepository.deleteByToken(refreshToken);
-
-                    log.info("refreshed token been successfully issued with reissuedRefreshToken.");
-                    return AuthenticationResponse.builder()
-                            .accessToken(accessToken)
-                            .refreshToken(reissuedRefreshToken)
-                            .build();
-                }
-
-                log.info("refreshed token been successfully issued.");
-                return AuthenticationResponse.builder()
-                        .accessToken(accessToken)
-                        .refreshToken(refreshToken)
-                        .build();
-            }
-        } catch (NoSuchElementException ex) {
-            log.warn("""
-                            User tried refresh tokens with Token not exists on database.
-                            Token: {}"""
-                    , refreshToken
-            );
-            responseWithBody.setResponseWithBody(
-                    response,
-                    400,
-                    "서버에 인증정보가 존재하지 않습니다.."
-            );
-        }
-        return null;
+    private AuthenticationResponse buildAuthenticationResponse(
+            String accessToken
+            , String refreshToken
+    ) {
+        return AuthenticationResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     @SuppressWarnings("null")
@@ -153,15 +127,18 @@ public class AuthenticationService {
         tokenRepository.save(token);
     }
 
-    private long getGapToExpiration(String refreshToken, LocalDate today) {
-        final LocalDate refreshTokenExpiration;
+    private boolean needToReissue(String refreshToken) {
+        return getGapToExpiration(refreshToken) < 8;
+    }
 
-        refreshTokenExpiration = jwtService
+    private int getGapToExpiration(String refreshToken) {
+        final LocalDate today = LocalDate.now();
+        final LocalDate refreshTokenExpiration = jwtService
                 .extractClaim(refreshToken, Claims::getExpiration)
                 .toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
 
-        return ChronoUnit.DAYS.between(today, refreshTokenExpiration);
+        return (int) ChronoUnit.DAYS.between(today, refreshTokenExpiration);
     }
 }

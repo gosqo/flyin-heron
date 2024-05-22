@@ -1,11 +1,10 @@
 package com.vong.manidues.auth;
 
-import com.vong.manidues.utility.JsonResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,28 +22,20 @@ public class AuthenticationController {
     private final AuthenticationService service;
 
     @PostMapping("/authenticate")
-    public ResponseEntity<Object> login(
+    public ResponseEntity<AuthenticationResponse> login(
             @Valid @RequestBody AuthenticationRequest request
     ) {
-        AuthenticationResponse response = service.authenticate(request);
-
-        return response.getAccessToken() != null
-                ? ResponseEntity.status(200).body(response)
-                : ResponseEntity.status(400).body(
-                        JsonResponse.builder()
-                                .message("인증에 실패했습니다.")
-                                .build()
-                );
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(service.authenticate(request));
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<Object> refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response
+    public ResponseEntity<AuthenticationResponse> refreshToken(
+            HttpServletRequest request
     ) throws IOException {
-        AuthenticationResponse authResponse = service.refreshToken(request, response);
-        return authResponse != null
-                ? ResponseEntity.ok(authResponse)
-                : ResponseEntity.badRequest().build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(service.refreshToken(request));
     }
 }

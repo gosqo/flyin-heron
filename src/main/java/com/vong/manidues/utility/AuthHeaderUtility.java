@@ -11,7 +11,8 @@ public class AuthHeaderUtility {
 
     private final JwtService jwtService;
 
-    public boolean isNotAuthenticated(String authHeader) {
+    public boolean isNotAuthenticated(HttpServletRequest request) {
+        String authHeader = extractAuthHeader(request);
         return authHeader == null || !authHeader.startsWith("Bearer ");
     }
 

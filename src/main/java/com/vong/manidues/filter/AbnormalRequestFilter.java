@@ -25,6 +25,51 @@ public class AbnormalRequestFilter extends OncePerRequestFilter {
             , "postman"
     };
 
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
+        String requestURI = request.getRequestURI();
+        String requestMethod = request.getMethod();
+        String userAgent = request.getHeader("User-Agent");
+        String connection = request.getHeader("Connection");
+
+        if (filterUtility.isUriPermittedToAll(requestURI)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        if (isAbnormalUserAgent(userAgent)
+                || isAbnormalConnection(connection)
+        ) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            log.warn("*** Request from not allowed UA or Connection *** response with {}", response.getStatus());
+
+            return;
+        }
+
+        if (authUtility.isNotAuthenticated(request)) {
+            if (requestMethod.equalsIgnoreCase("get")
+                    && isNotPermittedToAllGetURI(requestURI)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                log.warn("*** Request to unregistered URI *** response with {}", response.getStatus());
+
+                return;
+            }
+
+            if (requestMethod.equalsIgnoreCase("post")
+                    && isNotPermittedToAllPostURI(requestURI)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                log.warn("*** Request to unregistered URI *** response with {}", response.getStatus());
+
+                return;
+            }
+        }
+        filterChain.doFilter(request, response);
+    }
+
     private boolean isWhiteListUserAgent(String userAgent) {
         for (String whiteUserAgent : WHITE_LIST_USER_AGENTS) {
             if (userAgent.toLowerCase().contains(whiteUserAgent)) return true;
@@ -63,51 +108,5 @@ public class AbnormalRequestFilter extends OncePerRequestFilter {
 
     private boolean isNotPermittedToAllPostURI(String requestURI) {
         return isNotPermittedToAllURI(requestURI, SecurityConfig.WHITE_LIST_URIS_NON_MEMBER_POST);
-    }
-
-    @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
-        String requestURI = request.getRequestURI();
-        String requestMethod = request.getMethod();
-        String userAgent = request.getHeader("User-Agent");
-        String connection = request.getHeader("Connection");
-        String authHeader = request.getHeader("Authorization");
-
-        if (filterUtility.isUriPermittedToAll(requestURI)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        if (isAbnormalUserAgent(userAgent)
-                || isAbnormalConnection(connection)
-        ) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            log.warn("*** Request from not allowed UA or Connection *** response with {}", response.getStatus());
-
-            return;
-        }
-
-        if (authUtility.isNotAuthenticated(authHeader)) {
-            if (requestMethod.equalsIgnoreCase("get")
-                    && isNotPermittedToAllGetURI(requestURI)) {
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                log.warn("*** Request to unregistered URI *** response with {}", response.getStatus());
-
-                return;
-            }
-
-            if (requestMethod.equalsIgnoreCase("post")
-                    && isNotPermittedToAllPostURI(requestURI)) {
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                log.warn("*** Request to unregistered URI *** response with {}", response.getStatus());
-
-                return;
-            }
-        }
-        filterChain.doFilter(request, response);
     }
 }

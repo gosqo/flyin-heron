@@ -29,43 +29,37 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws IOException, ServletException {
-        String authHeader = request.getHeader("Authorization");
-        String accessToken;
-
-        if (authHeaderUtility.isNotAuthenticated(authHeader)) {
+        if (authHeaderUtility.isNotAuthenticated(request)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        accessToken = authHeader.substring(7);
+        String jwToken = authHeaderUtility.extractJwtFromHeader(request);
 
-        if (throwAnyJwtException(response, accessToken)) return;
+        if (throwAnyJwtException(response, jwToken)) return;
 
         filterChain.doFilter(request, response);
     }
 
     private boolean throwAnyJwtException(
             HttpServletResponse response
-            , String accessToken
+            , String jwToken
     ) throws IOException {
 
         try {
-            jwtService.extractExpiration(accessToken);
+            jwtService.extractUserEmail(jwToken);
+        } catch (ExpiredJwtException ex) {
+            log.debug("expired token, normal user will request to POST /api/v1/auth/refresh-token");
+            response.sendError(401, "토큰 만료.");
+
+            return true;
         } catch (JwtException ex) {
-
-            if (ex instanceof ExpiredJwtException) {
-                log.info("expired token, normal user will request to POST /api/v1/auth/refresh-token");
-                response.sendError(401, "토큰 만료.");
-
-                return true;
-            }
-
             log.warn("""
                             *** manipulated token *** response with 400. {}: {}
                             tried token: {}"""
                     , ex.getClass().getName()
                     , ex.getMessage()
-                    , accessToken
+                    , jwToken
             );
             response.sendError(400, "올바른 접근이 아닙니다. 로그아웃 후 다시 로그인 해주십시오.");
 
