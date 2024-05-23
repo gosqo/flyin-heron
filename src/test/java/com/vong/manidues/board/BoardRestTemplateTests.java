@@ -1,7 +1,6 @@
 package com.vong.manidues.board;
 
 import com.vong.manidues.board.dto.BoardGetResponse;
-import com.vong.manidues.web.MvcUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
+import static com.vong.manidues.web.HttpUtility.DEFAULT_GET_HEADERS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -23,7 +23,7 @@ public class BoardRestTemplateTests {
 
     @Test
     public void getBoard() throws Exception {
-        HttpEntity<String> request = new HttpEntity<>(MvcUtility.DEFAULT_HEADER);
+        HttpEntity<String> request = new HttpEntity<>(DEFAULT_GET_HEADERS);
 
         ResponseEntity<BoardGetResponse> response = template.exchange(
                 "/api/v1/board/1"

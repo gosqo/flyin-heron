@@ -8,17 +8,24 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import static com.vong.manidues.web.HttpUtility.DEFAULT_GET_HEADERS;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Slf4j
 public class AbnormalRequestFilterTests {
+    private final MockMvc mockMvc;
 
     @Autowired
-    private MockMvc mockMvc;
+    public AbnormalRequestFilterTests(MockMvc mockMvc) {
+        this.mockMvc = mockMvc;
+    }
 
     @Test
     public void requestPostToRegisteredURI() throws Exception {
@@ -30,30 +37,41 @@ public class AbnormalRequestFilterTests {
 
             if (uri.equals("/error")) {
                 mockMvc.perform(request)
-                        .andExpect(MockMvcResultMatchers.status().isInternalServerError());
+                        .andExpect(status().isInternalServerError());
+                continue;
+            }
+            if (uri.endsWith("**")) {
+                uri = uri.replace("**", "not-found");
+                mockMvc.perform(request)
+                        .andExpect(status().isForbidden());
                 continue;
             }
             mockMvc.perform(request)
-                    .andExpect(MockMvcResultMatchers.status().isOk());
+                    .andExpect(status().isOk());
         }
     }
 
     @Test
     public void requestGetToRegisteredURI() throws Exception {
         for (String uri : SecurityConfig.WHITE_LIST_URIS_NON_MEMBER_GET) {
-            MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                    .request(HttpMethod.GET, uri) // HTTP method POST
-                    .header("User-Agent", "Mozilla")
-                    .header("Connection", "keep-alive");
-
             if (uri.equals("/error")) {
-                mockMvc.perform(request)
-                        .andExpect(MockMvcResultMatchers.status().isInternalServerError());
+                getPerform(uri)
+                        .andExpect(status().isInternalServerError());
                 continue;
             }
-            mockMvc.perform(request)
-                    .andExpect(MockMvcResultMatchers.status().isOk());
+            if (uri.endsWith("**")) {
+                uri = uri.replace("**", "not-found");
+                getPerform(uri)
+                        .andExpect(status().isNotFound());
+                continue;
+            }
+            getPerform(uri)
+                    .andExpect(status().isOk());
         }
+    }
+
+    private ResultActions getPerform(String uri) throws Exception {
+        return mockMvc.perform(get(uri).headers(DEFAULT_GET_HEADERS));
     }
 
     @Test
@@ -64,7 +82,7 @@ public class AbnormalRequestFilterTests {
                 .header("Connection", "keep-alive");
 
         mockMvc.perform(request)
-                .andExpect(MockMvcResultMatchers.status().isInternalServerError());
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -75,7 +93,7 @@ public class AbnormalRequestFilterTests {
                 .header("Connection", "keep-alive");
 
         mockMvc.perform(request)
-                .andExpect(MockMvcResultMatchers.status().isInternalServerError());
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -86,7 +104,7 @@ public class AbnormalRequestFilterTests {
                 .header("Connection", "keep-alive");
 
         mockMvc.perform(request)
-                .andExpect(MockMvcResultMatchers.status().isForbidden());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -97,7 +115,7 @@ public class AbnormalRequestFilterTests {
                 .header("Connection", "keep-alive");
 
         mockMvc.perform(request)
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -108,7 +126,7 @@ public class AbnormalRequestFilterTests {
                 .header("Connection", "keep-alive");
 
         mockMvc.perform(request)
-                .andExpect(MockMvcResultMatchers.status().isForbidden());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -118,7 +136,7 @@ public class AbnormalRequestFilterTests {
                 .header("Connection", "keep-alive");
 
         mockMvc.perform(request)
-                .andExpect(MockMvcResultMatchers.status().isForbidden());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -128,6 +146,6 @@ public class AbnormalRequestFilterTests {
                 .header("User-Agent", "Mozilla");
 
         mockMvc.perform(request)
-                .andExpect(MockMvcResultMatchers.status().isForbidden());
+                .andExpect(status().isForbidden());
     }
 }

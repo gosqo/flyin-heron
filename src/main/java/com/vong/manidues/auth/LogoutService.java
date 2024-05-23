@@ -3,7 +3,7 @@ package com.vong.manidues.auth;
 import com.vong.manidues.token.Token;
 import com.vong.manidues.token.TokenRepository;
 import com.vong.manidues.utility.AuthHeaderUtility;
-import com.vong.manidues.utility.HttpResponseWithBody;
+import com.vong.manidues.utility.ResponseBodyWriter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import java.util.List;
 public class LogoutService implements LogoutHandler {
 
     private final TokenRepository tokenRepository;
-    private final HttpResponseWithBody responseWithBody;
+    private final ResponseBodyWriter responseBodyWriter;
     private final AuthHeaderUtility authHeaderUtility;
 
     /**
@@ -51,14 +51,13 @@ public class LogoutService implements LogoutHandler {
 
         if (storedTokens.isEmpty()) { // refreshToken entity 가 존재하지 않는다면,
             log.info("user tried refresh token that does not exist on database.");
-
             responseWith400(response);
+
             return;
         }
 
         int deletedTokenCount = tokenRepository.deleteByToken(refreshToken);
         log.info("Deleted token count is: {}", deletedTokenCount);
-
         responseWith200(response);
     }
 
@@ -72,7 +71,7 @@ public class LogoutService implements LogoutHandler {
 
     private void responseWith200(HttpServletResponse response) {
         try {
-            responseWithBody.setResponseWithBody(
+            responseBodyWriter.setResponseWithBody(
                     response
                     , 200
                     , "로그아웃 했습니다.");

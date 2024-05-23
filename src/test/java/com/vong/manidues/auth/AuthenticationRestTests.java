@@ -29,7 +29,7 @@ public class AuthenticationRestTests {
                 .email("wrong@email.ocm")
                 .password("wrongPassword")
                 .build();
-        var request = HttpUtility.postRequestOf(body, uri);
+        var request = HttpUtility.buildPostRequest(body, uri);
 
         var response = template.exchange(request, ErrorResponse.class);
         HttpUtility.logResponse(response);
@@ -43,7 +43,7 @@ public class AuthenticationRestTests {
                 .email("check@auth.io")
                 .password("Password0")
                 .build();
-        var request = HttpUtility.postRequestOf(body, uri);
+        var request = HttpUtility.buildPostRequest(body, uri);
 
         var response = template.exchange(request, AuthenticationResponse.class);
         HttpUtility.logResponse(response);

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vong.manidues.member.dto.IsPresentEmailRequest;
 import com.vong.manidues.member.dto.IsPresentNicknameRequest;
-import com.vong.manidues.web.MvcUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static com.vong.manidues.web.HttpUtility.DEFAULT_POST_HEADERS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @SpringBootTest
@@ -45,7 +45,7 @@ public class MemberRegisterIsPresentTests {
 
         mockMvc.perform(
                         post("/api/v1/member/isPresentNickname")
-                                .headers(MvcUtility.DEFAULT_POST_HEADER)
+                                .headers(DEFAULT_POST_HEADERS)
                                 .content(requestBody)
                 )
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -58,7 +58,7 @@ public class MemberRegisterIsPresentTests {
 
         mockMvc.perform(
                         post("/api/v1/member/isPresentNickname")
-                                .headers(MvcUtility.DEFAULT_POST_HEADER)
+                                .headers(DEFAULT_POST_HEADERS)
                                 .content(requestBody)
                 )
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -80,7 +80,7 @@ public class MemberRegisterIsPresentTests {
 
             mockMvc.perform(
                             post("/api/v1/member/isPresentNickname")
-                                    .headers(MvcUtility.DEFAULT_POST_HEADER)
+                                    .headers(DEFAULT_POST_HEADERS)
                                     .content(requestBody)
                     )
                     .andExpect(MockMvcResultMatchers.status().isOk())
@@ -102,7 +102,7 @@ public class MemberRegisterIsPresentTests {
 
             mockMvc.perform(
                             post("/api/v1/member/isPresentNickname")
-                                    .headers(MvcUtility.DEFAULT_POST_HEADER)
+                                    .headers(DEFAULT_POST_HEADERS)
                                     .content(requestBody)
                     )
                     .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -117,7 +117,7 @@ public class MemberRegisterIsPresentTests {
 
         mockMvc.perform(
                         post("/api/v1/member/isPresentEmail")
-                                .headers(MvcUtility.DEFAULT_POST_HEADER)
+                                .headers(DEFAULT_POST_HEADERS)
                                 .content(requestBody)
                 )
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -130,7 +130,7 @@ public class MemberRegisterIsPresentTests {
 
         mockMvc.perform(
                         post("/api/v1/member/isPresentEmail")
-                                .headers(MvcUtility.DEFAULT_POST_HEADER)
+                                .headers(DEFAULT_POST_HEADERS)
                                 .content(requestBody)
                 )
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -154,7 +154,7 @@ public class MemberRegisterIsPresentTests {
 
             mockMvc.perform(
                             post("/api/v1/member/isPresentEmail")
-                                    .headers(MvcUtility.DEFAULT_POST_HEADER)
+                                    .headers(DEFAULT_POST_HEADERS)
                                     .content(requestBody)
             )
                     .andExpect(MockMvcResultMatchers.status().isOk())
@@ -179,7 +179,7 @@ public class MemberRegisterIsPresentTests {
 
             mockMvc.perform(
                     post("/api/v1/member/isPresentEmail")
-                            .headers(MvcUtility.DEFAULT_POST_HEADER)
+                            .headers(DEFAULT_POST_HEADERS)
                             .content(requestBody)
             )
                     .andExpect(MockMvcResultMatchers.status().isBadRequest())

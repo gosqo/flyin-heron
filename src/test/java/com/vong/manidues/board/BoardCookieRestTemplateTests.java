@@ -1,7 +1,6 @@
 package com.vong.manidues.board;
 
 import com.vong.manidues.board.dto.BoardGetResponse;
-import com.vong.manidues.web.MvcUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,7 @@ import org.springframework.http.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.vong.manidues.web.HttpUtility.DEFAULT_GET_HEADERS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -23,7 +23,7 @@ public class BoardCookieRestTemplateTests {
 
     @Test
     public void initializeBbvCookie() throws Exception {
-        HttpHeaders requestHeaders = new HttpHeaders(MvcUtility.DEFAULT_HEADER);
+        HttpHeaders requestHeaders = new HttpHeaders(DEFAULT_GET_HEADERS);
         HttpEntity<String> request = new HttpEntity<>(requestHeaders);
 
         ResponseEntity<BoardGetResponse> response = template.exchange(
@@ -46,7 +46,7 @@ public class BoardCookieRestTemplateTests {
     @Test
     public void canSetCookie() throws Exception {
         // first
-        HttpHeaders requestHeaders = new HttpHeaders(MvcUtility.DEFAULT_HEADER);
+        HttpHeaders requestHeaders = new HttpHeaders(DEFAULT_GET_HEADERS);
         requestHeaders.add("Cookie", "bbv=1");
         List<String> requestCookies = requestHeaders.get("Cookie");
 

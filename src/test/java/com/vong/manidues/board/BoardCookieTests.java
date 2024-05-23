@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import static com.vong.manidues.web.HttpUtility.DEFAULT_GET_HEADERS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
@@ -37,7 +38,7 @@ public class BoardCookieTests {
         MvcResult firstRequestResult = mockMvc.perform(
                         get(firstUri)
                                 .cookie(firstRequestCookie)
-                                .headers(MvcUtility.DEFAULT_HEADER)
+                                .headers(DEFAULT_GET_HEADERS)
                 )
                 .andExpectAll(
                         status().isOk()
@@ -53,7 +54,7 @@ public class BoardCookieTests {
 
         MvcResult secondRequestResult = mockMvc.perform(
                         get(secondUri)
-                                .headers(MvcUtility.DEFAULT_HEADER)
+                                .headers(DEFAULT_GET_HEADERS)
                                 .cookie(secondRequestCookie)
                 )
                 .andExpectAll(

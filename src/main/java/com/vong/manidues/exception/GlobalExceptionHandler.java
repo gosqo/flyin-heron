@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -20,8 +21,19 @@ import java.util.NoSuchElementException;
 public class GlobalExceptionHandler {
     private static final String PROJECT_ROOT_PACKAGE = "com.vong.manidues";
 
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResourceFoundException(
+            NoResourceFoundException ex
+    ) {
+        logException(ex);
+        logWhereThrows(ex);
+        String userMessage = "존재하지 않는 자원에 대한 요청입니다.";
+
+        return buildResponseEntity(HttpStatus.NOT_FOUND, userMessage);
+    }
+
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<?> handleBadCredentialsException(
+    public ResponseEntity<ErrorResponse> handleBadCredentialsException(
             BadCredentialsException ex
     ) {
         logException(ex);

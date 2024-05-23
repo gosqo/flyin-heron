@@ -1,6 +1,6 @@
 package com.vong.manidues.filter;
 
-import com.vong.manidues.utility.HttpResponseWithBody;
+import com.vong.manidues.utility.ResponseBodyWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,17 +27,17 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             HttpServletResponse response,
             AuthenticationException authException
     ) throws IOException, ServletException {
-        HttpResponseWithBody responseWithBody = new HttpResponseWithBody();
+        ResponseBodyWriter responseBodyWriter = new ResponseBodyWriter();
 
         if (authException instanceof BadCredentialsException) {
-            responseWithBody.setResponseWithBody(
+            responseBodyWriter.setResponseWithBody(
                     response,
                     400,
                     "아이디 혹은 비밀번호를 확인해주세요."
             );
 
         } else if (authException instanceof InsufficientAuthenticationException) {
-            responseWithBody.setResponseWithBody(
+            responseBodyWriter.setResponseWithBody(
                     response,
                     401,
                     "인증정보가 필요합니다."

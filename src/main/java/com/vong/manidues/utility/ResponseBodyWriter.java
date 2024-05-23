@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
-public class HttpResponseWithBody {
+public class ResponseBodyWriter {
 
     public void setResponseWithBody(
             HttpServletResponse response,

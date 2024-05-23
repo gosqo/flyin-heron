@@ -14,51 +14,86 @@ import java.net.URI;
 @RequiredArgsConstructor
 @Slf4j
 public class HttpUtility {
+    public static final HttpHeaders DEFAULT_GET_HEADERS = new HttpHeaders();
+    public static final HttpHeaders DEFAULT_POST_HEADERS = new HttpHeaders();
+    public static final HttpEntity<String> DEFAULT_HTTP_ENTITY = new HttpEntity<>(HttpUtility.DEFAULT_GET_HEADERS);
+
+    static {
+        defaultGetHeaders(DEFAULT_GET_HEADERS);
+        defaultPostHeaders(DEFAULT_POST_HEADERS);
+    }
 
     private final TokenUtility tokenUtility;
 
-    public static final HttpHeaders DEFAULT_HTTP_GET_HEADERS = new HttpHeaders();
-    public static final HttpHeaders DEFAULT_HTTP_POST_HEADERS = DEFAULT_HTTP_GET_HEADERS;
-
-    public static final HttpEntity<String> DEFAULT_HTTP_ENTITY = new HttpEntity<>(HttpUtility.DEFAULT_HTTP_GET_HEADERS);
-
-    static {
-        DEFAULT_HTTP_GET_HEADERS.add("Connection", "Keep-Alive");
-        DEFAULT_HTTP_GET_HEADERS.add("User-Agent", "Mozilla");
-        DEFAULT_HTTP_POST_HEADERS.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+    private static void defaultHeaders(HttpHeaders headers) {
+        headers.add("Connection", "Keep-Alive");
+        headers.add("User-Agent", "Mozilla");
     }
 
-    public static RequestEntity<String> postRequestOf(Object body, String uri)
+    private static void defaultGetHeaders(HttpHeaders headers) {
+        defaultHeaders(headers);
+    }
+
+    private static void defaultPostHeaders(HttpHeaders headers) {
+        defaultHeaders(headers);
+        headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+    }
+
+    public static HttpHeaders buildDefaultHeaders() {
+        var headers = new HttpHeaders();
+        defaultHeaders(headers);
+        return headers;
+    }
+
+    public static HttpHeaders buildDefaultPostHeaders() {
+        var headers = buildDefaultHeaders();
+        headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+        return headers;
+    }
+
+    public static RequestEntity<String> buildPostRequest(Object body, String uri)
             throws JsonProcessingException {
         return new RequestEntity<>(
                 getMappedBody(body)
-                , DEFAULT_HTTP_POST_HEADERS
+                , buildDefaultPostHeaders()
                 , HttpMethod.POST
                 , URI.create(uri)
         );
     }
 
-    public static RequestEntity<String> getRequestOf(String uri) {
+    public static RequestEntity<String> buildPostRequest(HttpHeaders httpHeaders, Object body, String uri)
+            throws JsonProcessingException {
         return new RequestEntity<>(
-                DEFAULT_HTTP_GET_HEADERS
+                getMappedBody(body)
+                , httpHeaders
+                , HttpMethod.POST
+                , URI.create(uri)
+        );
+    }
+
+    public static RequestEntity<String> buildGetRequest(String uri) {
+        return new RequestEntity<>(
+                DEFAULT_GET_HEADERS
                 , HttpMethod.GET
                 , URI.create(uri)
         );
     }
 
-    private static <T> String getMappedBody(Object body)
+    private static String getMappedBody(Object body)
             throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(body);
     }
 
     public HttpHeaders headersWithAuthorization(Long memberId) {
-        HttpHeaders headers = new HttpHeaders(DEFAULT_HTTP_GET_HEADERS);
+        var headers = buildDefaultHeaders();
+        headers.add("Authorization", tokenUtility.issueAccessTokenOnTest(memberId));
 
-        headers.add(
-                "Authorization"
-                , tokenUtility.issueAccessTokenOnTest(memberId)
-        );
+        return headers;
+    }
 
+    public static HttpHeaders buildPostHeaders(String k, String v) {
+        final var headers = buildDefaultPostHeaders();
+        headers.add(k, v);
         return headers;
     }
 
