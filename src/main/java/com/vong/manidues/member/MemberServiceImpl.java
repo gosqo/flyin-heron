@@ -22,9 +22,7 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findByEmail(request.getEmail())
                 .orElseThrow();
 
-        return passwordEncoder.matches(
-                request.getPassword(), member.getPassword()
-        );
+        return passwordEncoder.matches(request.getPassword(), member.getPassword());
     }
 
     @Override
@@ -35,8 +33,7 @@ public class MemberServiceImpl implements MemberService {
         if (passwordEncoder.matches(request.getCurrentPassword(), member.getPassword())
                 && request.getChangedPassword().equals(request.getChangedPasswordCheck())
         ) {
-            member.updatePassword(
-                    passwordEncoder.encode(request.getChangedPassword()));
+            member.updatePassword(passwordEncoder.encode(request.getChangedPassword()));
             memberRepository.save(member);
 
             return true;

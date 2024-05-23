@@ -1,6 +1,5 @@
 package com.vong.manidues.auth;
 
-import com.vong.manidues.token.JwtService;
 import com.vong.manidues.token.Token;
 import com.vong.manidues.token.TokenRepository;
 import com.vong.manidues.utility.AuthHeaderUtility;
@@ -21,7 +20,6 @@ import java.util.List;
 @Slf4j
 public class LogoutService implements LogoutHandler {
 
-    private final JwtService jwtService;
     private final TokenRepository tokenRepository;
     private final HttpResponseWithBody responseWithBody;
     private final AuthHeaderUtility authHeaderUtility;
@@ -49,8 +47,7 @@ public class LogoutService implements LogoutHandler {
             Authentication authentication
     ) {
         final String refreshToken = authHeaderUtility.extractJwtFromHeader(request);
-        final List<Token> storedTokens =
-                tokenRepository.findAllByToken(refreshToken).stream().toList();
+        final List<Token> storedTokens = tokenRepository.findAllByToken(refreshToken).stream().toList();
 
         if (storedTokens.isEmpty()) { // refreshToken entity 가 존재하지 않는다면,
             log.info("user tried refresh token that does not exist on database.");
