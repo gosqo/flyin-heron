@@ -97,6 +97,12 @@ public class HttpUtility {
         return headers;
     }
 
+    public static HttpHeaders buildPostHeadersWithAuth(String bearerToken) {
+        final var headers = buildDefaultPostHeaders();
+        headers.add("Authorization", bearerToken);
+        return headers;
+    }
+
     public static <T> void logResponse(ResponseEntity<T> response) {
         log.info(response.getBody() == null
                         ? "response: {}\n{}"
