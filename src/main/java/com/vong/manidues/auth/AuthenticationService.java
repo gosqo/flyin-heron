@@ -79,16 +79,16 @@ public class AuthenticationService {
             throws IOException {
         final String formerRefreshToken = authHeaderUtility.extractJwtFromHeader(request);
         final String userEmail = jwtService.extractUserEmail(formerRefreshToken);
+        final Member member = this.memberRepository.findByEmail(userEmail).orElseThrow(
+                () -> new NoSuchElementException("존재하지 않는 회원에 대한 조회.")
+        );
 
         tokenRepository.findByToken(formerRefreshToken).orElseThrow(
                 () -> new NoSuchElementException("데이터베이스에 존재하지 않는 리프레시 토큰.")
         );
-        Member member = this.memberRepository.findByEmail(userEmail).orElseThrow(
-                () -> new NoSuchElementException("존재하지 않는 회원에 대한 조회.")
-        );
 
         if (needToReissue(formerRefreshToken)) {
-            String reissuedRefreshToken = jwtService.generateRefreshToken(member);
+            final String reissuedRefreshToken = jwtService.generateRefreshToken(member);
 
             saveMemberToken(member, reissuedRefreshToken);
             tokenRepository.deleteByToken(formerRefreshToken);
@@ -120,7 +120,7 @@ public class AuthenticationService {
 
     @SuppressWarnings("null")
     private void saveMemberToken(Member member, String jwtToken) {
-        Token token = Token.builder()
+        final Token token = Token.builder()
                 .member(member)
                 .token(jwtToken)
                 .build();

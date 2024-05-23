@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface MemberService {
-    public boolean register(MemberRegisterRequest request);
+    public void register(MemberRegisterRequest request);
     public boolean changePassword(ChangeMemberPasswordRequest request);
     public boolean verifyOneself(MemberVerificationRequest request);
 }

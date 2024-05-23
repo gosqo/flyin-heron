@@ -2,6 +2,7 @@ package com.vong.manidues.exception;
 
 import com.vong.manidues.exception.custom.DebugNeededException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -26,6 +27,18 @@ public class GlobalExceptionHandler {
         logException(ex);
         logWhereThrows(ex);
         String userMessage = "이메일 혹은 패스워드를 확인 해주세요.";
+
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, userMessage);
+    }
+
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<?> handleDataIntegrityViolationException(
+            DataIntegrityViolationException ex
+    ) {
+        logException(ex);
+        logErrorStackTrace(ex);
+        String userMessage = "자원의 입력 및 수정이 지정된 형식에 맞지 않거나 중복을 발생시킵니다.";
 
         return buildResponseEntity(HttpStatus.BAD_REQUEST, userMessage);
     }

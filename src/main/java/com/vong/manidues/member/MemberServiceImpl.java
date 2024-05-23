@@ -32,10 +32,8 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findByEmail(request.getEmail())
                 .orElseThrow();
 
-        if (passwordEncoder.matches(
-                request.getCurrentPassword(), member.getPassword())
-                && request.getChangedPassword().equals(
-                        request.getChangedPasswordCheck())
+        if (passwordEncoder.matches(request.getCurrentPassword(), member.getPassword())
+                && request.getChangedPassword().equals(request.getChangedPasswordCheck())
         ) {
             member.updatePassword(
                     passwordEncoder.encode(request.getChangedPassword()));
@@ -48,32 +46,12 @@ public class MemberServiceImpl implements MemberService {
 
     @SuppressWarnings("null")
     @Override
-    public boolean register(MemberRegisterRequest request) {
-        if (isDuplicated(request)) {
-            return false;
-        }
+    public void register(MemberRegisterRequest request) {
+        if (isDuplicated(request))
+            throw new DataIntegrityViolationException("존재하는 자원과 중복.");
 
-        Member member = request.toEntity(passwordEncoder.encode(request.getPassword()));
-
-        try {
-            Member storedMember = memberRepository.save(member);
-
-            log.info("""
-                            Member register succeeded.
-                                Registered member email is: {}
-                            """,
-                    storedMember.getEmail()
-            );
-        } catch (DataIntegrityViolationException ex) {
-            log.info("""
-                            DataIntegrityViolationException occurs on method register() in memberService,
-                                message is: {}
-                            """,
-                    ex.getMessage()
-            );
-            return false;
-        }
-        return true;
+        final Member member = request.toEntity(passwordEncoder.encode(request.getPassword()));
+        memberRepository.save(member);
     }
 
     private boolean isDuplicated(MemberRegisterRequest request) {
