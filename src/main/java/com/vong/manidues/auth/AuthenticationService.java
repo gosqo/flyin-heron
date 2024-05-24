@@ -15,7 +15,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -57,29 +56,10 @@ public class AuthenticationService {
         return buildAuthenticationResponse(accessToken, refreshToken);
     }
 
-    /**
-     * 액세스 토큰 갱신(refresh) 및 발급.
-     * <pre>
-     *     클라이언트는 요청헤더에 리프레시 토큰을 담습니다.
-     *     리프레시 토큰이 만료, 위조된 경우 401 상태코드로 응답합니다.
-     *     리프레시 토큰이 검증에 성공하면 데이터 베이스에 조회합니다.
-     *     리프레시 토큰의 만료일을 오늘과 비교합니다.
-     *       만료일까지 7 일 이하로 남았다면,
-     *         accessToken, refreshToken 모두 갱신하여 응답합니다.
-     *       7일 이상 남았다면,
-     *         accessToken 만 갱신하고, 요청헤더의 기존 refreshToken 을 함께 응답합니다.
-     *
-     *     해당 요청이 성공적이라면,
-     *       클라이언트는 갱신된 access_token,
-     *       갱신되거나 기존의 refresh_token 을 모두 브라우저에 저장합니다.
-     *       응답은 json 형태입니다.
-     * </pre>
-     */
-    public AuthenticationResponse refreshToken(HttpServletRequest request)
-            throws IOException {
+    public AuthenticationResponse refreshToken(HttpServletRequest request) {
         final String formerRefreshToken = authHeaderUtility.extractJwtFromHeader(request);
         final String userEmail = jwtService.extractUserEmail(formerRefreshToken);
-        final Member member = this.memberRepository.findByEmail(userEmail).orElseThrow(
+        final Member member = memberRepository.findByEmail(userEmail).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 회원에 대한 조회.")
         );
 

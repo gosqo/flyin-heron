@@ -43,7 +43,6 @@ public class AuthenticationRestTests {
         this.tokenRepository = tokenRepository;
     }
 
-
     @Test
     void badCredentialsExceptionCheck() throws JsonProcessingException {
         var uri = "/api/v1/auth/authenticate";
