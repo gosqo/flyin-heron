@@ -10,10 +10,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
+import org.springframework.test.context.ActiveProfiles;
 
 import static com.vong.manidues.auth.AuthenticationFixture.MEMBER_EMAIL;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,10 +21,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = NONE)
+@ActiveProfiles("test")
 class AuthenticationServiceTest {
     private final AuthenticationRequest authRequest = AuthenticationFixture.AUTH_REQUEST;
     private AuthenticationService authService;
