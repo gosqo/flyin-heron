@@ -15,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -77,18 +76,12 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Long register(String userEmail, BoardRegisterRequest request) {
+        Member member = memberRepository.findByEmail(userEmail).orElseThrow(
+                () -> new NoSuchElementException("No Member present with the email.")
+        );
+        Board entity = request.toEntity(member);
 
-        Optional<Member> optionalMember = memberRepository.findByEmail(userEmail);
-
-        if (optionalMember.isPresent()) {
-
-            Board entity = request.toEntity(optionalMember.get());
-            return boardRepository.save(entity).getId();
-
-        } else {
-
-            throw new NoSuchElementException("No Member present with the email.");
-        }
+        return boardRepository.save(entity).getId();
     }
 
     @Override

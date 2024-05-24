@@ -2,7 +2,6 @@ package com.vong.manidues.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vong.manidues.token.TokenUtility;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
@@ -22,8 +21,6 @@ public class HttpUtility {
         defaultGetHeaders(DEFAULT_GET_HEADERS);
         defaultPostHeaders(DEFAULT_POST_HEADERS);
     }
-
-    private final TokenUtility tokenUtility;
 
     private static void defaultHeaders(HttpHeaders headers) {
         headers.add("Connection", "Keep-Alive");
@@ -82,13 +79,6 @@ public class HttpUtility {
     private static String getMappedBody(Object body)
             throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(body);
-    }
-
-    public HttpHeaders headersWithAuthorization(Long memberId) {
-        var headers = buildDefaultHeaders();
-        headers.add("Authorization", tokenUtility.issueAccessTokenOnTest(memberId));
-
-        return headers;
     }
 
     public static HttpHeaders buildPostHeaders(String k, String v) {
