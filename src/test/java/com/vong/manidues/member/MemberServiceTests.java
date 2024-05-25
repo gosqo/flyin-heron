@@ -6,22 +6,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
+import static com.vong.manidues.auth.AuthenticationFixture.MEMBER_EMAIL;
+import static com.vong.manidues.auth.AuthenticationFixture.PASSWORD;
 
 @SpringBootTest
+@ActiveProfiles("test")
 @Slf4j
 public class MemberServiceTests {
 
     @Autowired
     private MemberService service;
 
-    @Value("${test.variable.email}")
-    private String email;
-    @Value("${test.variable.password}")
-    private String password;
-    @Value("${test.variable.changed-password}")
-    private String changedPassword;
+    private String email = MEMBER_EMAIL;
+    private String password = PASSWORD;
+    private String changedPassword = PASSWORD + "1";
 
     @Test
     public void memberVerification() {

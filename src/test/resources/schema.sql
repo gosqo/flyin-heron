@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS `member`;
+DROP TABLE IF EXISTS `member` CASCADE;
 
 CREATE TABLE `member` (
   `id` bigint NOT NULL AUTO_INCREMENT,

@@ -1,7 +1,9 @@
 package com.vong.manidues.board;
 
 import com.vong.manidues.board.dto.BoardGetResponse;
+import com.vong.manidues.member.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +24,29 @@ public class BoardCookieRestTemplateTests {
 
     @Autowired
     TestRestTemplate template;
+    private final BoardRepository boardRepository;
+    private final MemberRepository memberRepository;
+
+    @Autowired
+    public BoardCookieRestTemplateTests(
+            BoardRepository boardRepository
+            , MemberRepository memberRepository
+    ) {
+        this.boardRepository = boardRepository;
+        this.memberRepository = memberRepository;
+    }
+
+    @BeforeEach
+    void setUp() {
+        for (int i = 1; i < 4; i++) {
+            boardRepository.save(Board.builder()
+                    .title("hello" + i)
+                    .content("testing updateDate.")
+                    .member(memberRepository.findById(1L).orElseThrow())
+                    .build()
+            );
+        }
+    }
 
     @Test
     public void initializeBbvCookie() throws Exception {

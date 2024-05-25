@@ -3,9 +3,7 @@ package com.vong.manidues.member;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
 @Slf4j
 public class MemberEmailRegexpTests {
     @Test
@@ -20,7 +18,7 @@ public class MemberEmailRegexpTests {
                 , "hello@world*asd.com" // 부적절 특수문자 포함
         };
         for (String email : InappropriateEmails) {
-            log.info(String.valueOf(email.matches(regExp)) + " " + email);
+            log.info(email.matches(regExp) + " " + email);
             Assertions.assertFalse(email.matches(regExp), email);
         }
     }
@@ -38,7 +36,7 @@ public class MemberEmailRegexpTests {
                 , "hello@world-asd_asd.d09.cac"
         };
         for (String email : InappropriateEmails) {
-            log.info(String.valueOf(email.matches(regExp)) + " " + email);
+            log.info(email.matches(regExp) + " " + email);
             Assertions.assertTrue(email.matches(regExp), email);
         }
     }

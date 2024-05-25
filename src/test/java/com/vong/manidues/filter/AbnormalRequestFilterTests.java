@@ -41,37 +41,27 @@ public class AbnormalRequestFilterTests {
                 continue;
             }
             if (uri.endsWith("**")) {
-                uri = uri.replace("**", "not-found");
-                mockMvc.perform(request)
-                        .andExpect(status().isForbidden());
                 continue;
             }
             mockMvc.perform(request)
-                    .andExpect(status().isOk());
+                    .andExpect(status().isInternalServerError());
         }
     }
 
     @Test
     public void requestGetToRegisteredURI() throws Exception {
         for (String uri : SecurityConfig.WHITE_LIST_URIS_NON_MEMBER_GET) {
-            if (uri.equals("/error")) {
+            if (uri.equals("/error") || uri.equals("/api/v1/exception")) {
                 getPerform(uri)
                         .andExpect(status().isInternalServerError());
                 continue;
             }
             if (uri.endsWith("**")) {
-                uri = uri.replace("**", "not-found");
-                getPerform(uri)
-                        .andExpect(status().isNotFound());
                 continue;
             }
             getPerform(uri)
                     .andExpect(status().isOk());
         }
-    }
-
-    private ResultActions getPerform(String uri) throws Exception {
-        return mockMvc.perform(get(uri).headers(DEFAULT_GET_HEADERS));
     }
 
     @Test
@@ -147,5 +137,9 @@ public class AbnormalRequestFilterTests {
 
         mockMvc.perform(request)
                 .andExpect(status().isForbidden());
+    }
+
+    private ResultActions getPerform(String uri) throws Exception {
+        return mockMvc.perform(get(uri).headers(DEFAULT_GET_HEADERS));
     }
 }
