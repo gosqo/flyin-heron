@@ -15,7 +15,7 @@ import static com.vong.manidues.auth.AuthenticationFixture.PASSWORD;
 @SpringBootTest
 @ActiveProfiles("test")
 @Slf4j
-public class MemberServiceTests {
+public class MemberServiceTest {
 
     @Autowired
     private MemberService service;

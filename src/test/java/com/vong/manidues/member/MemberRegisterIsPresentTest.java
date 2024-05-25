@@ -21,12 +21,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Slf4j
-public class MemberRegisterIsPresentTests {
+public class MemberRegisterIsPresentTest {
 
     private final MockMvc mockMvc;
 
     @Autowired
-    public MemberRegisterIsPresentTests(MockMvc mockMvc) {
+    public MemberRegisterIsPresentTest(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
     }
 

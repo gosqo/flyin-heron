@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Slf4j
-public class IpEntryLogFilterTests {
+public class IpEntryLogFilterTest {
 
     @Autowired
     private MockMvc mockMvc;

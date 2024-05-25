@@ -19,11 +19,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Slf4j
-public class AbnormalRequestFilterTests {
+public class AbnormalRequestFilterTest {
     private final MockMvc mockMvc;
 
     @Autowired
-    public AbnormalRequestFilterTests(MockMvc mockMvc) {
+    public AbnormalRequestFilterTest(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
     }
 

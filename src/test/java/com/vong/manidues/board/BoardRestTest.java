@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @Slf4j
-public class BoardRestTests {
+public class BoardRestTest {
 
     @Autowired
     private TestRestTemplate template;
@@ -37,7 +37,7 @@ public class BoardRestTests {
     private final TokenUtility tokenUtility;
 
     @Autowired
-    public BoardRestTests(
+    public BoardRestTest(
             BoardRepository boardRepository
             , MemberRepository memberRepository
             , TokenUtility tokenUtility

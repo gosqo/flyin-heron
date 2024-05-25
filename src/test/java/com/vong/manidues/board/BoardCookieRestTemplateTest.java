@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @Slf4j
-public class BoardCookieRestTemplateTests {
+public class BoardCookieRestTemplateTest {
 
     @Autowired
     TestRestTemplate template;
@@ -28,7 +28,7 @@ public class BoardCookieRestTemplateTests {
     private final MemberRepository memberRepository;
 
     @Autowired
-    public BoardCookieRestTemplateTests(
+    public BoardCookieRestTemplateTest(
             BoardRepository boardRepository
             , MemberRepository memberRepository
     ) {

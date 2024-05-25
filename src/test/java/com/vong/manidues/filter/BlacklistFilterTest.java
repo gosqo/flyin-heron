@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Slf4j
-public class BlacklistFilterTests {
+public class BlacklistFilterTest {
 
     @Autowired
     private MockMvc mockMvc;

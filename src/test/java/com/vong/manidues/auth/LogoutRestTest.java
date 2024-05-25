@@ -18,12 +18,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @Slf4j
-public class LogoutRestTests {
+public class LogoutRestTest {
     private final TokenUtility tokenUtility;
     private final TestRestTemplate template;
 
     @Autowired
-    public LogoutRestTests(TokenUtility tokenUtility, TestRestTemplate template) {
+    public LogoutRestTest(TokenUtility tokenUtility, TestRestTemplate template) {
         this.tokenUtility = tokenUtility;
         this.template = template;
     }

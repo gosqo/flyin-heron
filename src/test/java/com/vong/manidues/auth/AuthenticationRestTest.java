@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @Slf4j
-public class AuthenticationRestTests {
+public class AuthenticationRestTest {
     private final TestRestTemplate template;
     private final MemberRepository memberRepository;
     private final TokenRepository tokenRepository;
@@ -39,7 +39,7 @@ public class AuthenticationRestTests {
     private String secretKey;
 
     @Autowired
-    public AuthenticationRestTests(TestRestTemplate template, MemberRepository memberRepository, TokenRepository tokenRepository) {
+    public AuthenticationRestTest(TestRestTemplate template, MemberRepository memberRepository, TokenRepository tokenRepository) {
         this.template = template;
         this.memberRepository = memberRepository;
         this.tokenRepository = tokenRepository;
