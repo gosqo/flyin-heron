@@ -6,19 +6,17 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static com.vong.manidues.filter.FilterUtility.isStaticUri;
+
 @Component
 @Slf4j
-@RequiredArgsConstructor
 public class BlacklistFilter extends OncePerRequestFilter {
-
-    private final FilterUtility filterUtility;
 
     @Override
     protected void doFilterInternal(
@@ -29,7 +27,7 @@ public class BlacklistFilter extends OncePerRequestFilter {
         String requestIp = request.getRemoteAddr();
         String requestURI = request.getRequestURI();
 
-        if (filterUtility.isUriPermittedToAll(requestURI)) {
+        if (isStaticUri(requestURI)) {
             filterChain.doFilter(request, response);
             return;
         }

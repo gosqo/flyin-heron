@@ -5,19 +5,18 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static com.vong.manidues.filter.FilterUtility.isStaticUri;
+import static com.vong.manidues.filter.FilterUtility.logRequestInfo;
+
 @Component
 @Slf4j
-@RequiredArgsConstructor
 public class IpEntryLogFilter extends OncePerRequestFilter {
-
-    private final FilterUtility filterUtility;
 
     @Override
     protected void doFilterInternal(
@@ -27,12 +26,12 @@ public class IpEntryLogFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         String requestURI = request.getRequestURI();
 
-        if (filterUtility.isUriPermittedToAll(requestURI)) {
+        if (isStaticUri(requestURI)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        filterUtility.logRequestInfo(request);
+        logRequestInfo(request);
         RequestTracker.trackRequest(request);
         RequestTracker.clearExpiredRequests();
         filterChain.doFilter(request, response);

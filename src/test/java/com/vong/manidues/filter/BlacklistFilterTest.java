@@ -39,5 +39,19 @@ public class BlacklistFilterTest {
             mockMvc.perform(request)
                     .andExpect(MockMvcResultMatchers.status().isForbidden());
         }
+
+        MockHttpServletRequestBuilder request2 = MockMvcRequestBuilders
+                .request(HttpMethod.GET, "/")
+                .remoteAddress("127.0.0.3")
+                .header("User-Agent", "Mozilla")
+                .header("Connection", "keep-alive");
+
+        for (int i = 0; i < 71; i++) {
+            log.info("{}", i);
+            if (i == 70) mockMvc.perform(request2)
+                    .andExpect(MockMvcResultMatchers.status().isForbidden());
+            else mockMvc.perform(request2)
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+        }
     }
 }

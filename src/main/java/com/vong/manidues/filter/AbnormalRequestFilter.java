@@ -13,14 +13,15 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static com.vong.manidues.filter.FilterUtility.isStaticUri;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class AbnormalRequestFilter extends OncePerRequestFilter {
 
-    private final FilterUtility filterUtility;
     private final AuthHeaderUtility authUtility;
-    private final String[] WHITE_LIST_USER_AGENTS = {
+    private static final String[] WHITE_LIST_USER_AGENTS = {
             "mozilla"
             , "postman"
     };
@@ -36,7 +37,7 @@ public class AbnormalRequestFilter extends OncePerRequestFilter {
         String userAgent = request.getHeader("User-Agent");
         String connection = request.getHeader("Connection");
 
-        if (filterUtility.isUriPermittedToAll(requestURI)) {
+        if (isStaticUri(requestURI)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -50,24 +51,21 @@ public class AbnormalRequestFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (authUtility.isNotAuthenticated(request)) {
-            if (requestMethod.equalsIgnoreCase("get")
-                    && isNotPermittedToAllGetURI(requestURI)) {
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                log.warn("*** Request to unregistered URI *** response with {}", response.getStatus());
+        if (authUtility.isNotAuthenticated(request)
+                && isNotPermittedToAll(requestMethod, requestURI)) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            log.warn("*** Request to unregistered URI *** response with {}", response.getStatus());
 
-                return;
-            }
-
-            if (requestMethod.equalsIgnoreCase("post")
-                    && isNotPermittedToAllPostURI(requestURI)) {
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                log.warn("*** Request to unregistered URI *** response with {}", response.getStatus());
-
-                return;
-            }
+            return;
         }
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isNotPermittedToAll(String requestMethod, String requestURI) {
+        return requestMethod.equalsIgnoreCase("get")
+                && isNotPermittedToAllGetURI(requestURI)
+                || requestMethod.equalsIgnoreCase("post")
+                && isNotPermittedToAllPostURI(requestURI);
     }
 
     private boolean isWhiteListUserAgent(String userAgent) {

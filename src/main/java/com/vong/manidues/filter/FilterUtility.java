@@ -8,25 +8,25 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class FilterUtility {
 
-    final String[] RESOURCES_PERMITTED_TO_ALL_STARTS_WITH = {
+    private static final String[] STATIC_RESOURCES_PERMITTED_TO_ALL = {
             "/css/"
             , "/js/"
             , "/img/"
     };
 
-    boolean isUriPermittedToAll(String requestURI) {
-        return startsWithOneOf(requestURI, RESOURCES_PERMITTED_TO_ALL_STARTS_WITH)
+    static boolean isStaticUri(String requestURI) {
+        return startsWithOneOf(requestURI, STATIC_RESOURCES_PERMITTED_TO_ALL)
                 || requestURI.equals("/favicon.ico");
     }
 
-    boolean startsWithOneOf(String requestURI, String[] array) {
+    private static boolean startsWithOneOf(String requestURI, String[] array) {
         for (String uri : array) {
             if (requestURI.startsWith(uri)) return true;
         }
         return false;
     }
 
-    void logRequestInfo(HttpServletRequest request) {
+    public static void logRequestInfo(HttpServletRequest request) {
         String ipFormat = String.format("%-15s", request.getRemoteAddr());
 
         log.info("""
