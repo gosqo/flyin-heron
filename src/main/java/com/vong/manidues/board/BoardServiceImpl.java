@@ -1,5 +1,6 @@
 package com.vong.manidues.board;
 
+import com.vong.manidues.board.dto.BoardGetResponse;
 import com.vong.manidues.board.dto.BoardRegisterRequest;
 import com.vong.manidues.board.dto.BoardUpdateRequest;
 import com.vong.manidues.cookie.CookieUtility;
@@ -27,14 +28,14 @@ public class BoardServiceImpl implements BoardService {
 
     private final String BOARDS_BEEN_VIEWED = "bbv";
 
-    public void initializeCookieBbv(Long id, HttpServletResponse response) {
+    private void initializeCookieBbv(Long id, HttpServletResponse response) {
         Cookie cookie = new Cookie(BOARDS_BEEN_VIEWED, id.toString());
 
         cookie.setMaxAge(60 * 60);
         response.addCookie(cookie);
     }
 
-    public void addValueCookieBbv(Long id, HttpServletRequest request, HttpServletResponse response) {
+    private void addValueCookieBbv(Long id, HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
 
         if (cookies == null) {
@@ -51,7 +52,7 @@ public class BoardServiceImpl implements BoardService {
         response.addCookie(cookie);
     }
 
-    public boolean hasViewed(
+    private boolean hasViewed(
             Long id
             , HttpServletRequest request
     ) {
@@ -120,7 +121,21 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Board get(Long id) {
-        return boardRepository.findById(id).orElseThrow();
+    public BoardGetResponse get(Long id, HttpServletRequest request, HttpServletResponse response) {
+        var entity = boardRepository.findById(id).orElseThrow(
+                () -> new NoSuchElementException("존재하지 않는 게시물 get 요청."));
+
+        if (!hasViewed(id, request)) {
+            addValueCookieBbv(id, request, response);
+
+            // 게시글 중 조회수가 null 인 게시물 하나를 위한 if.
+            if (entity.getViewCount() == null) {
+                return new BoardGetResponse().of(entity);
+            }
+
+            entity.addViewCount(); // throws NPException in previous version.
+            boardRepository.save(entity);
+        }
+        return new BoardGetResponse().of(entity);
     }
 }

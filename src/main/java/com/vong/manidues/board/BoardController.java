@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 public class BoardController {
 
     private final BoardService service;
-    private final BoardRepository repository;
     private final AuthHeaderUtility authHeaderUtility;
 
     @GetMapping("/{id}")
@@ -26,19 +25,7 @@ public class BoardController {
             , HttpServletRequest request
             , HttpServletResponse response
     ) {
-        Board entity = service.get(id); // throws NoSuchElementException
-
-        if (!service.hasViewed(id, request)) {
-            service.addValueCookieBbv(id, request, response);
-            if (entity.getViewCount() != null) {
-                entity.addViewCount(); // throws NPException in previous version.
-                repository.save(entity);
-            }
-        }
-
-        return entity != null
-                ? ResponseEntity.ok(new BoardGetResponse().fromEntity(entity))
-                : ResponseEntity.status(404).build();
+        return ResponseEntity.status(200).body(service.get(id, request, response));
     }
 
     @DeleteMapping("/{id}")

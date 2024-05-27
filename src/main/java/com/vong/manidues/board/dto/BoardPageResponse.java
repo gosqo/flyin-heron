@@ -22,7 +22,7 @@ public class BoardPageResponse {
 
         return BoardPageResponse.builder()
                 .boardPage(new PageImpl<BoardGetResponse>(
-                        entityPage.get().map(boardGetResponse::fromEntity).toList(),
+                        entityPage.get().map(boardGetResponse::of).toList(),
                         entityPage.getPageable(),
                         entityPage.getTotalElements()
                 ))

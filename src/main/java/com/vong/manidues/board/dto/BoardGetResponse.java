@@ -1,10 +1,7 @@
 package com.vong.manidues.board.dto;
 
 import com.vong.manidues.board.Board;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class BoardGetResponse {
 
     private Long boardId;
@@ -23,7 +21,7 @@ public class BoardGetResponse {
     private LocalDateTime registerDate;
     private LocalDateTime updateDate;
 
-    public BoardGetResponse fromEntity(Board entity) {
+    public BoardGetResponse of(Board entity) {
         return BoardGetResponse.builder()
                 .boardId(entity.getId())
                 .writerId(entity.getMember().getId())
@@ -34,22 +32,5 @@ public class BoardGetResponse {
                 .registerDate(entity.getRegisterDate())
                 .updateDate(entity.getUpdateDate())
                 .build();
-    }
-
-    @Override
-    public String toString() {
-        return String.format("""
-                        BoardGetResponse{
-                            boardId = %d,
-                            writerId = %d,
-                            title = "%s",
-                            content = "%s",
-                            writer = "%s"
-                            viewCount = %d,
-                            registerDate = '%s',
-                            updateDate = '%s',
-                        """
-                , boardId, writerId, title, content, writer
-                , viewCount, registerDate.toString(), updateDate.toString());
     }
 }
