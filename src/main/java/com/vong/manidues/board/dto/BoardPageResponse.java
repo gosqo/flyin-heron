@@ -17,12 +17,9 @@ public class BoardPageResponse {
     private Page<BoardGetResponse> boardPage;
 
     public BoardPageResponse fromEntityPage(Page<Board> entityPage) {
-
-        BoardGetResponse boardGetResponse = new BoardGetResponse();
-
         return BoardPageResponse.builder()
-                .boardPage(new PageImpl<BoardGetResponse>(
-                        entityPage.get().map(boardGetResponse::of).toList(),
+                .boardPage(new PageImpl<>(
+                        entityPage.get().map(BoardGetResponse::of).toList(),
                         entityPage.getPageable(),
                         entityPage.getTotalElements()
                 ))

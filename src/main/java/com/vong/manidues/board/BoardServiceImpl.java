@@ -26,7 +26,7 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final CookieUtility cookieUtility;
 
-    private final String BOARDS_BEEN_VIEWED = "bbv";
+    private static final String BOARDS_BEEN_VIEWED = "bbv";
 
     private void initializeCookieBbv(Long id, HttpServletResponse response) {
         Cookie cookie = new Cookie(BOARDS_BEEN_VIEWED, id.toString());
@@ -58,14 +58,13 @@ public class BoardServiceImpl implements BoardService {
     ) {
         Cookie[] cookies = request.getCookies();
 
-        if (cookies != null) {
-            if (cookieUtility.hasCookieNamed(BOARDS_BEEN_VIEWED, cookies)) {
-                Cookie targetCookie = cookieUtility.getCookie(BOARDS_BEEN_VIEWED, cookies);
+        if (cookies == null) return false;
 
-                return cookieUtility.hasSpecificValueIn(id, targetCookie);
-            }
-        }
-        return false;
+        Cookie targetCookie = cookieUtility.getCookie(BOARDS_BEEN_VIEWED, cookies);
+
+        if (targetCookie == null) return false;
+
+        return cookieUtility.hasSpecificValueIn(id, targetCookie);
     }
 
     @Override
@@ -130,12 +129,12 @@ public class BoardServiceImpl implements BoardService {
 
             // 게시글 중 조회수가 null 인 게시물 하나를 위한 if.
             if (entity.getViewCount() == null) {
-                return new BoardGetResponse().of(entity);
+                return BoardGetResponse.of(entity);
             }
 
             entity.addViewCount(); // throws NPException in previous version.
             boardRepository.save(entity);
         }
-        return new BoardGetResponse().of(entity);
+        return BoardGetResponse.of(entity);
     }
 }

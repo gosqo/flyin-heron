@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@EqualsAndHashCode
 public class BoardGetResponse {
 
     private Long boardId;
@@ -21,7 +22,7 @@ public class BoardGetResponse {
     private LocalDateTime registerDate;
     private LocalDateTime updateDate;
 
-    public BoardGetResponse of(Board entity) {
+    public static BoardGetResponse of(Board entity) {
         return BoardGetResponse.builder()
                 .boardId(entity.getId())
                 .writerId(entity.getMember().getId())
