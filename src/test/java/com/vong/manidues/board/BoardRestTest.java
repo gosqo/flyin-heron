@@ -29,19 +29,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 @Slf4j
 public class BoardRestTest {
-
-    @Autowired
-    private TestRestTemplate template;
+    private final TestRestTemplate template;
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
     private final TokenUtility tokenUtility;
 
     @Autowired
     public BoardRestTest(
-            BoardRepository boardRepository
+            TestRestTemplate template
+            , BoardRepository boardRepository
             , MemberRepository memberRepository
             , TokenUtility tokenUtility
     ) {
+        this.template = template;
         this.boardRepository = boardRepository;
         this.memberRepository = memberRepository;
         this.tokenUtility = tokenUtility;

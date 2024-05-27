@@ -1,4 +1,4 @@
-package com.vong.manidues.filter;
+package com.vong.manidues.filter.substituted;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ public class BlacklistFilterTest {
     public void checkTrackRequestWith71Requests() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .request(HttpMethod.GET, "/")
-                .remoteAddress("127.0.0.2")
+                .remoteAddress("127.0.0.6")
                 .header("User-Agent", "Mozilla")
                 .header("Connection", "keep-alive");
 
@@ -42,7 +42,7 @@ public class BlacklistFilterTest {
 
         MockHttpServletRequestBuilder request2 = MockMvcRequestBuilders
                 .request(HttpMethod.GET, "/")
-                .remoteAddress("127.0.0.3")
+                .remoteAddress("127.0.0.7")
                 .header("User-Agent", "Mozilla")
                 .header("Connection", "keep-alive");
 
