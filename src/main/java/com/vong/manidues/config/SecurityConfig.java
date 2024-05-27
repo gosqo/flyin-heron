@@ -47,6 +47,8 @@ public class SecurityConfig {
             , "/boards/**"
             , "/api/v1/cookie/**"
             , "/api/v1/exception"
+            , "/h2-console"
+            , "/h2-console/**"
     };
 
     public static final String[] WHITE_LIST_URIS_NON_MEMBER_POST = {
@@ -55,6 +57,7 @@ public class SecurityConfig {
             , "/api/v1/auth/authenticate"
             , "/error"
             , "/error/**"
+            , "/h2-console/**"
     };
 
     @Bean

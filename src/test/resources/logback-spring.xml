@@ -3,7 +3,7 @@
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
 
     <property name="LOG_PATTERN"
-              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %green(%-5level) %cyan(%logger:%5line) - %m%n"/>
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %green(%-5level) %cyan(%logger{36}:%5line) - %m%n"/>
     <property name="LOG_CHARSET" value="UTF-8" />
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">

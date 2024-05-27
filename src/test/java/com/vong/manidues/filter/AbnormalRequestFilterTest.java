@@ -56,7 +56,7 @@ public class AbnormalRequestFilterTest {
                         .andExpect(status().isInternalServerError());
                 continue;
             }
-            if (uri.endsWith("**")) {
+            if (uri.endsWith("**") || uri.equals("/h2-console")) {
                 continue;
             }
             getPerform(uri)

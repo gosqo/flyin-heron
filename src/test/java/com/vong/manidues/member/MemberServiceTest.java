@@ -44,5 +44,14 @@ public class MemberServiceTest {
                         .changedPasswordCheck(changedPassword)
                         .build();
         Assertions.assertTrue(service.changePassword(request));
+
+        ChangeMemberPasswordRequest request2 =
+                ChangeMemberPasswordRequest.builder()
+                        .email(email)
+                        .currentPassword(changedPassword)
+                        .changedPassword(password)
+                        .changedPasswordCheck(password)
+                        .build();
+        Assertions.assertTrue(service.changePassword(request2));
     }
 }
