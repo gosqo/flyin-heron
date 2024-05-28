@@ -25,7 +25,6 @@ import static org.mockito.Mockito.when;
 public class BoardServiceTest {
     @InjectMocks
     private BoardServiceImpl service;
-
     @Mock
     private BoardRepository boardRepository;
 

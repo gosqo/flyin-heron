@@ -99,24 +99,21 @@ public class AbnormalRequestFilterTest {
             }
 
             if (uri.equals("/error")) {
-                mockMvc.perform(request)
-                        .andExpect(status().isInternalServerError());
+                mockMvc.perform(request).andExpect(status().isInternalServerError());
                 continue;
             }
 
             if (uri.equals("/api/v1/auth/authenticate")) {
                 request.content(objMapper.writeValueAsString(AUTH_REQUEST));
 
-                mockMvc.perform(request)
-                        .andExpect(status().isOk());
+                mockMvc.perform(request).andExpect(status().isOk());
                 continue;
             }
 
             if (uri.equals("api/v1/member")) {
                 request.content(objMapper.writeValueAsString(MEMBER_REGISTER_REQUEST));
 
-                mockMvc.perform(request)
-                        .andExpect(status().isOk());
+                mockMvc.perform(request).andExpect(status().isOk());
             }
         }
     }
@@ -130,15 +127,13 @@ public class AbnormalRequestFilterTest {
     public void requestGetToRegisteredURI() throws Exception {
         for (String uri : SecurityConfig.WHITE_LIST_URIS_NON_MEMBER_GET) {
             if (uri.equals("/error") || uri.equals("/api/v1/exception")) {
-                performGet(uri, mockMvc)
-                        .andExpect(status().isInternalServerError());
+                performGet(uri, mockMvc).andExpect(status().isInternalServerError());
                 continue;
             }
             if (uri.endsWith("**") || uri.equals("/h2-console")) {
                 continue;
             }
-            performGet(uri, mockMvc)
-                    .andExpect(status().isOk());
+            performGet(uri, mockMvc).andExpect(status().isOk());
         }
     }
 
@@ -169,8 +164,7 @@ public class AbnormalRequestFilterTest {
         var request = request(HttpMethod.GET, "/")
                 .header("Connection", "keep-alive");
 
-        mockMvc.perform(request)
-                .andExpect(status().isForbidden());
+        mockMvc.perform(request).andExpect(status().isForbidden());
     }
 
     @Test
@@ -178,7 +172,6 @@ public class AbnormalRequestFilterTest {
         var request = request(HttpMethod.GET, "/")
                 .header("User-Agent", "Mozilla");
 
-        mockMvc.perform(request)
-                .andExpect(status().isForbidden());
+        mockMvc.perform(request).andExpect(status().isForbidden());
     }
 }
