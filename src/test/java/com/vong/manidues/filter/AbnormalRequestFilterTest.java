@@ -25,19 +25,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.validation.Validator;
 
 import static com.vong.manidues.auth.AuthenticationFixture.AUTH_REQUEST;
 import static com.vong.manidues.auth.AuthenticationFixture.MEMBER_REGISTER_REQUEST;
-import static com.vong.manidues.web.HttpUtility.DEFAULT_GET_HEADERS;
-import static com.vong.manidues.web.HttpUtility.DEFAULT_POST_HEADERS;
+import static com.vong.manidues.web.MvcUtility.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
@@ -127,46 +123,45 @@ public class AbnormalRequestFilterTest {
 
     @Test
     public void requestPostToRegisteredResourceExactlyMatches() throws Exception {
-        performPost("/error")
-                .andExpect(status().isInternalServerError());
+        performPost("/error", mockMvc).andExpect(status().isInternalServerError());
     }
 
     @Test
     public void requestGetToRegisteredURI() throws Exception {
         for (String uri : SecurityConfig.WHITE_LIST_URIS_NON_MEMBER_GET) {
             if (uri.equals("/error") || uri.equals("/api/v1/exception")) {
-                performGet(uri)
+                performGet(uri, mockMvc)
                         .andExpect(status().isInternalServerError());
                 continue;
             }
             if (uri.endsWith("**") || uri.equals("/h2-console")) {
                 continue;
             }
-            performGet(uri)
+            performGet(uri, mockMvc)
                     .andExpect(status().isOk());
         }
     }
 
     @Test
     public void requestGetToRegisteredResourceExactlyMatches() throws Exception {
-        performGet("/error").andExpect(status().isInternalServerError());
+        performGet("/error", mockMvc).andExpect(status().isInternalServerError());
     }
 
     @Test
     public void requestToRegisteredResourceMatchesTest() throws Exception {
-        performGet("/errorasd").andExpect(status().isForbidden());
+        performGet("/errorasd", mockMvc).andExpect(status().isForbidden());
     }
 
     // controller 중심의 테스트로,
     // 요청의 매개변수를 읽고, 응답에 문제가 없으므로 andExpect(status().isOk())
     @Test
     public void requestToRegisteredResourceUnderSlash() throws Exception {
-        performGet("/api/v1/board/9999").andExpect(status().isOk());
+        performGet("/api/v1/board/9999", mockMvc).andExpect(status().isOk());
     }
 
     @Test
     public void unregisteredResourceRequest() throws Exception {
-        performGet("/unregistered.").andExpect(status().isForbidden());
+        performGet("/unregistered.", mockMvc).andExpect(status().isForbidden());
     }
 
     @Test
@@ -185,24 +180,5 @@ public class AbnormalRequestFilterTest {
 
         mockMvc.perform(request)
                 .andExpect(status().isForbidden());
-    }
-
-    private static MockHttpServletRequestBuilder buildMockPostRequest(String uri) {
-        return request(HttpMethod.POST, uri) // HTTP method POST
-                .headers(DEFAULT_POST_HEADERS)
-                .contentType(MediaType.APPLICATION_JSON);
-    }
-
-    private static MockHttpServletRequestBuilder buildMockGetRequest(String uri) {
-        return request(HttpMethod.GET, uri) // HTTP method POST
-                .headers(DEFAULT_GET_HEADERS);
-    }
-
-    private ResultActions performGet(String uri) throws Exception {
-        return mockMvc.perform(buildMockGetRequest(uri));
-    }
-
-    private ResultActions performPost(String uri) throws Exception {
-        return mockMvc.perform(buildMockPostRequest(uri));
     }
 }

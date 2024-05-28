@@ -10,14 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import static com.vong.manidues.web.MvcUtility.buildMockGetRequest;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ViewController.class)
 @Import(SecurityConfig.class)
@@ -41,37 +40,26 @@ public class BlacklistFilterWebMvcTest {
 
     @Test
     public void checkTrackRequestWith71Requests() throws Exception {
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .request(HttpMethod.GET, "/")
-                .remoteAddress("127.0.0.2")
-                .header("User-Agent", "Mozilla")
-                .header("Connection", "keep-alive");
+        var request = buildMockGetRequest("/").remoteAddress("127.0.0.2");
+
+        for (int i = 0; i < 74; i++) {
+            log.info("{}", i);
+            if (i >= 70) {
+                mockMvc.perform(request).andExpect(status().isForbidden());
+                continue;
+            }
+            mockMvc.perform(request).andExpect(status().isOk());
+        }
+
+        var request2 = buildMockGetRequest("/").remoteAddress("127.0.0.3");
 
         for (int i = 0; i < 71; i++) {
             log.info("{}", i);
-            if (i == 70) mockMvc.perform(request)
-                    .andExpect(MockMvcResultMatchers.status().isForbidden());
-            else mockMvc.perform(request)
-                    .andExpect(MockMvcResultMatchers.status().isOk());
-        }
-
-        for (int i = 0; i < 3; i++) {
-            mockMvc.perform(request)
-                    .andExpect(MockMvcResultMatchers.status().isForbidden());
-        }
-
-        MockHttpServletRequestBuilder request2 = MockMvcRequestBuilders
-                .request(HttpMethod.GET, "/")
-                .remoteAddress("127.0.0.3")
-                .header("User-Agent", "Mozilla")
-                .header("Connection", "keep-alive");
-
-        for (int i = 0; i < 71; i++) {
-            log.info("{}", i);
-            if (i == 70) mockMvc.perform(request2)
-                    .andExpect(MockMvcResultMatchers.status().isForbidden());
-            else mockMvc.perform(request2)
-                    .andExpect(MockMvcResultMatchers.status().isOk());
+            if (i == 70) {
+                mockMvc.perform(request2).andExpect(status().isForbidden());
+                continue;
+            }
+            mockMvc.perform(request2).andExpect(status().isOk());
         }
     }
 }
