@@ -20,8 +20,13 @@ public class AuthHeaderUtility {
         return request.getHeader("Authorization");
     }
 
-    public String extractJwtFromHeader(HttpServletRequest request) {
-        return extractAuthHeader(request).substring(7);
+    public String extractJwtFromHeader(HttpServletRequest request) throws NullPointerException {
+        String authHeader = extractAuthHeader(request);
+
+        if (authHeader != null && !authHeader.isEmpty())
+            return authHeader.substring(7);
+
+        throw new NullPointerException("Can not extract JWT from null");
     }
 
     public String extractEmailFromHeader(HttpServletRequest request) {
