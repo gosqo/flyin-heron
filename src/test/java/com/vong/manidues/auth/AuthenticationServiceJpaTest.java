@@ -66,6 +66,8 @@ class AuthenticationServiceJpaTest {
         Query query = entityManager.createNativeQuery("SELECT * FROM token t", Token.class);
         List resultList = query.getResultList();
         log.info(resultList.toString());
+
+        tokenRepository.deleteAll();
     }
 
     @Test
@@ -84,8 +86,8 @@ class AuthenticationServiceJpaTest {
 
         // then
         assertThat(response).isNotNull();
-        assertThat(response.getAccessToken()).isNotNull();
-        assertThat(response.getRefreshToken()).isNotNull();
+        assertThat(response.getAccessToken()).isEqualTo("accessToken");
+        assertThat(response.getRefreshToken()).isEqualTo("refreshToken");
         verify(authManager, times(1)).authenticate(any(Authentication.class));
         verify(jwtService, times(1)).generateAccessToken(any(Member.class));
         verify(jwtService, times(1)).generateRefreshToken(any(Member.class));

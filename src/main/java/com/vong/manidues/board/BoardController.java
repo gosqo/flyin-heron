@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,22 +49,13 @@ public class BoardController {
 
     @PutMapping("/{id}")
     public ResponseEntity<BoardUpdateResponse> updateBoard(
-            HttpServletRequest servletRequest,
+            HttpServletRequest request,
             @PathVariable("id") Long id,
-            @RequestBody BoardUpdateRequest request
+            @RequestBody BoardUpdateRequest body
     ) {
-        String requestUserEmail = authHeaderUtility
-                .extractEmailFromHeader(servletRequest);
-
-        return service.update(id, requestUserEmail, request)
-                ? ResponseEntity.ok(
-                BoardUpdateResponse.builder()
-                        .id(id)
-                        .isUpdated(true)
-                        .message("해당 게시물의 수정이 처리됐습니다.")
-                        .build()
-        )
-                : ResponseEntity.status(400).build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(service.update(id, request, body));
     }
 
     @PostMapping("")

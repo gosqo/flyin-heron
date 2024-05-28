@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -20,6 +21,17 @@ import java.util.NoSuchElementException;
 @Slf4j
 public class GlobalExceptionHandler {
     private static final String PROJECT_ROOT_PACKAGE = "com.vong.manidues";
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(
+            AccessDeniedException ex
+    ) {
+        logException(ex);
+        logErrorStackTrace(ex);
+        String userMessage = "잘못된 요청입니다.";
+
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, userMessage);
+    }
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponse> handleNoResourceFoundException(

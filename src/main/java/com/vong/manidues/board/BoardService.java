@@ -3,6 +3,7 @@ package com.vong.manidues.board;
 import com.vong.manidues.board.dto.BoardGetResponse;
 import com.vong.manidues.board.dto.BoardRegisterRequest;
 import com.vong.manidues.board.dto.BoardUpdateRequest;
+import com.vong.manidues.board.dto.BoardUpdateResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
@@ -15,7 +16,7 @@ public interface BoardService {
 
     Long register(String userEmail, BoardRegisterRequest request);
 
-    boolean update(Long id, String requestUserEmail, BoardUpdateRequest request);
+    BoardUpdateResponse update(Long id, HttpServletRequest request, BoardUpdateRequest body);
 
     boolean delete(Long id, String requestUserEmail);
 

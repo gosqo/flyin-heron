@@ -3,9 +3,11 @@ package com.vong.manidues.board;
 import com.vong.manidues.board.dto.BoardGetResponse;
 import com.vong.manidues.board.dto.BoardRegisterRequest;
 import com.vong.manidues.board.dto.BoardUpdateRequest;
+import com.vong.manidues.board.dto.BoardUpdateResponse;
 import com.vong.manidues.cookie.CookieUtility;
 import com.vong.manidues.member.Member;
 import com.vong.manidues.member.MemberRepository;
+import com.vong.manidues.utility.AuthHeaderUtility;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
@@ -25,6 +28,7 @@ public class BoardServiceImpl implements BoardService {
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final CookieUtility cookieUtility;
+    private final AuthHeaderUtility authHeaderUtility;
 
     private static final String BOARDS_BEEN_VIEWED = "bbv";
 
@@ -85,24 +89,24 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public boolean update(Long id,
-                          String requestUserEmail,
-                          BoardUpdateRequest request) {
-
+    public BoardUpdateResponse update(Long id, HttpServletRequest request, BoardUpdateRequest body) {
+        String requestUserEmail = authHeaderUtility.extractEmailFromHeader(request);
         Board storedBoard = boardRepository.findById(id).orElseThrow();
 
-        if (storedBoard.getMember().getEmail().equals(requestUserEmail)) {
-
-            storedBoard.updateTitle(request.getTitle());
-            storedBoard.updateContent(request.getContent());
-            storedBoard.updateUpdateDate();
-
-            boardRepository.save(storedBoard);
-
-            return true;
+        if (!storedBoard.getMember().getEmail().equals(requestUserEmail)) {
+            throw new AccessDeniedException("요청자와 저작자의 불일치");
         }
 
-        return false;
+        storedBoard.updateTitle(body.getTitle());
+        storedBoard.updateContent(body.getContent());
+        storedBoard.updateUpdateDate();
+
+        Board updatedBoard = boardRepository.save(storedBoard);
+
+        return BoardUpdateResponse.builder()
+                .id(updatedBoard.getId())
+                .message("게시물 수정이 정상적으로 처리됐습니다.")
+                .build();
     }
 
     @Override
