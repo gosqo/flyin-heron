@@ -1,9 +1,6 @@
 package com.vong.manidues.board;
 
-import com.vong.manidues.board.dto.BoardGetResponse;
-import com.vong.manidues.board.dto.BoardRegisterRequest;
-import com.vong.manidues.board.dto.BoardUpdateRequest;
-import com.vong.manidues.board.dto.BoardUpdateResponse;
+import com.vong.manidues.board.dto.*;
 import com.vong.manidues.cookie.CookieUtility;
 import com.vong.manidues.member.Member;
 import com.vong.manidues.member.MemberRepository;
@@ -90,8 +87,10 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public BoardUpdateResponse update(Long id, HttpServletRequest request, BoardUpdateRequest body) {
-        String requestUserEmail = authHeaderUtility.extractEmailFromHeader(request);
-        Board storedBoard = boardRepository.findById(id).orElseThrow();
+        final String requestUserEmail = authHeaderUtility.extractEmailFromHeader(request);
+        final Board storedBoard = boardRepository.findById(id).orElseThrow(
+                () -> new NoSuchElementException("존재하지 않는 게시물 update 요청.")
+        );
 
         if (!storedBoard.getMember().getEmail().equals(requestUserEmail)) {
             throw new AccessDeniedException("요청자와 저작자의 불일치");
@@ -110,23 +109,27 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public boolean delete(Long id, String requestUserEmail) {
+    public BoardDeleteResponse delete(Long id, HttpServletRequest request) {
+        final String requestUserEmail = authHeaderUtility.extractEmailFromHeader(request);
+        final Board storedBoard = boardRepository.findById(id).orElseThrow(
+                () -> new NoSuchElementException("존재하지 않는 게시물 delete 요청.")
+        );
 
-        Board storedBoard = boardRepository.findById(id).orElseThrow();
+        if (!storedBoard.getMember().getEmail().equals(requestUserEmail))
+            throw new AccessDeniedException("요청자와 저작자의 불일치");
 
-        if (storedBoard.getMember().getEmail().equals(requestUserEmail)) {
+        boardRepository.delete(storedBoard);
 
-            boardRepository.delete(storedBoard);
-            return true;
-        }
-
-        return false;
+        return BoardDeleteResponse.builder()
+                .message("게시물 삭제가 정상적으로 처리됐습니다.")
+                .build();
     }
 
     @Override
     public BoardGetResponse get(Long id, HttpServletRequest request, HttpServletResponse response) {
         var entity = boardRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("존재하지 않는 게시물 get 요청."));
+                () -> new NoSuchElementException("존재하지 않는 게시물 get 요청.")
+        );
 
         if (!hasViewed(id, request)) {
             addValueCookieBbv(id, request, response);

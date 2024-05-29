@@ -1,9 +1,6 @@
 package com.vong.manidues.board;
 
-import com.vong.manidues.board.dto.BoardGetResponse;
-import com.vong.manidues.board.dto.BoardRegisterRequest;
-import com.vong.manidues.board.dto.BoardUpdateRequest;
-import com.vong.manidues.board.dto.BoardUpdateResponse;
+import com.vong.manidues.board.dto.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
@@ -18,7 +15,7 @@ public interface BoardService {
 
     BoardUpdateResponse update(Long id, HttpServletRequest request, BoardUpdateRequest body);
 
-    boolean delete(Long id, String requestUserEmail);
+    BoardDeleteResponse delete(Long id, HttpServletRequest request);
 
     BoardGetResponse get(Long id, HttpServletRequest request, HttpServletResponse response);
 }

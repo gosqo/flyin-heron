@@ -31,20 +31,12 @@ public class BoardController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<BoardDeleteResponse> deleteBoard(
-            HttpServletRequest servletRequest,
+            HttpServletRequest request,
             @PathVariable("id") Long id
     ) {
-        String requestUserEmail = authHeaderUtility
-                .extractEmailFromHeader(servletRequest);
-
-        return service.delete(id, requestUserEmail)
-                ? ResponseEntity.ok(
-                BoardDeleteResponse.builder()
-                        .isDeleted(true)
-                        .message("삭제되었습니다.")
-                        .build()
-        )
-                : ResponseEntity.status(400).build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(service.delete(id, request));
     }
 
     @PutMapping("/{id}")

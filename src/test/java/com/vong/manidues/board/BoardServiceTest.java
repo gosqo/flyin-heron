@@ -1,9 +1,6 @@
 package com.vong.manidues.board;
 
-import com.vong.manidues.board.dto.BoardGetResponse;
-import com.vong.manidues.board.dto.BoardRegisterRequest;
-import com.vong.manidues.board.dto.BoardUpdateRequest;
-import com.vong.manidues.board.dto.BoardUpdateResponse;
+import com.vong.manidues.board.dto.*;
 import com.vong.manidues.member.Member;
 import com.vong.manidues.member.MemberRepository;
 import com.vong.manidues.utility.AuthHeaderUtility;
@@ -95,25 +92,44 @@ public class BoardServiceTest {
     @Test
     void update() {
         // given
-        var mockRequest = new MockHttpServletRequest();
         mockRequest.addHeader("Authorization", "Bearer some.valid.token");
+        var boardId = 1L;
         var requestBody = BoardUpdateRequest.builder()
                 .title("Updated title.")
                 .content("Updated content.")
                 .build();
-        var updatedBoard = buildMockBoard(1L, memberEntity, 0L);
+        var updatedBoard = buildMockBoard(boardId, memberEntity, 0L);
 
-        when(boardRepository.findById(any(Long.class))).thenReturn(Optional.of(board1));
+        when(boardRepository.findById(boardId)).thenReturn(Optional.of(board1));
         when(authHeaderUtility.extractEmailFromHeader(any(HttpServletRequest.class))).thenReturn(MEMBER_EMAIL);
         when(boardRepository.save(any(Board.class))).thenReturn(updatedBoard);
 
         // when
-        var result = service.update(1L, mockRequest, requestBody);
+        var result = service.update(boardId, mockRequest, requestBody);
 
         // then
         assertThat(result).isEqualTo(BoardUpdateResponse.builder()
                 .id(1L)
                 .message("게시물 수정이 정상적으로 처리됐습니다.")
+                .build()
+        );
+    }
+
+    @Test
+    void delete() {
+        // given
+        mockRequest.addHeader("Authorization", "Bearer some.valid.token");
+        var boardId = 1L;
+
+        when(boardRepository.findById(boardId)).thenReturn(Optional.of(board1));
+        when(authHeaderUtility.extractEmailFromHeader(any(HttpServletRequest.class))).thenReturn(MEMBER_EMAIL);
+
+        // when
+        var result = service.delete(boardId, mockRequest);
+
+        // then
+        assertThat(result).isEqualTo(BoardDeleteResponse.builder()
+                .message("게시물 삭제가 정상적으로 처리됐습니다.")
                 .build()
         );
     }
