@@ -23,8 +23,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
-
+import static com.vong.manidues.board.BoardUtility.buildMockBoard;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -53,37 +52,31 @@ public class BoardWebTest {
     @MockBean
     private JwtService jwtService;
 
+    private final ObjectMapper objectMapper;
+
+    @Autowired
+    public BoardWebTest(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper.registerModule(new JavaTimeModule()).disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    }
+
     @BeforeEach
     void setUp() {
     }
 
     @Test
     void controllerTest1() throws Exception {
-        ObjectMapper objMapper = new ObjectMapper()
-        // LocalDateTime -> JSON data time array Parsing
-                .registerModule(new JavaTimeModule())
-                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
         // given
-        var board = Board.builder()
-                .id(1L)
-                .title("title")
-                .content("content")
-                .member(mock(Member.class))
-                .viewCount(0L)
-                .registerDate(LocalDateTime.now())
-                .updateDate(LocalDateTime.now())
-                .build();
-        var expectedResponse = new BoardGetResponse().of(board);
-        var mappedResponse = objMapper.writeValueAsString(expectedResponse);
+        var mockBoard = buildMockBoard(1L, mock(Member.class));
+        var expectedResponseBody = BoardGetResponse.of(mockBoard);
+        var stringifiedResponse = objectMapper.writeValueAsString(expectedResponseBody);
         when(service.get(eq(1L), any(HttpServletRequest.class), any(HttpServletResponse.class)))
-                .thenReturn(expectedResponse);
+                .thenReturn(expectedResponseBody);
 
         // when, then
         mockMvc.perform(get("/api/v1/board/1")
                         .headers(HttpUtility.DEFAULT_GET_HEADERS))
                 .andExpect(status().isOk())
-                .andExpect(content().json(mappedResponse))
+                .andExpect(content().json(stringifiedResponse))
                 .andDo(print());
     }
 }

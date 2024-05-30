@@ -76,13 +76,17 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Long register(String userEmail, BoardRegisterRequest request) {
-        Member member = memberRepository.findByEmail(userEmail).orElseThrow(
+    public BoardRegisterResponse register(HttpServletRequest request, BoardRegisterRequest requestBody) {
+        String requestUserEmail = authHeaderUtility.extractEmailFromHeader(request);
+        Member member = memberRepository.findByEmail(requestUserEmail).orElseThrow(
                 () -> new NoSuchElementException("No Member present with the email.")
         );
-        Board entity = request.toEntity(member);
+        Board entity = requestBody.toEntity(member);
 
-        return boardRepository.save(entity).getId();
+        return BoardRegisterResponse.builder()
+                .id(boardRepository.save(entity).getId())
+                .message("게시물이 성공적으로 등록됐습니다.")
+                .build();
     }
 
     @Override

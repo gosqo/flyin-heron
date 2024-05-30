@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public interface BoardService {
     Page<Board> getBoardPage(Pageable pageable);
 
-    Long register(String userEmail, BoardRegisterRequest request);
+    BoardRegisterResponse register(HttpServletRequest request, BoardRegisterRequest requestBody);
 
     BoardUpdateResponse update(Long id, HttpServletRequest request, BoardUpdateRequest body);
 

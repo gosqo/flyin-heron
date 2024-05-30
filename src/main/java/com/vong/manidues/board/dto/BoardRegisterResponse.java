@@ -10,9 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardRegisterResponse {
-
     private Long id;
-    private boolean posted;
     private String message;
-
 }

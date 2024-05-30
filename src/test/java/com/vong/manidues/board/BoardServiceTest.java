@@ -1,6 +1,8 @@
 package com.vong.manidues.board;
 
-import com.vong.manidues.board.dto.*;
+import com.vong.manidues.board.dto.BoardDeleteResponse;
+import com.vong.manidues.board.dto.BoardGetResponse;
+import com.vong.manidues.board.dto.BoardUpdateResponse;
 import com.vong.manidues.member.Member;
 import com.vong.manidues.member.MemberRepository;
 import com.vong.manidues.utility.AuthHeaderUtility;
@@ -18,6 +20,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import java.util.Optional;
 
 import static com.vong.manidues.auth.AuthenticationFixture.MEMBER_EMAIL;
+import static com.vong.manidues.board.BoardDtoUtility.buildBoardRegisterRequest;
+import static com.vong.manidues.board.BoardDtoUtility.buildBoardUpdateRequest;
+import static com.vong.manidues.board.BoardUtility.buildBoardAddedViewCount;
 import static com.vong.manidues.board.BoardUtility.buildMockBoard;
 import static com.vong.manidues.member.MemberUtility.buildMockMember;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,9 +45,9 @@ public class BoardServiceTest {
     private MockHttpServletRequest mockRequest;
     private MockHttpServletResponse mockResponse;
     private final Member memberEntity = buildMockMember();
-    private final Board board1 = buildMockBoard(1L, memberEntity, 999L);
-    private final Board board1ViewCountAdded = buildMockBoard(1L, memberEntity, 1000L);
-    private final Board board2 = buildMockBoard(2L, memberEntity, null);
+    private final Board boardActiveViewCount = buildMockBoard(1L, memberEntity, 999L);
+    private final Board boardViewCountAdded = buildBoardAddedViewCount(boardActiveViewCount);
+    private final Board boardViewCountNull = buildMockBoard(2L, memberEntity, null);
 
     @BeforeEach
     void setUp() {
@@ -51,10 +56,10 @@ public class BoardServiceTest {
     }
 
     @Test
-    void get() {
+    void getBoardAddedViewCount() {
         // given
-        var expectedObj = BoardGetResponse.of(board1ViewCountAdded);
-        when(boardRepository.findById(1L)).thenReturn(Optional.of(board1));
+        var expectedObj = BoardGetResponse.of(boardViewCountAdded);
+        when(boardRepository.findById(1L)).thenReturn(Optional.of(boardActiveViewCount));
 
         // when
         var returns = service.get(1L, mockRequest, mockResponse);
@@ -64,10 +69,10 @@ public class BoardServiceTest {
     }
 
     @Test
-    void get2() {
+    void getBoardViewCountNull() {
         // given
-        var expectedObj = BoardGetResponse.of(board2);
-        when(boardRepository.findById(1L)).thenReturn(Optional.of(board2));
+        var expectedObj = BoardGetResponse.of(boardViewCountNull);
+        when(boardRepository.findById(1L)).thenReturn(Optional.of(boardViewCountNull));
 
         // when
         var returns = service.get(1L, mockRequest, mockResponse);
@@ -79,14 +84,18 @@ public class BoardServiceTest {
     @Test
     void register() {
         // given
+        mockRequest.addHeader("Authorization", "Bearer some.valid.token");
+        when(authHeaderUtility.extractEmailFromHeader(any(HttpServletRequest.class))).thenReturn(MEMBER_EMAIL);
         when(memberRepository.findByEmail(MEMBER_EMAIL)).thenReturn(Optional.of(memberEntity));
-        when(boardRepository.save(any(Board.class))).thenReturn(board1);
+        when(boardRepository.save(any(Board.class))).thenReturn(boardActiveViewCount);
 
         // when
-        var result = service.register(MEMBER_EMAIL, BoardRegisterRequest.builder().build());
+        var result = service.register(mockRequest, buildBoardRegisterRequest());
 
         // then
-        assertThat(result).isEqualTo(1L);
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.getMessage()).isEqualTo("게시물이 성공적으로 등록됐습니다.");
     }
 
     @Test
@@ -94,14 +103,11 @@ public class BoardServiceTest {
         // given
         mockRequest.addHeader("Authorization", "Bearer some.valid.token");
         var boardId = 1L;
-        var requestBody = BoardUpdateRequest.builder()
-                .title("Updated title.")
-                .content("Updated content.")
-                .build();
+        var requestBody = buildBoardUpdateRequest();
         var updatedBoard = buildMockBoard(boardId, memberEntity, 0L);
 
-        when(boardRepository.findById(boardId)).thenReturn(Optional.of(board1));
         when(authHeaderUtility.extractEmailFromHeader(any(HttpServletRequest.class))).thenReturn(MEMBER_EMAIL);
+        when(boardRepository.findById(boardId)).thenReturn(Optional.of(boardActiveViewCount));
         when(boardRepository.save(any(Board.class))).thenReturn(updatedBoard);
 
         // when
@@ -121,7 +127,7 @@ public class BoardServiceTest {
         mockRequest.addHeader("Authorization", "Bearer some.valid.token");
         var boardId = 1L;
 
-        when(boardRepository.findById(boardId)).thenReturn(Optional.of(board1));
+        when(boardRepository.findById(boardId)).thenReturn(Optional.of(boardActiveViewCount));
         when(authHeaderUtility.extractEmailFromHeader(any(HttpServletRequest.class))).thenReturn(MEMBER_EMAIL);
 
         // when

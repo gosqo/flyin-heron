@@ -1,15 +1,11 @@
 package com.vong.manidues.board.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Getter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
-public class BoardUpdateRequest {
-    private String title;
-    private String content;
+public class BoardUpdateRequest extends BoardRequestBody {
 }

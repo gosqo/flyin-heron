@@ -12,6 +12,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 
+import static com.vong.manidues.auth.AuthenticationFixture.MEMBER_ENTITY;
 import static com.vong.manidues.web.HttpUtility.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,9 +40,10 @@ public class LogoutRestTest {
 
     @Test
     public void logoutWithAuthHeaderNotExistOnDatabase() throws JsonProcessingException {
-        final var accessToken = tokenUtility.issueAccessTokenOnTest(1L);
+        final var accessToken = tokenUtility.buildToken(MEMBER_ENTITY);
+        final var bearerAccessToken = "Bearer " + accessToken;
         final var headers = buildDefaultHeaders();
-        headers.add("Authorization", accessToken);
+        headers.add("Authorization", bearerAccessToken);
         final var request = buildPostRequest(headers, null, "/api/v1/auth/logout");
         final var response = template.exchange(request, JsonResponse.class);
 

@@ -2,30 +2,29 @@ package com.vong.manidues.board;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vong.manidues.board.dto.BoardGetResponse;
-import com.vong.manidues.board.dto.BoardRegisterRequest;
 import com.vong.manidues.board.dto.BoardRegisterResponse;
 import com.vong.manidues.member.MemberRepository;
 import com.vong.manidues.token.TokenUtility;
-import com.vong.manidues.web.HttpUtility;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-import static com.vong.manidues.auth.AuthenticationFixture.MEMBER_ID;
-import static com.vong.manidues.web.HttpUtility.buildGetRequest;
-import static com.vong.manidues.web.HttpUtility.buildPostRequest;
+import static com.vong.manidues.auth.AuthenticationFixture.MEMBER_ENTITY;
+import static com.vong.manidues.board.BoardDtoUtility.buildBoardRegisterRequest;
+import static com.vong.manidues.web.HttpUtility.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
 @Slf4j
 public class BoardRestTest {
@@ -51,31 +50,37 @@ public class BoardRestTest {
     void setUp() {
         boardRepository.save(Board.builder()
                 .title("hello")
-                .content("testing updateDate.")
+                .content("testing")
                 .member(memberRepository.findById(1L).orElseThrow())
                 .build()
         );
     }
 
+    @AfterEach
+    void tearDown() {
+        log.info(boardRepository.findAll().toString());
+    }
+
     @Test
-    public void getBoard() throws Exception {
+    public void getBoard() {
         final var request = buildGetRequest("/api/v1/board/1");
         final var response = template.exchange(request, BoardGetResponse.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getBoardId()).isEqualTo(1L);
+        assertThat(response.getBody().getTitle()).isEqualTo("hello");
+        assertThat(response.getBody().getContent()).isEqualTo("testing");
     }
 
     @Test
-    public void testViewCountAffectUpdateDate() throws InterruptedException {
+    public void testViewCountAffectUpdateDate() {
         final var request = buildGetRequest("/api/v1/board/1");
         final var firstResponse = template.exchange(request, BoardGetResponse.class);
 
         assertThat(firstResponse.getBody()).isNotNull();
         final var firstResponseUpdateDate = firstResponse.getBody().getUpdateDate();
 
-        Thread.sleep(1000);
         final var secondResponse = template.exchange(request, BoardGetResponse.class);
 
         assertThat(secondResponse.getBody()).isNotNull();
@@ -89,29 +94,26 @@ public class BoardRestTest {
 
         // given
         // to build HTTP headers with Authorization
-        final var token = tokenUtility.issueAccessTokenOnTest(MEMBER_ID);
-        HttpHeaders headers = HttpUtility.buildPostHeadersWithAuth(token);
+        final var accessToken = tokenUtility.buildToken(MEMBER_ENTITY);
+        final var BearerAccessToken = "Bearer " + accessToken;
+        final var headers = buildPostHeadersWithAuth(BearerAccessToken);
         // build body, JSON 형태의 스트링으로 보내지 않고 객체로 전달해도 테스트 가능.
-        BoardRegisterRequest body = BoardRegisterRequest.builder()
-                .title("Board from boardPostTests")
-                .content("test")
-                .build();
+        final var body = buildBoardRegisterRequest();
         final var request = buildPostRequest(headers, body, "/api/v1/board");
 
         // when
         final var response = template.exchange(request, BoardRegisterResponse.class);
 
         assertThat(response.getBody()).isNotNull();
-        Board registeredBoard = boardRepository
-                .findById(response.getBody().getId()).orElseThrow();
+        final var registeredBoard = boardRepository.findById(response.getBody().getId()).orElseThrow();
 
-        LocalDateTime dateTime1 = registeredBoard.getRegisterDate();
-        LocalDateTime dateTime2 = registeredBoard.getUpdateDate();
+        final var dateTime1 = registeredBoard.getRegisterDate();
+        final var dateTime2 = registeredBoard.getUpdateDate();
         long nanoGap = ChronoUnit.NANOS.between(dateTime1, dateTime2);
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(registeredBoard.getMember().getId()).isEqualTo(MEMBER_ID);
+        assertThat(registeredBoard.getMember().getId()).isEqualTo(MEMBER_ENTITY.getId());
         assertThat(registeredBoard.getTitle()).isEqualTo(body.getTitle());
         assertThat(registeredBoard.getContent()).isEqualTo(body.getContent());
         assertThat(registeredBoard.getViewCount()).isEqualTo(0);

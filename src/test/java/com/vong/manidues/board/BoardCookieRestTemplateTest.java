@@ -3,21 +3,25 @@ package com.vong.manidues.board;
 import com.vong.manidues.board.dto.BoardGetResponse;
 import com.vong.manidues.member.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.vong.manidues.web.HttpUtility.DEFAULT_GET_HEADERS;
+import static com.vong.manidues.web.HttpUtility.buildDefaultHeaders;
+import static com.vong.manidues.web.HttpUtility.buildGetRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
 @Slf4j
 public class BoardCookieRestTemplateTest {
@@ -48,82 +52,52 @@ public class BoardCookieRestTemplateTest {
         }
     }
 
-    @Test
-    public void initializeBbvCookie() throws Exception {
-        HttpHeaders requestHeaders = new HttpHeaders(DEFAULT_GET_HEADERS);
-        HttpEntity<String> request = new HttpEntity<>(requestHeaders);
-
-        ResponseEntity<BoardGetResponse> response = template.exchange(
-                "/api/v1/board/1"
-                , HttpMethod.GET
-                , request
-                , BoardGetResponse.class
-        );
-
-        log.info("\n{}\n{}\n{}"
-                , response.getStatusCode()
-                , response.getHeaders()
-                , response.getBody()
-        );
-
-        assertThat(response.getHeaders().get("Set-Cookie")).isNotNull();
-        assertThat(response.getHeaders().get("Set-Cookie").get(0)).startsWith("bbv");
+    @AfterEach
+    void tearDown() {
+        boardRepository.deleteAll();
     }
 
     @Test
-    public void canSetCookie() throws Exception {
+    public void initializeBbvCookie() {
+        final var request = buildGetRequest("/api/v1/board/1");
+        final var response = template.exchange(request, BoardGetResponse.class);
+
+        assertThat(response.getHeaders().get("Set-Cookie")).isNotNull();
+        assertThat(response.getHeaders().get("Set-Cookie").get(0)).startsWith("bbv=1");
+    }
+
+    @Test
+    public void canSetCookie() {
         // first
-        HttpHeaders requestHeaders = new HttpHeaders(DEFAULT_GET_HEADERS);
-        requestHeaders.add("Cookie", "bbv=1");
-        List<String> requestCookies = requestHeaders.get("Cookie");
+        final var firstRequestHeaders = buildDefaultHeaders();
+        firstRequestHeaders.add("Cookie", "bbv=1");
+        final var firstRequest = buildGetRequest(firstRequestHeaders, "/api/v1/board/2");
+        final var firstResponse = template.exchange(firstRequest, BoardGetResponse.class);
 
-        HttpEntity<String> firstRequest = new HttpEntity<>(requestHeaders);
-        String firstUri = "/api/v1/board/2";
+        // Parse cookies in response headers
+        // Prepare to place the cookie value in the next request header.
+        final var firstResponseCookies = firstResponse.getHeaders().get("Set-Cookie");
+        assertThat(firstResponseCookies).isNotNull();
+        final var cookiesToSend = getCookieListFromResponse(firstResponseCookies);
 
-        ResponseEntity<BoardGetResponse> firstResponse = template.exchange(
-                firstUri
-                , HttpMethod.GET
-                , firstRequest
-                , BoardGetResponse.class
-        );
-
-        List<String> firstResponseCookies = firstResponse.getHeaders().get("Set-Cookie");
-
-        assert requestCookies != null;
-        requestCookies.removeIf(item -> item.startsWith("bbv"));
-
-        assert firstResponseCookies != null;
-        HttpEntity<String> secondRequest =
-                httpEntityWithCookiesFromServer(firstResponseCookies, requestHeaders);
-        String secondUri = "/api/v1/board/3";
-
-        ResponseEntity<BoardGetResponse> secondResponse = template.exchange(
-                secondUri
-                , HttpMethod.GET
-                , secondRequest
-                , BoardGetResponse.class
-        );
-
-        List<String> secondResponseCookies = secondResponse.getHeaders().get("Set-Cookie");
+        // second
+        final var secondRequestHeaders = buildDefaultHeaders();
+        secondRequestHeaders.addAll("Cookie", cookiesToSend);
+        final var secondRequest = buildGetRequest(secondRequestHeaders, "/api/v1/board/3");
+        final var secondResponse = template.exchange(secondRequest, BoardGetResponse.class);
+        final var secondResponseCookies = secondResponse.getHeaders().get("Set-Cookie");
 
         assertThat(secondResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(secondResponseCookies).isNotNull();
         assertThat(secondResponseCookies.get(0)).startsWith("bbv=1/2/3");
     }
 
-    private HttpEntity<String> httpEntityWithCookiesFromServer(
-            List<String> cookiesFromServer
-            , HttpHeaders requestHeaders
-    ) {
-        List<String> nextRequestHeaderCookieValue = new ArrayList<>();
-
-        for (String cookie : cookiesFromServer) {
+    private static ArrayList<String> getCookieListFromResponse(List<String> cookiesFromResponse) {
+        final var cookiesToSend = new ArrayList<String>();
+        for (String cookie : cookiesFromResponse) {
             String[] cookiePairs = cookie.split(";");
-            nextRequestHeaderCookieValue.add(cookiePairs[0]);
+            cookiesToSend.add(cookiePairs[0]);
         }
-
-        requestHeaders.addAll("Cookie", nextRequestHeaderCookieValue);
-
-        return new HttpEntity<>(requestHeaders);
+        return cookiesToSend;
     }
 }

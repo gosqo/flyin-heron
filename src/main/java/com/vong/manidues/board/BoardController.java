@@ -26,7 +26,9 @@ public class BoardController {
             , HttpServletRequest request
             , HttpServletResponse response
     ) {
-        return ResponseEntity.status(200).body(service.get(id, request, response));
+        return ResponseEntity
+                .status(200)
+                .body(service.get(id, request, response));
     }
 
     @DeleteMapping("/{id}")
@@ -52,21 +54,11 @@ public class BoardController {
 
     @PostMapping("")
     public ResponseEntity<BoardRegisterResponse> registerBoard(
-            HttpServletRequest servletRequest,
-            @Valid @RequestBody BoardRegisterRequest request
+            HttpServletRequest request,
+            @Valid @RequestBody BoardRegisterRequest requestBody
     ) {
-        String requestUserEmail = authHeaderUtility
-                .extractEmailFromHeader(servletRequest);
-        Long id = service.register(requestUserEmail, request);
-
-        return id != null
-                ? ResponseEntity.ok(
-                BoardRegisterResponse.builder()
-                        .id(id)
-                        .posted(true)
-                        .message("게시물 등록이 완료됐습니다.")
-                        .build()
-        )
-                : ResponseEntity.status(400).build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(service.register(request, requestBody));
     }
 }

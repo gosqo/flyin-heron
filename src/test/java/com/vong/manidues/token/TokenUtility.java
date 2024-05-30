@@ -24,10 +24,9 @@ public class TokenUtility {
     public static final long EXPIRATION_8_DAYS = 691200000L;
 
     private final MemberRepository memberRepository;
-    private final JwtService service;
 
-    public String issueAccessTokenOnTest(Long memberId) {
-        return "Bearer " + service.generateAccessToken(memberRepository.findById(memberId).orElseThrow());
+    public String buildToken(UserDetails userDetails) {
+        return buildToken(new HashMap<>(), userDetails, 1800000L);
     }
 
     public String buildToken(

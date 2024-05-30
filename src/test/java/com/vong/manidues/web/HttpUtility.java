@@ -76,6 +76,14 @@ public class HttpUtility {
         );
     }
 
+    public static RequestEntity<String> buildGetRequest(HttpHeaders httpHeaders, String uri) {
+        return new RequestEntity<>(
+                httpHeaders
+                , HttpMethod.GET
+                , URI.create(uri)
+        );
+    }
+
     private static String getMappedBody(Object body)
             throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(body);
