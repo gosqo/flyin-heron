@@ -21,7 +21,7 @@ function logoutConfirm() {
 
 async function fetchLogout() {
     const url = '/api/v1/auth/logout';
-    const requestInit = {
+    let requestInit = {
         headers: {
             'Authorization': localStorage.getItem('refresh_token'),
         },

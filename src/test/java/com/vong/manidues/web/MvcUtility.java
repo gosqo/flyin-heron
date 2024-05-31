@@ -1,7 +1,6 @@
 package com.vong.manidues.web;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -15,7 +14,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @Getter
 @Component
-@Slf4j
 public class MvcUtility {
     public static MockHttpServletRequestBuilder buildMockPostRequest(String uri) {
         return request(HttpMethod.POST, uri) // HTTP method POST

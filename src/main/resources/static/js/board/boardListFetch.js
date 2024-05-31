@@ -3,7 +3,7 @@ async function getBoardList(pageNumber) {
     const url = `/api/v1/boards/${pageNumber}`;
 
     try {
-        const response = await fetch(url);
+        const response = await fetch(url, { cache: "no-cache" });
         console.log(response);
 
         if (response.status === 404) {

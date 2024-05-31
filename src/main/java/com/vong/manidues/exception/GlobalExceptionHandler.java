@@ -1,6 +1,7 @@
 package com.vong.manidues.exception;
 
 import com.vong.manidues.exception.custom.DebugNeededException;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -34,14 +35,15 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNoResourceFoundException(
+    public String handleNoResourceFoundException(
             NoResourceFoundException ex
+            , HttpServletResponse response
     ) {
         logException(ex);
         logWhereThrows(ex);
-        String userMessage = "존재하지 않는 자원에 대한 요청입니다.";
+        response.setStatus(404);
 
-        return buildResponseEntity(HttpStatus.NOT_FOUND, userMessage);
+        return "error/404";
     }
 
     @ExceptionHandler(BadCredentialsException.class)
@@ -84,9 +86,9 @@ public class GlobalExceptionHandler {
     ) {
         logException(ex);
         logWhereThrows(ex);
-        String userMessage = "존재하지 않는 자원에 대한 접근입니다.";
+        String userMessage = "존재하지 않는 자원에 대한 요청입니다.";
 
-        return buildResponseEntity(HttpStatus.NOT_FOUND, userMessage);
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, userMessage);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vong.manidues.member.dto.IsPresentEmailRequest;
 import com.vong.manidues.member.dto.IsPresentNicknameRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,7 +19,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Slf4j
 public class MemberRegisterIsPresentTest {
 
     private final MockMvc mockMvc;
@@ -168,7 +166,7 @@ public class MemberRegisterIsPresentTest {
     @Test
     public void isPresentEmailWithInappropriateEmail() throws Exception {
         String[] inappropriateEmails = {
-                "helllo@world..cc" // 마지막 . 이전에 영문 대소문자 혹은 숫자가 존재하지 않음.
+                "hello@world..cc" // 마지막 . 이전에 영문 대소문자 혹은 숫자가 존재하지 않음.
                 , "hello@world00.commm" // 최상위 도메인 자리수 초과
                 , "hello@world.d09.c" // 최상위 도메인 자리수 미달
                 , "hello@world--asd_asd.d09.co" // 연속된 하이픈

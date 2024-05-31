@@ -64,7 +64,7 @@ class AuthenticationServiceJpaTest {
     @AfterEach
     void tearDown() {
         Query query = entityManager.createNativeQuery("SELECT * FROM token t", Token.class);
-        List resultList = query.getResultList();
+        List<?> resultList = query.getResultList();
         log.info(resultList.toString());
 
         tokenRepository.deleteAll();

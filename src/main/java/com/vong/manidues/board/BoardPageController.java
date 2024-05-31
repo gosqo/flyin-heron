@@ -2,7 +2,6 @@ package com.vong.manidues.board;
 
 import com.vong.manidues.board.dto.BoardPageResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("api/v1/boards")
 @RequiredArgsConstructor
-@Slf4j
 public class BoardPageController {
 
     private final BoardService service;

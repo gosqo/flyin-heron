@@ -9,16 +9,16 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.NoSuchElementException;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService {
 
@@ -130,9 +130,9 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardGetResponse get(Long id, HttpServletRequest request, HttpServletResponse response) {
+    public BoardGetResponse get(Long id, HttpServletRequest request, HttpServletResponse response) throws NoResourceFoundException {
         var entity = boardRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("존재하지 않는 게시물 get 요청.")
+                () -> new NoResourceFoundException(HttpMethod.GET, request.getRequestURI())
         );
 
         if (!hasViewed(id, request)) {

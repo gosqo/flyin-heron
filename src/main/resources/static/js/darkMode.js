@@ -1,4 +1,9 @@
 window.addEventListener('load', () => {
+    initDarkMode();
+});
+
+function initDarkMode() {
+    console.log('darkMode.js initiated.');
 
     const themeToggleButton = document.querySelector('#theme-toggle-button');
     var localTheme = localStorage.getItem('themePreference');
@@ -34,7 +39,7 @@ window.addEventListener('load', () => {
 
         }
     });
-});
+}
 
 function toggleTheme(themeToggleButton, preference) {
 

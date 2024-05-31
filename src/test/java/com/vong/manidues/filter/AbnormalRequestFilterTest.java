@@ -17,7 +17,6 @@ import com.vong.manidues.token.JwtService;
 import com.vong.manidues.token.TokenExceptionTestController;
 import com.vong.manidues.utility.AuthHeaderUtility;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +52,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 )
 @Import(SecurityConfig.class)
 @ActiveProfiles("test")
-@Slf4j
 public class AbnormalRequestFilterTest {
     private final MockMvc mockMvc;
 
@@ -144,7 +142,7 @@ public class AbnormalRequestFilterTest {
 
     @Test
     public void requestToRegisteredResourceMatchesTest() throws Exception {
-        performGet("/errorasd", mockMvc).andExpect(status().isForbidden());
+        performGet("/errorAsd", mockMvc).andExpect(status().isForbidden());
     }
 
     // controller 중심의 테스트로,

@@ -7,7 +7,6 @@ import com.vong.manidues.member.Member;
 import com.vong.manidues.member.MemberRepository;
 import com.vong.manidues.utility.AuthHeaderUtility;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.Optional;
 
@@ -30,7 +30,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@Slf4j
 public class BoardServiceTest {
     @InjectMocks
     private BoardServiceImpl service;
@@ -56,7 +55,7 @@ public class BoardServiceTest {
     }
 
     @Test
-    void getBoardAddedViewCount() {
+    void getBoardAddedViewCount() throws NoResourceFoundException {
         // given
         var expectedObj = BoardGetResponse.of(boardViewCountAdded);
         when(boardRepository.findById(1L)).thenReturn(Optional.of(boardActiveViewCount));
@@ -69,7 +68,7 @@ public class BoardServiceTest {
     }
 
     @Test
-    void getBoardViewCountNull() {
+    void getBoardViewCountNull() throws NoResourceFoundException {
         // given
         var expectedObj = BoardGetResponse.of(boardViewCountNull);
         when(boardRepository.findById(1L)).thenReturn(Optional.of(boardViewCountNull));

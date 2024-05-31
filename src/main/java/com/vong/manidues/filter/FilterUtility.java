@@ -27,16 +27,20 @@ public class FilterUtility {
     }
 
     public static void logRequestInfo(HttpServletRequest request) {
-        String ipFormat = String.format("%-15s", request.getRemoteAddr());
+        final String ipFormat = String.format("%-15s", request.getRemoteAddr());
+        final String method = String.format("%-7s", request.getMethod());
+        final String uri = String.format("%-30s", request.getRequestURI());
+        final String protocol = String.format("%-8s", request.getProtocol());
+        final String connection = String.format("%-12s", request.getHeader("Connection"));
 
         log.info("""
                         {} "{} {} {}" {} {}"""
                 , ipFormat
-                , request.getMethod()
-                , request.getRequestURI()
-                , request.getProtocol()
+                , method
+                , uri
+                , protocol
+                , connection
                 , request.getHeader("User-Agent")
-                , request.getHeader("Connection")
         );
     }
 }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vong.manidues.exception.ErrorResponse;
 import com.vong.manidues.token.TokenUtility;
 import com.vong.manidues.utility.JsonResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-@Slf4j
 public class LogoutRestTest {
     private final TokenUtility tokenUtility;
     private final TestRestTemplate template;

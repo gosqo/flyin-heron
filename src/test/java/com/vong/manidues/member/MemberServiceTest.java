@@ -2,7 +2,6 @@ package com.vong.manidues.member;
 
 import com.vong.manidues.member.dto.ChangeMemberPasswordRequest;
 import com.vong.manidues.member.dto.MemberVerificationRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import static com.vong.manidues.auth.AuthenticationFixture.PASSWORD;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Slf4j
 public class MemberServiceTest {
 
     @Autowired

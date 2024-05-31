@@ -5,13 +5,11 @@ async function getBoard(boardId) {
         const response = await fetch(url);
 
         if (response.status === 404) {
-            location.href = '/error/404';
+            await page404(response);
         } else if (response.status === 500) {
             location.href = '/error';
         } else {
-            const data = await response.json();
-            console.log(data);
-            return data;
+            return await response.json();
         }
     } catch (error) {
         console.error('Error ' + error);

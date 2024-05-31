@@ -2,7 +2,6 @@ package com.vong.manidues.board;
 
 import com.vong.manidues.board.dto.BoardGetResponse;
 import com.vong.manidues.member.MemberRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
-@Slf4j
 public class BoardCookieRestTemplateTest {
 
     @Autowired

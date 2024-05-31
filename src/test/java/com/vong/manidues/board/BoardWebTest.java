@@ -11,7 +11,6 @@ import com.vong.manidues.utility.AuthHeaderUtility;
 import com.vong.manidues.web.HttpUtility;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = BoardController.class)
 @Import(SecurityConfig.class)
 @ActiveProfiles("test")
-@Slf4j
 public class BoardWebTest {
     @Autowired
     private MockMvc mockMvc;

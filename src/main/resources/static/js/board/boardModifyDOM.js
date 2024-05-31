@@ -18,7 +18,6 @@ window.addEventListener('load', async () => {
 
     // fetch board {id}
     const boardData = await getBoard(boardId);
-    console.log(boardData);
 
     if (boardData !== '' || boardData !== undefined) {
         
@@ -89,13 +88,11 @@ window.addEventListener('load', async () => {
 
                         const data = await fetchWithToken(url, options);
                         console.log(data);
-                        if (data.updated === true) {
+                        if (data.id !== undefined) {
                             alert(data.message);
                             location.replace(`/board/${data.id}`);
                         } else {
-                            // TODO 서버에서 예외 핸들링 및 응답 메세지 작성. 
-                            // input value request Object validation 등
-                            alert('게시물 수정에 문제가 발생했습니다.');
+                            alert(data.message);
                         }
 
                     } catch (error) {

@@ -1,31 +1,28 @@
 package com.vong.manidues.board;
 
 import com.vong.manidues.board.dto.*;
-import com.vong.manidues.utility.AuthHeaderUtility;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestController
 @RequestMapping("/api/v1/board")
 @RequiredArgsConstructor
-@Slf4j
 public class BoardController {
 
     private final BoardService service;
-    private final AuthHeaderUtility authHeaderUtility;
 
     @GetMapping("/{id}")
     public ResponseEntity<BoardGetResponse> getBoard(
             @PathVariable("id") Long id
             , HttpServletRequest request
             , HttpServletResponse response
-    ) {
+    ) throws NoResourceFoundException {
         return ResponseEntity
                 .status(200)
                 .body(service.get(id, request, response));
@@ -45,7 +42,7 @@ public class BoardController {
     public ResponseEntity<BoardUpdateResponse> updateBoard(
             HttpServletRequest request,
             @PathVariable("id") Long id,
-            @RequestBody BoardUpdateRequest body
+            @Valid @RequestBody BoardUpdateRequest body
     ) {
         return ResponseEntity
                 .status(HttpStatus.OK)

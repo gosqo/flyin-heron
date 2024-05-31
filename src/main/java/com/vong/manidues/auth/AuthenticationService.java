@@ -98,7 +98,6 @@ public class AuthenticationService {
                 .build();
     }
 
-    @SuppressWarnings("null")
     private void saveMemberToken(Member member, String jwtToken) {
         final Token token = Token.builder()
                 .member(member)

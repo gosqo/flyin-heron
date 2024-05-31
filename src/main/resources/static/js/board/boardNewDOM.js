@@ -54,10 +54,11 @@ window.addEventListener('load', async () => {
                 const confirmation = confirm('작성을 취소하시겠습니까?\n 확인을 클릭 시, 작성 내용을 저장하지 않고 이전 페이지로 이동합니다.');
                 if (confirmation) {
 
-                    document.querySelectorAll('input').forEach((input) => {
+                    const inputs = document.querySelectorAll('.form-control');
+                    inputs.forEach((input) => {
                         input.value = '';
                     });
-                    history.go(-1);
+                    history.back();
                 }
             });
     }
@@ -71,7 +72,8 @@ window.addEventListener('load', async () => {
                 const confirmation = confirm('작성하신 내용을 지우시겠습니까?');
                 if (confirmation) {
 
-                    document.querySelectorAll('input').forEach((input) => {
+                    const inputs = document.querySelectorAll('.form-control');
+                    inputs.forEach((input) => {
                         input.value = '';
                     });
                 }
@@ -104,16 +106,12 @@ window.addEventListener('load', async () => {
                         
                     } else {
                         
-                        if (data.posted === true) {
+                        if (data.id === undefined) {
                             alert(data.message);
-                            // replace() 사용시 서브밋 후, 뒤로가기, 목록에 닿을 시 캐시된 페이지가 나와서 새 글이 목록에 표시되지 않음.
-                            // 수정 서브밋에서도 마찬가지.
-                            location.replace(`/board/${data.id}`);
-                        } else {
-                            // TODO 서버에서 예외 핸들링 및 응답 메세지 작성. 
-                            // input value request Object validation 등
-                            alert('게시물 등록에 문제가 발생했습니다.');
+                            return;
                         }
+                        alert(data.message);
+                        location.replace(`/board/${data.id}`);
                     }
 
                 } catch (error) {

@@ -1,9 +1,12 @@
 window.addEventListener('load', async () => {
-    
+    await getBoards();
+});
+
+async function getBoards() {
     const path = window.location.pathname.split('/');
     const uriPageNumber = path[path.length - 1] === ''
-            ? 1
-            : parseInt(path[path.length - 1]);
+        ? 1
+        : parseInt(path[path.length - 1]);
     const data = await getBoardList(uriPageNumber);
     console.log(data);
     const boardPage = data.boardPage;
@@ -16,12 +19,9 @@ window.addEventListener('load', async () => {
         const boardListHeader = document.querySelector('#board-list-header');
 
         const newBoardButton = createElement('button', 'btn btn-primary', 'register-board');
-        // const newBoardButton = document.createElement('button');
-        // newBoardButton.className = 'btn btn-primary';
-        // newBoardButton.id = "register-board";
         newBoardButton.textContent = 'New Board';
-        newBoardButton.onclick = () => { self.location.href = '/board/new' };
-        
+        newBoardButton.onclick = () => { location.href = '/board/new'; };
+
         boardListHeader.append(newBoardButton);
     }
 
@@ -32,8 +32,7 @@ window.addEventListener('load', async () => {
     });
 
     createPageItemsWrapper(boardPageTotalPages, boardPageNumber);
-
-});
+}
 
 function createPageItem(targetNumber, boardPageNumber) {
 

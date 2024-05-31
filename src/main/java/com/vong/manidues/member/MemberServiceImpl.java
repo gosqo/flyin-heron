@@ -4,14 +4,12 @@ import com.vong.manidues.member.dto.ChangeMemberPasswordRequest;
 import com.vong.manidues.member.dto.MemberRegisterRequest;
 import com.vong.manidues.member.dto.MemberVerificationRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
@@ -41,7 +39,6 @@ public class MemberServiceImpl implements MemberService {
         return false;
     }
 
-    @SuppressWarnings("null")
     @Override
     public void register(MemberRegisterRequest request) {
         if (isDuplicated(request))
