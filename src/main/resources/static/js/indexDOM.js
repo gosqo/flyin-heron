@@ -1,65 +1,42 @@
-const buttonsArea = document.querySelector('#buttons-area');
+window.addEventListener('load', () => {
+    const buttonsArea = document.querySelector('#buttons-area');
 
-if (localStorage.getItem('access_token')) {
-    // logoutButton
-    const logoutButton = document.createElement('button');
-    
-    logoutButton.id = 'logoutButton';
-    logoutButton.className = 'btn btn-primary';
-    logoutButton.textContent = 'logout';
-    
-    buttonsArea.append(logoutButton);
-    
-    // jwtValidationButton
-    const jwtValidationButton = document.createElement('button');
+    addButtons();
+    addBoardListButton();
 
-    jwtValidationButton.id = 'jwtValidationButton';
-    jwtValidationButton.className = 'btn btn-primary';
-    jwtValidationButton.textContent = 'Test JWT';
+    function addButtons() {
 
-    buttonsArea.append(jwtValidationButton);
+        if (localStorage.getItem('access_token')) {
+            const logoutButton = createButton('logoutButton', 'btn btn-primary', 'logout');
+            buttonsArea.append(logoutButton);
 
-} else {
-    // loginButton
-    const loginButton = document.createElement('button');
-    
-    loginButton.id = 'login-btn';
-    loginButton.className = 'btn btn-primary';
-    loginButton.textContent = 'Login';
+            const jwtValidationButton = createButton('jwtValidationButton', 'btn btn-primary', 'Test JWT');
+            buttonsArea.append(jwtValidationButton);
 
-    loginButton.addEventListener(
-        'click',
-        () => self.location.href = '/login'
-    );
-    
-    buttonsArea.append(loginButton);
+            return;
+        }
 
-    // signUpButton
-    const signUpButton = document.createElement('button');
-    
-    signUpButton.id = 'sign-up-btn';
-    signUpButton.className = 'btn btn-primary';
-    signUpButton.textContent = 'Sign up';
+        const loginButton = createButton('login-btn', 'btn btn-primary', 'Login');
+        buttonsArea.append(loginButton);
+        loginButton.addEventListener(
+            'click',
+            () => self.location.href = '/login'
+        );
 
-    signUpButton.addEventListener(
-        'click', 
-        () => self.location.href = '/signUp'
-    );
-    
-    buttonsArea.append(signUpButton);
+        const signUpButton = createButton('sign-up-btn', 'btn btn-primary', 'Sign up');
+        buttonsArea.append(signUpButton);
+        signUpButton.addEventListener(
+            'click',
+            () => self.location.href = '/signUp'
+        );
+    }
 
-}
-
-// get board list
-const getBoardButton = document.createElement('button');
-    
-getBoardButton.id = 'get-board-btn';
-getBoardButton.className = 'btn btn-primary';
-getBoardButton.textContent = 'Board List';
-
-getBoardButton.addEventListener(
-    'click',
-    () => self.location.href = '/boards'
-);
-
-buttonsArea.append(getBoardButton);
+    function addBoardListButton() {
+        const getBoardButton = createButton('get-board-btn', 'btn btn-primary', 'Board List');
+        buttonsArea.append(getBoardButton);
+        getBoardButton.addEventListener(
+            'click',
+            () => self.location.href = '/boards'
+        );
+    }
+});

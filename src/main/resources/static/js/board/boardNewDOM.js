@@ -2,47 +2,24 @@ window.addEventListener('load', async () => {
     const buttonsArea = document.querySelector('#buttons-area')
     const accessToken = localStorage.getItem('access_token');
     const decodedJwt = parseJwt(accessToken);
-    // console.log(decodedJwt);
-    const userEmail = decodedJwt.sub;
-    // console.log(userEmail);
     const userId = decodedJwt.id;
-    // console.log(userId);
-    
+
     // fragment/boardHeader button control
     const goBackButton = document.querySelector('#go-back-btn');
     goBackButton.addEventListener('click', () => {
         history.back();
     });
-    
+
     // buttons DOM
     if (userId) {
-        // submit Button
-        const submitButton = document.createElement('button');
-
-        submitButton.id = 'submit-btn';
-        submitButton.className = 'btn btn-primary';
-        submitButton.textContent = 'Submit';
-
+        const submitButton = createButton('submit-btn', 'btn btn-primary', 'Submit');
         buttonsArea.append(submitButton);
 
-        // resetButton
-        const resetButton = document.createElement('button');
-
-        resetButton.id = 'reset-btn';
-        resetButton.className = 'btn btn-secondary';
-        resetButton.textContent = 'Reset';
-
+        const resetButton = createButton('reset-btn', 'btn btn-secondary', 'Reset');
         buttonsArea.append(resetButton);
 
-        // cancelButton
-        const cancelButton = document.createElement('button');
-
-        cancelButton.id = 'cancel-btn';
-        cancelButton.className = 'btn btn-secondary';
-        cancelButton.textContent = 'Cancel';
-
+        const cancelButton = createButton('cancel-btn', 'btn btn-secondary', 'Cancel');
         buttonsArea.append(cancelButton);
-
     }
 
     // cancel and back button
@@ -103,9 +80,9 @@ window.addEventListener('load', async () => {
                     if (data.message.includes('Validation')) {
 
                         alert(data.errors[0].defaultMessage);
-                        
+
                     } else {
-                        
+
                         if (data.id === undefined) {
                             alert(data.message);
                             return;

@@ -10,12 +10,11 @@ window.addEventListener('load', () => {
     const submitButton = document.querySelector('#submit-form-btn');
     const isPresentEmailButton = document.querySelector('#is-present-email-button');
     const isPresentNicknameButton = document.querySelector('#is-present-nickname-button');
-    const form = document.querySelector('#form');
-    
+
     isPresentEmailButton.addEventListener('click', async (event) => {
         event.preventDefault();
         const targetElement = document.querySelector('input[name=email]');
-        
+
         removeElementIfPresent(targetElement, 'IsPresentCheckMessage');
 
         const valueToCheck = targetElement.value;
@@ -25,10 +24,10 @@ window.addEventListener('load', () => {
                 'Content-Type': 'application/json',
             },
             method: 'POST',
-            body: JSON.stringify({"email": valueToCheck})
+            body: JSON.stringify({ "email": valueToCheck })
         };
 
-        const isPresentResultMessage= await fetchAndReturnMessage(url, options);
+        const isPresentResultMessage = await fetchAndReturnMessage(url, options);
         const isPassed = isPresentResultMessage === '사용 가능한 이메일 주소입니다.';
         addResultMessageIsPresent(targetElement, isPassed, isPresentResultMessage, isUniqueEmail);
         if (isPassed) isUniqueEmail = true;
@@ -49,7 +48,7 @@ window.addEventListener('load', () => {
                 'Content-Type': 'application/json',
             },
             method: 'POST',
-            body: JSON.stringify({"nickname": valueToCheck})
+            body: JSON.stringify({ "nickname": valueToCheck })
         };
 
         const isPresentResultMessage = await fetchAndReturnMessage(url, options);
@@ -62,12 +61,8 @@ window.addEventListener('load', () => {
 
     submitButton.addEventListener('click', async (event) => {
         event.preventDefault();
-        const formData = new FormData(form);
-        const body = {};
-        
-        formData.forEach((value, key) => {
-            body[key] = value;
-        });
+
+        const body = getBodyFromForm();
 
         const url = '/api/v1/member';
         const options = {
@@ -77,21 +72,49 @@ window.addEventListener('load', () => {
             method: 'POST',
             body: JSON.stringify(body)
         };
-
         await fetchSubmit(url, options);
     });
-    
+
+    function getBodyFromForm() {
+        const form = document.querySelector('#form');
+        const formData = new FormData(form);
+        const body = {};
+
+        formData.forEach((value, key) => {
+            body[key] = value;
+        });
+        return body;
+    }
+
+    async function fetchSubmit(url, options) {
+        try {
+            const response = await fetch(url, options);
+
+            if (response.status === 200) {
+                const result = await response.text();
+                alert(result);
+
+                location.replace('/login');
+                return;
+            }
+
+            const data = await response.json();
+            alert(data.message);
+        } catch (error) {
+            console.error(error);
+        }
+    }
 });
 
 function activateSubmitIfClear() {
     const submitButton = document.querySelector('#submit-form-btn');
 
     submitButton.disabled = isValidEmail === true
-                && isValidPassword === true
-                && isValidPasswordCheck === true
-                && isValidNickname === true
-                && isUniqueEmail === true
-                && isUniqueNickname === true ? false : true;
+        && isValidPassword === true
+        && isValidPasswordCheck === true
+        && isValidNickname === true
+        && isUniqueEmail === true
+        && isUniqueNickname === true ? false : true;
 }
 
 function removeElementIfPresent(targetElement, appendingId) {
@@ -107,10 +130,10 @@ function addResultMessageIsPresent(targetElement, passingFlag, resultMessage, re
     message.id = `${targetElement.name}ResultMessageIsPresent`;
     message.textContent = resultMessage;
     if (passingFlag) {
-        message.style.color ='green';
+        message.style.color = 'green';
         resultFlag = true;
     } else {
-        message.style.color ='red';
+        message.style.color = 'red';
         resultFlag = false;
     }
     targetElement.closest('div').nextElementSibling.nextElementSibling.append(message);
@@ -123,34 +146,5 @@ async function fetchAndReturnMessage(url, options) {
         return data.message;
     } catch (error) {
         console.error('Error: ', error);
-    }
-}
-
-async function fetchSubmit(url, options) {
-    try {
-        const response = await fetch(url, options);
-        console.log(response);
-
-        if (response.status === 200) {
-
-            const result = await response.text();
-            alert(result);
-
-            location.replace('/login');
-
-        } else if (response.status === 400) {
-
-            const result = await response.json();
-            console.log(result);
-            alert(result.message);
-
-        } else {
-
-            const result = await response.json();
-            alert(result.message);
-
-        }
-    } catch (error) {
-        console.error(error);
     }
 }

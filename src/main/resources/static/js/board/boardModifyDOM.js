@@ -4,11 +4,7 @@ window.addEventListener('load', async () => {
     const buttonsArea = document.querySelector('#buttons-area')
     const accessToken = localStorage.getItem('access_token');
     const decodedJwt = parseJwt(accessToken);
-    // console.log(decodedJwt);
-    const userEmail = decodedJwt.sub;
-    // console.log(userEmail);
     const userId = decodedJwt.id;
-    // console.log(userId);
 
     // fragment/boardHeader button control
     const goBackButton = document.querySelector('#go-back-btn');
@@ -20,38 +16,25 @@ window.addEventListener('load', async () => {
     const boardData = await getBoard(boardId);
 
     if (boardData !== '' || boardData !== undefined) {
-        
+
         document.querySelector('#board-id').textContent = boardData.boardId;
         document.querySelector('#board-title').value = boardData.title;
         document.querySelector('#board-writer').value = boardData.writer;
         // TODO add boardHits on response entity(on server). then unlock below.
         // document.querySelector('#board-hits').textContent = boardData.hits;
-        document.querySelector('#board-date').textContent = 
-                boardData.registerDate !== boardData.updateDate
-                        ? formatDate(boardData.registerDate )
-                        : '수정됨 ' + formatDate(boardData.updateDate);
+        document.querySelector('#board-date').textContent =
+            boardData.registerDate !== boardData.updateDate
+                ? formatDate(boardData.registerDate)
+                : '수정됨 ' + formatDate(boardData.updateDate);
         document.querySelector('#board-content').value = boardData.content;
-    
+
         // buttons DOM
         if (userId === boardData.writerId) {
-            // modifyButton
-            const modifyButton = document.createElement('button');
-    
-            modifyButton.id = 'modify-btn';
-            modifyButton.className = 'btn btn-primary';
-            modifyButton.textContent = 'Modify';
-    
+            const modifyButton = createButton('modify-btn', 'btn btn-primary', 'Modify');
             buttonsArea.append(modifyButton);
-    
-            // cancelButton
-            const cancelButton = document.createElement('button');
-    
-            cancelButton.id = 'cancel-btn';
-            cancelButton.className = 'btn btn-secondary';
-            cancelButton.textContent = 'Cancel';
-    
+
+            const cancelButton = createButton('cancel-btn', 'btn btn-secondary', 'Cancel');
             buttonsArea.append(cancelButton);
-    
         }
 
         // cancel button click event
@@ -61,13 +44,13 @@ window.addEventListener('load', async () => {
                 'click',
                 () => {
                     const confirmation = confirm('수정을 취소하시겠습니까?\n 확인을 클릭 시, 수정 내용을 저장하지 않고 목록으로 이동합니다.');
-                if (confirmation) {
-                    location.replace(`/board/${boardId}`);
-                }
+                    if (confirmation) {
+                        history.back();
+                    }
                 }
             )
         }
-    
+
         // modify board fetch.
         const modifyButton = document.querySelector('#modify-btn');
         if (modifyButton) {
@@ -121,13 +104,13 @@ function parseJwt(token) {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     const jsonPayload = decodeURIComponent(window.atob(base64)
-            .split('')
-            .map(function (c) {
-                    return '%' 
-                            + ('00' + c.charCodeAt(0).toString(16))
-                            .slice(-2);
-            })
-            .join('')
+        .split('')
+        .map(function (c) {
+            return '%'
+                + ('00' + c.charCodeAt(0).toString(16))
+                    .slice(-2);
+        })
+        .join('')
     );
 
     return JSON.parse(jsonPayload);
@@ -137,11 +120,11 @@ function formatDate(data) {
 
     // LocalDateTime 형식의 JSON 값을 Date 객체로 변환
     const date = new Date(data);
-    
+
     // 원하는 형식(yyyy-MM-dd)으로 변환
     const formattedDate = date.getFullYear() + '-' +
         String(date.getMonth() + 1).padStart(2, '0') + '-' +
         String(date.getDate()).padStart(2, '0');
-    
+
     return formattedDate;
 }

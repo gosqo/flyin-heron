@@ -19,8 +19,7 @@ async function getBoards() {
     if (tokenCheck()) {
         const boardListHeader = document.querySelector('#board-list-header');
 
-        const newBoardButton = createElement('button', 'btn btn-primary', 'register-board');
-        newBoardButton.textContent = 'New Board';
+        const newBoardButton = createButton('register-board', 'btn btn-primary', 'New Board');
         newBoardButton.onclick = () => { location.href = '/board/new'; };
 
         boardListHeader.append(newBoardButton);
@@ -37,19 +36,19 @@ async function getBoards() {
 
 function createPageItem(targetNumber, boardPageNumber) {
 
-    const pageItem = document.createElement('li');
-    pageItem.className = 'page-item';
-    
-        const pageLink = createElement('a', 'page-link');
-        // const pageLink = document.createElement('a');
-        // pageLink.className = 'page-link';
-        pageLink.href = `/boards/${targetNumber + 1}`;
-        pageLink.textContent = targetNumber + 1;
+    const pageItem = createElement('li', null, 'page-item');
 
-        if (boardPageNumber === targetNumber) 
+    const pageLink = createAnchor(
+        null
+        , 'page-link'
+        , `/boards/${targetNumber + 1}`
+        , targetNumber + 1
+    );
+
+    if (boardPageNumber === targetNumber)
         pageLink.classList.add('active');
 
-        pageItem.append(pageLink);
+    pageItem.append(pageLink);
 
     return pageItem;
 }
@@ -60,58 +59,42 @@ function createPageItemsWrapper(boardPageTotalPages, boardPageNumber) {
 
     // variables for iteration (start|endNumber)
     const startNumber = boardPageNumber > 1
-            ? boardPageNumber - 2
-            : 0;
+        ? boardPageNumber - 2
+        : 0;
 
     const endNumber = boardPageNumber + 3 > boardPageTotalPages
-            ? boardPageTotalPages
-            : boardPageNumber + 3;
+        ? boardPageTotalPages
+        : boardPageNumber + 3;
 
-    const pagination = document.createElement('ul');
-    pagination.className = 'pagination justify-content-center';
-    pagination.id = 'pagination-ul';
-
+    const pagination = createElement('ul', 'pagination-ul', 'pagination justify-content-center');
     paginationContainer.append(pagination);
 
     if (boardPageNumber > 2) {
-        const prevItem = document.createElement('li');
-        prevItem.className = 'page-item';
-    
+        const prevItem = createElement('li', null, 'page-item');
         pagination.append(prevItem);
 
-        const pageLink = document.createElement('a');
-        pageLink.className = 'page-link';
-        pageLink.href = `/boards/${boardPageNumber + 1 - 3}`;
-
+        const pageLink = createAnchor(null, 'page-link', `/boards/${boardPageNumber + 1 - 3}`, null);
         prevItem.append(pageLink);
-        
-        const prevChar = document.createElement('span');
+
+        const prevChar = createElement('span', null, null);
         prevChar.ariaHidden = 'true';
         prevChar.textContent = '«';
-
         pageLink.append(prevChar);
-
     }
 
     for (i = startNumber; i < endNumber; i++)
-    pagination.append(createPageItem(i, boardPageNumber));
+        pagination.append(createPageItem(i, boardPageNumber));
 
     if (boardPageNumber < boardPageTotalPages - 3) {
-        const nextItem = document.createElement('li');
-        nextItem.className = 'page-item';
-
+        const nextItem = createElement('li', null, 'page-item');
         pagination.append(nextItem);
 
-        const pageLink = document.createElement('a');
-        pageLink.className = 'page-link';
-        pageLink.href = `/boards/${boardPageNumber + 1 + 3}`;
-
+        const pageLink = createAnchor(null, 'page-link', `/boards/${boardPageNumber + 1 + 3}`, null);
         nextItem.append(pageLink);
-        
-        const nextChar = document.createElement('span');
+
+        const nextChar = createElement('span', null, null);
         nextChar.ariaHidden = 'true';
         nextChar.textContent = '»';
-
         pageLink.append(nextChar);
     }
 }
@@ -142,68 +125,54 @@ function createBoardNodes(board) {
     //   </div>
     // </div>
 
-    const boardWrapper = document.createElement('div');
-    boardWrapper.className = 'card mb-3';
-
+    const boardWrapper = createDivision(null, 'card mb-3');
     boardListContainer.append(boardWrapper);
-    
-      const boardBody = document.createElement('div');
-      boardBody.id = `board${board.boardId}`;
-      boardBody.className = 'card-body';
-    
-      boardWrapper.append(boardBody);
 
-        const topWrapper = document.createElement('div');
-        topWrapper.className = 'd-flex justify-content-between';
+    const boardBody = createDivision(`board${board.boardId}`, 'card-body');
+    boardWrapper.append(boardBody);
 
-        boardBody.append(topWrapper);
-    
-          const boardTitle = document.createElement('h5');
-          boardTitle.className = 'card-title';
-          boardTitle.textContent = board.title;
-    
-          topWrapper.append(boardTitle);
+    const topWrapper = createDivision(null, 'd-flex justify-content-between');
+    boardBody.append(topWrapper);
 
-          const boardWriter = document.createElement('p');
-          boardWriter.id = 'board-writer';
-          boardWriter.textContent = board.writer;
+    const boardTitle = createDivision(null, 'card-title');
+    boardTitle.textContent = board.title;
 
-          topWrapper.append(boardWriter);
-    
-        const boardContent = document.createElement('p');
-        boardContent.className = 'card-text';
-        const substringContent = board.content.length > 151
-            ? board.content.substring(0, 150) + '...'
-            : board.content;
-        boardContent.textContent = substringContent;
-    
-        boardBody.append(boardContent);
-    
-        const boardDateWrapper = document.createElement('p');
-        boardDateWrapper.className = 'card-text';
-    
-        boardBody.append(boardDateWrapper);
-    
-          const boardDate = document.createElement('small');
-          boardDate.className = 'text-body-secondary';
-          boardDate.textContent = 
-               gapBetweenDateTimes(board.updateDate, board.registerDate) === 0
-                  ? formatDate(board.registerDate)
-                  : '수정됨 ' + formatDate(board.updateDate);
-    
-          boardDateWrapper.append(boardDate);
+    topWrapper.append(boardTitle);
+
+    const boardWriter = createParagraph('board-writer', null, board.writer);
+    topWrapper.append(boardWriter);
+
+    const contentPreview = board.content.length > 151
+        ? trimIn150(board.content)
+        : board.content;
+    const boardContentPreview = createParagraph(null, 'card-text', contentPreview);
+    boardBody.append(boardContentPreview);
+
+    const boardDateWrapper = createParagraph(null, 'card-text', null);
+    boardBody.append(boardDateWrapper);
+
+    const boardDate = document.createElement('small', null, 'text-body-secondary');
+    boardDate.textContent =
+        gapBetweenDateTimes(board.updateDate, board.registerDate) === 0
+            ? formatDate(board.registerDate)
+            : '수정됨 ' + formatDate(board.updateDate);
+    boardDateWrapper.append(boardDate);
+
+    function trimIn150(content) {
+        return content.substring(0, 150) + '...';
+    }
 }
 
 function formatDate(data) {
 
     // LocalDateTime 형식의 JSON 값을 Date 객체로 변환
     const date = new Date(data);
-    
+
     // 원하는 형식(yyyy-MM-dd)으로 변환
     const formattedDate = date.getFullYear() + '-' +
         String(date.getMonth() + 1).padStart(2, '0') + '-' +
         String(date.getDate()).padStart(2, '0');
-    
+
     return formattedDate;
 }
 

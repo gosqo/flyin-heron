@@ -1,14 +1,12 @@
 window.addEventListener('load', () => {
     if (localStorage.getItem('access_token')) {
         const logoutButton = document.querySelector('#logoutButton');
-    
+
         if (logoutButton) {
             logoutButton.addEventListener('click', (event) => {
                 event.preventDefault();
-    
+
                 if (logoutConfirm()) fetchLogout();
-                else return;
-    
             });
         }
     }
@@ -42,9 +40,9 @@ async function fetchLogout() {
         } else {
             alert('안전한 서비스 이용을 위해 강제 로그아웃을 진행합니다.');
 
-            if (localStorage.getItem('access_token')) 
+            if (localStorage.getItem('access_token'))
                 localStorage.removeItem('access_token');
-            if (localStorage.getItem('refresh_token')) 
+            if (localStorage.getItem('refresh_token'))
                 localStorage.removeItem('refresh_token');
 
             location.reload();

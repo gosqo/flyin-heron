@@ -88,7 +88,7 @@ function addMessageIfValid(targetElement) {
 
 function assignTargetAndMessage(event) {
     const targetElement = event.target;
-    const message = createElement('small', null, `${targetElement.name}ValidationMessage`);
+    const message = createElement('small', `${targetElement.name}ValidationMessage`, null);
     return { targetElement, message };
 }
 

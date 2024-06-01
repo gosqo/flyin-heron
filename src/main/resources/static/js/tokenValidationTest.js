@@ -1,32 +1,32 @@
-if (localStorage.getItem('access_token')) {
-    const tokenValidationButton = document.querySelector('#jwtValidationButton');
+window.addEventListener('load', () => {
+    if (localStorage.getItem('access_token')) {
+        const tokenValidationButton = document.querySelector('#jwtValidationButton');
 
-    tokenValidationButton.addEventListener('click', (event) => {
-        event.preventDefault();
-        // console.log(event.target);
-        tokenValidationCheck();
-    });
+        tokenValidationButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            tokenValidationCheck();
+        });
 
-    async function tokenValidationCheck() {
-        const accessToken = localStorage.getItem('access_token')
-        const url = '/tokenValidationTest';
-        let options = {
-            headers: {
-                'Authorization': accessToken,
+        async function tokenValidationCheck() {
+            const accessToken = localStorage.getItem('access_token')
+            const url = '/tokenValidationTest';
+            let options = {
+                headers: {
+                    'Authorization': accessToken,
+                }
+            };
+
+            try {
+                const data = await fetchWithToken(url, options);
+
+                if (data === undefined) return;
+
+                const paragraph = createParagraph(null, null, `${data.email} / ${data.expiration}`);
+                document.querySelector('#test-jwt-area').append(paragraph);
+
+            } catch (error) {
+                console.error('Error ' + error);
             }
-        };
-
-        try {
-            const data = await fetchWithToken(url, options);
-
-            if (data === undefined) return;
-
-            const paragraph = document.createElement('p');
-            document.querySelector('#test-jwt-area').append(paragraph);
-            paragraph.textContent = `${data.email} / ${data.expiration}`;
-
-        } catch (error) {
-            console.error('Error ' + error);
         }
     }
-}
+});

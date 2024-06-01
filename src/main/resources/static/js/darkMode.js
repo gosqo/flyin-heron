@@ -57,7 +57,7 @@ function toggleTheme(themeToggleButton, preference) {
 }
 
 function themeToggleButtonText(themeToggleButton, preference) {
-    
+
     themeToggleButton.textContent = preference === 'light'
         ? 'Dark mode'
         : 'Light mode';
