@@ -24,7 +24,7 @@ public class ViewController {
         return "board/boardModify";
     }
 
-    @GetMapping(value = {"/boards/", "/boards/{pageNumber}"})
+    @GetMapping(value = {"/boards", "/boards/{pageNumber}"})
     public String getBoardListView(@Nullable @PathVariable("pageNumber") Integer pageNumber) {
         return "board/boardList";
     }

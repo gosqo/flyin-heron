@@ -42,6 +42,7 @@ public class SecurityConfig {
             , "/api/v1/boards/**"
             , "/api/v1/board/**"
             , "/board/**"
+            , "/boards"
             , "/boards/**"
             , "/api/v1/cookie/**"
             , "/api/v1/exception"

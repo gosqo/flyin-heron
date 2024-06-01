@@ -4,7 +4,7 @@ window.addEventListener('load', async () => {
 
 async function getBoards() {
     const path = window.location.pathname.split('/');
-    const uriPageNumber = path[path.length - 1] === ''
+    const uriPageNumber = path[path.length - 1] === 'boards'
         ? 1
         : parseInt(path[path.length - 1]);
     const data = await getBoardList(uriPageNumber);
