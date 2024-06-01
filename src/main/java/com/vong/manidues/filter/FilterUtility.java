@@ -29,7 +29,7 @@ public class FilterUtility {
     public static void logRequestInfo(HttpServletRequest request) {
         final String ipFormat = String.format("%-15s", request.getRemoteAddr());
         final String method = String.format("%-7s", request.getMethod());
-        final String uri = String.format("%-30s", request.getRequestURI());
+        final String uri = String.format("%-36s", request.getRequestURI());
         final String protocol = String.format("%-8s", request.getProtocol());
         final String connection = String.format("%-12s", request.getHeader("Connection"));
 
