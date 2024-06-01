@@ -2,14 +2,12 @@ package com.vong.manidues.board;
 
 import com.vong.manidues.board.dto.BoardPageResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestController
 @RequestMapping("api/v1/boards")
@@ -21,18 +19,7 @@ public class BoardPageController {
     @GetMapping("/{pageNumber}")
     public ResponseEntity<BoardPageResponse> getBoardList(
             @PathVariable("pageNumber") int pageNumber
-    ) {
-        pageNumber = pageNumber - 1;
-        int pageSize = 3;
-        Sort sort = Sort.by(Sort.Direction.DESC, "registerDate");
-
-        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sort);
-
-        Page<Board> foundPage = service.getBoardPage(pageRequest);
-
-        return foundPage != null
-                ? ResponseEntity.status(200).body(new BoardPageResponse()
-                        .fromEntityPage(foundPage))
-                : ResponseEntity.status(404).build();
+    ) throws NoResourceFoundException {
+        return ResponseEntity.status(200).body(service.getBoardPage(pageNumber));
     }
 }

@@ -1,4 +1,5 @@
 window.addEventListener('load', async () => {
+    if (_404Flag) return;
     await getBoards();
 });
 

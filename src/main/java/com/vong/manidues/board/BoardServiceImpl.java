@@ -10,7 +10,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -29,50 +30,15 @@ public class BoardServiceImpl implements BoardService {
 
     private static final String BOARDS_BEEN_VIEWED = "bbv";
 
-    private void initializeCookieBbv(Long id, HttpServletResponse response) {
-        Cookie cookie = new Cookie(BOARDS_BEEN_VIEWED, id.toString());
-
-        cookie.setMaxAge(60 * 60);
-        response.addCookie(cookie);
-    }
-
-    private void addValueCookieBbv(Long id, HttpServletRequest request, HttpServletResponse response) {
-        Cookie[] cookies = request.getCookies();
-
-        if (cookies == null) {
-            initializeCookieBbv(id, response);
-            return;
-        }
-        Cookie cookie = cookieUtility.getCookie(BOARDS_BEEN_VIEWED, cookies);
-
-        if (cookieUtility.getCookieValueSize(cookie) > 3500)
-            cookieUtility.cutFirst500BytesWith(cookie, '/');
-        cookieUtility.appendCookieValueWith(id, cookie, '/');
-
-        cookie.setMaxAge(60 * 60);
-        response.addCookie(cookie);
-    }
-
-    private boolean hasViewed(
-            Long id
-            , HttpServletRequest request
-    ) {
-        Cookie[] cookies = request.getCookies();
-
-        if (cookies == null) return false;
-
-        Cookie targetCookie = cookieUtility.getCookie(BOARDS_BEEN_VIEWED, cookies);
-
-        if (targetCookie == null) return false;
-
-        return cookieUtility.hasSpecificValueIn(id, targetCookie);
-    }
-
     @Override
-    public Page<Board> getBoardPage(Pageable pageable) {
-        Page<Board> foundPage = boardRepository.findAll(pageable);
-        if (foundPage.getTotalPages() - 1 < pageable.getPageNumber()) return null;
-        return foundPage;
+    public BoardPageResponse getBoardPage(int pageNumber) throws NoResourceFoundException {
+        PageRequest pageRequest = getPageRequest(pageNumber);
+        Page<Board> foundPage = boardRepository.findAll(pageRequest);
+
+        if (foundPage.getTotalPages() - 1 < pageRequest.getPageNumber())
+            throw new NoResourceFoundException(HttpMethod.GET, "/boards/" + (foundPage.getPageable().getPageNumber() + 1));
+
+        return BoardPageResponse.fromEntityPage(foundPage);
     }
 
     @Override
@@ -147,5 +113,52 @@ public class BoardServiceImpl implements BoardService {
             boardRepository.save(entity);
         }
         return BoardGetResponse.of(entity);
+    }
+
+    private void initializeCookieBbv(Long id, HttpServletResponse response) {
+        Cookie cookie = new Cookie(BOARDS_BEEN_VIEWED, id.toString());
+
+        cookie.setMaxAge(60 * 60);
+        response.addCookie(cookie);
+    }
+
+    private void addValueCookieBbv(Long id, HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies == null) {
+            initializeCookieBbv(id, response);
+            return;
+        }
+        Cookie cookie = cookieUtility.getCookie(BOARDS_BEEN_VIEWED, cookies);
+
+        if (cookieUtility.getCookieValueSize(cookie) > 3500)
+            cookieUtility.cutFirst500BytesWith(cookie, '/');
+        cookieUtility.appendCookieValueWith(id, cookie, '/');
+
+        cookie.setMaxAge(60 * 60);
+        response.addCookie(cookie);
+    }
+
+    private boolean hasViewed(
+            Long id
+            , HttpServletRequest request
+    ) {
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies == null) return false;
+
+        Cookie targetCookie = cookieUtility.getCookie(BOARDS_BEEN_VIEWED, cookies);
+
+        if (targetCookie == null) return false;
+
+        return cookieUtility.hasSpecificValueIn(id, targetCookie);
+    }
+
+    private static PageRequest getPageRequest(int pageNumber) {
+        pageNumber = pageNumber - 1;
+        int pageSize = 3;
+        Sort sort = Sort.by(Sort.Direction.DESC, "registerDate");
+
+        return PageRequest.of(pageNumber, pageSize, sort);
     }
 }

@@ -1,3 +1,4 @@
+let _404Flag = false;
 
 async function page404(response) {
     _404Flag = true;

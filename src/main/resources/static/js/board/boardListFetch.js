@@ -4,15 +4,13 @@ async function getBoardList(pageNumber) {
 
     try {
         const response = await fetch(url, { cache: "no-cache" });
-        console.log(response);
 
         if (response.status === 404) {
-            location.href = '/error/404';
-        } else {
-            const data = await response.json();
-            console.log(data);
-            return data;
+            page404(response);
+            return;
         }
+
+        return await response.json();
     } catch (error) {
         console.error('Error ' + error);
     }

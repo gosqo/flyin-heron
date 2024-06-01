@@ -16,7 +16,7 @@ public class BoardPageResponse {
 
     private Page<BoardGetResponse> boardPage;
 
-    public BoardPageResponse fromEntityPage(Page<Board> entityPage) {
+    public static BoardPageResponse fromEntityPage(Page<Board> entityPage) {
         return BoardPageResponse.builder()
                 .boardPage(new PageImpl<>(
                         entityPage.get().map(BoardGetResponse::of).toList(),

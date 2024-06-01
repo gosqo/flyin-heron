@@ -1,9 +1,5 @@
-let _404Flag = false;
-
 window.addEventListener('load', async () => {
-    if (_404Flag) {
-        return;
-    }
+    if (_404Flag) return;
 
     const path = window.location.pathname.split('/');
     const boardId = path[path.length - 1];
