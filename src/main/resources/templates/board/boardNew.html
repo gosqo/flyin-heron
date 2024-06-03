@@ -1,8 +1,6 @@
 
 <thymeleaf th:replace="~{fragment/htmlHead}"></thymeleaf>
-  <script defer src="/js/tokenCheck.js"></script>
   <script defer src="/js/board/boardNewDOM.js"></script>
-  <script defer src="/js/fetchWithToken.js"></script>
   <title>New Board</title>
 </head>
 <body>
@@ -10,7 +8,7 @@
 
   <div class="container">
 
-      <div th:replace="~{fragment/boardHeader}"></div>
+      <div th:replace="~{fragment/board/boardHeader}"></div>
       <h2>Hello, you can post here.</h2>
       
     <form id="form">

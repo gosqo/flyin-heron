@@ -1,15 +1,14 @@
 
 <thymeleaf th:replace="~{fragment/htmlHead}"></thymeleaf>
-  <script defer src="/js/tokenCheck.js"></script>
+  <script defer src="/js/token/testJwt.js"></script>
   <script defer src="/js/indexDOM.js"></script>
-  <script defer src="/js/tokenValidationTest.js"></script>
-  <script defer src="/js/fetchWithToken.js"></script>
 <thymeleaf th:replace="~{fragment/scriptsAfterDOM}"></thymeleaf>
   <title>Home</title>
 </head>
+
 <body>
   <div th:replace="~{fragment/header :: header}"></div>
-  
+
   <div class="container">
     <div class="mt-4 mb-3 row">
       <h2>Hello, you came here, index.</h2>

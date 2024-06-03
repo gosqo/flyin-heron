@@ -4,12 +4,6 @@ window.addEventListener('load', async () => {
     const decodedJwt = parseJwt(accessToken);
     const userId = decodedJwt.id;
 
-    // fragment/boardHeader button control
-    const goBackButton = document.querySelector('#go-back-btn');
-    goBackButton.addEventListener('click', () => {
-        history.back();
-    });
-
     // buttons DOM
     if (userId) {
         const submitButton = createButton('submit-btn', 'btn btn-primary', 'Submit');

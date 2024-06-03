@@ -1,8 +1,7 @@
+
 <thymeleaf th:replace="~{fragment/htmlHead}"></thymeleaf>
-<script defer src="/js/tokenCheck.js"></script>
 <script defer src="/js/board/boardFetch.js"></script>
 <script defer src="/js/board/boardModifyDOM.js"></script>
-<script defer src="/js/fetchWithToken.js"></script>
 <title>Board Modify</title>
 </head>
 
@@ -11,7 +10,7 @@
 
   <div class="container">
 
-    <div th:replace="~{fragment/boardHeader}"></div>
+    <div th:replace="~{fragment/board/boardHeader}"></div>
     <h2>Hello, you're watching /board/<span id="board-id"></span>/modify</h2>
 
     <form id="form">
@@ -26,7 +25,7 @@
           <input type="text" name="writer" class="form-control" id="board-writer" disabled />
         </label>
         <div class="row">
-          <div class="my-auto" id="board-date" style="text-align: right">yy/MM/dd</div>
+          <div class="my-auto" id="board-date" style="text-align: right"></div>
         </div>
       </div>
 
@@ -36,10 +35,7 @@
         <textarea type="text" name="content" class="form-control" id="board-content" rows="6"></textarea>
       </div>
     </form>
-    <div class="mb-3" id="buttons-area">
-      <!-- if watcher is modify, delete -->
-
-    </div>
+    <div class="mb-3" id="buttons-area"></div>
   </div>
 
   <thymeleaf th:replace="~{fragment/footer}"></thymeleaf>

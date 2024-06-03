@@ -6,12 +6,6 @@ window.addEventListener('load', async () => {
     const decodedJwt = parseJwt(accessToken);
     const userId = decodedJwt.id;
 
-    // fragment/boardHeader button control
-    const goBackButton = document.querySelector('#go-back-btn');
-    goBackButton.addEventListener('click', () => {
-        history.back();
-    });
-
     // fetch board {id}
     const boardData = await getBoard(boardId);
 

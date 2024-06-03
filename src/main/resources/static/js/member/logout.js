@@ -1,17 +1,3 @@
-window.addEventListener('load', () => {
-    if (localStorage.getItem('access_token')) {
-        const logoutButton = document.querySelector('#logoutButton');
-
-        if (logoutButton) {
-            logoutButton.addEventListener('click', (event) => {
-                event.preventDefault();
-
-                if (logoutConfirm()) fetchLogout();
-            });
-        }
-    }
-});
-
 function logoutConfirm() {
     const confirmation = confirm('로그아웃 하시겠습니까?');
     return confirmation;

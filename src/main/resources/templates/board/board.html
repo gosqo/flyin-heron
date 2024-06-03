@@ -1,9 +1,6 @@
-
 <thymeleaf th:replace="~{fragment/htmlHead}"></thymeleaf>
-  <script defer src="/js/tokenCheck.js"></script>
   <script defer src="/js/board/boardFetch.js"></script>
   <script defer src="/js/board/boardDOM.js"></script>
-  <script defer src="/js/fetchWithToken.js"></script>
   <title>Board</title>
 </head>
 
@@ -12,7 +9,7 @@
 
   <div class="container" id="container">
 
-    <div th:replace="~{fragment/boardHeader}"></div>
+    <div th:replace="~{fragment/board/boardHeader}"></div>
     <h2>Hello, you're watching /board/<span id="board-id"></span></h2>
 
     <div class="mb-3">
@@ -27,13 +24,8 @@
       </div>
     </div>
 
-    <div class="mb-4" id="board-content">
-    </div>
-
-    <div class="mb-3" id="buttons-area">
-      <!-- if watcher is modify, delete -->
-
-    </div>
+    <div class="mb-4" id="board-content"></div>
+    <div class="mb-3" id="buttons-area"></div>
   </div>
 
 <thymeleaf th:replace="~{fragment/footer}"></thymeleaf>

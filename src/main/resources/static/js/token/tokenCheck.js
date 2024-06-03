@@ -2,8 +2,7 @@
  * 
  * @returns 스토리지에 토큰이 있다면 true, 아니라면 false
  */
-function tokenCheck() {
+function hasAuth() {
     const accessToken = localStorage.getItem('access_token');
-    if (accessToken) { return true }
-    return false;
+    return accessToken !== undefined && accessToken.startsWith('Bearer ');
 }

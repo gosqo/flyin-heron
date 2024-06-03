@@ -1,37 +1,42 @@
 window.addEventListener('load', async () => {
     if (_404Flag) return;
-    await getBoards();
-});
 
-async function getBoards() {
-    const path = window.location.pathname.split('/');
-    const uriPageNumber = path[path.length - 1] === 'boards'
-        ? 1
-        : parseInt(path[path.length - 1]);
+    if (hasAuth()) {
+        addNewBoardButton();
+    }
+
+    const uriPageNumber = getPageNumber();
     const data = await getBoardList(uriPageNumber);
-    console.log(data);
+
+    if (data === undefined) return;
+
     const boardPage = data.boardPage;
     const boardPageContent = boardPage.content;
     const boardPageTotalPages = boardPage.totalPages;
     const boardPageNumber = boardPage.number;
-    console.log(boardPageNumber);
-
-    if (tokenCheck()) {
-        const boardListHeader = document.querySelector('#board-list-header');
-
-        const newBoardButton = createButton('register-board', 'btn btn-primary', 'New Board');
-        newBoardButton.onclick = () => { location.href = '/board/new'; };
-
-        boardListHeader.append(newBoardButton);
-    }
 
     boardPageContent.forEach(board => {
-        console.log(board);
         createBoardNodes(board);
         addClickEvent(board.boardId);
     });
 
     createPageItemsWrapper(boardPageTotalPages, boardPageNumber);
+});
+
+function addNewBoardButton() {
+    const boardListHeader = document.querySelector('#board-list-header');
+
+    const newBoardButton = createButton('register-board', 'btn btn-primary', 'New Board');
+    newBoardButton.onclick = () => { location.href = '/board/new'; };
+    boardListHeader.append(newBoardButton);
+}
+
+function getPageNumber() {
+    const path = window.location.pathname.split('/');
+    const uriPageNumber = path[path.length - 1] === 'boards'
+        ? 1
+        : parseInt(path[path.length - 1]);
+    return uriPageNumber;
 }
 
 function createPageItem(targetNumber, boardPageNumber) {
@@ -105,7 +110,7 @@ function addClickEvent(boardId) {
         targetNode.style.cursor = 'pointer';
     });
     targetNode.addEventListener('click', () => {
-        self.location.href = `/board/${boardId}`;
+        location.href = `/board/${boardId}`;
     });
 }
 
