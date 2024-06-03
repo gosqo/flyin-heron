@@ -1,18 +1,14 @@
-window.addEventListener('load', () =>{
+import FormUtility from "../common/FormUtility";
 
-    const form = document.querySelector('#form');
+window.addEventListener('load', () => {
+
     const submitButton = document.querySelector('#submit-form-btn');
     
     submitButton.addEventListener('click', async (event) => {
         event.preventDefault();
     
-        const formData = new FormData(form);
-    
-        const body = {};
-        formData.forEach((value, key) => {
-            body[key] = value;
-        });
-    
+        const body = FormUtility.formToBody();
+        
         const url = '/api/v1/auth/authenticate';
         const requestInit = {
             headers: {

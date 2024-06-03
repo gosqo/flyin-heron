@@ -1,59 +1,72 @@
+import DomCreate from "./domUtils/DomCreate.js";
+import Logout from "./member/Logout.js";
+import TestJwt from './token/TestJwt.js';
+
+const indexDOM = new IndexDOM();
+
 window.addEventListener('load', () => {
-    addAuthDependButtons();
-    addBoardListButton();
+    indexDOM.addAuthDependButtons();
+    indexDOM.addBoardListButton();
 });
 
-function addAuthDependButtons() {
-    if (hasAuth()) {
-        addLogoutButton();
-        addJwtTestButton();
 
-        return;
+class IndexDOM {
+    logout = new Logout();
+    testJwt = new TestJwt();
+
+    addAuthDependButtons() {
+        if (AuthChecker.hasAuth()) {
+            this.addLogoutButton();
+            this.addJwtTestButton();
+    
+            return;
+        }
+    
+        this.addLoginButton();
+        this.addSignUpButton();
+    }
+    
+    addLogoutButton() {
+        const buttonsArea = document.querySelector('#buttons-area');
+
+        const logoutButton = DomCreate.button('logout-button', 'btn btn-primary', 'logout');
+        logoutButton.addEventListener('click', () => {
+            if (this.logout.logoutConfirm())
+                this.logout.fetchLogout();
+        });
+        buttonsArea.append(logoutButton);
     }
 
-    addLoginButton();
-    addSignUpButton();
+    addJwtTestButton() {
+        const buttonsArea = document.querySelector('#buttons-area');
+
+        const jwtTestButton = DomCreate.button('jwt-test-button', 'btn btn-primary', 'Test JWT');
+        jwtTestButton.onclick = () => this.testJwt.testJwt();
+        buttonsArea.append(jwtTestButton);
+    }
+
+    addLoginButton() {
+        const buttonsArea = document.querySelector('#buttons-area');
+
+        const loginButton = DomCreate.button('login-btn', 'btn btn-primary', 'Login');
+        loginButton.onclick = () => { location.href = '/login'; };
+        buttonsArea.append(loginButton);
+    }
+
+    addSignUpButton() {
+        const buttonsArea = document.querySelector('#buttons-area');
+
+        const signUpButton = DomCreate.button('sign-up-btn', 'btn btn-primary', 'Sign up');
+        signUpButton.onclick = () => { location.href = '/signUp'; };
+        buttonsArea.append(signUpButton);
+    }
+
+    addBoardListButton() {
+        const buttonsArea = document.querySelector('#buttons-area');
+
+        const getBoardButton = DomCreate.button('get-board-btn', 'btn btn-primary', 'Board List');
+        getBoardButton.onclick = () => { location.href = '/boards'; };
+        buttonsArea.append(getBoardButton);
+    }
 }
 
-function addLogoutButton() {
-    const buttonsArea = document.querySelector('#buttons-area');
-
-    const logoutButton = createButton('logout-button', 'btn btn-primary', 'logout');
-    logoutButton.addEventListener('click', () => {
-        if (logoutConfirm())
-            fetchLogout();
-    });
-    buttonsArea.append(logoutButton);
-}
-
-function addJwtTestButton() {
-    const buttonsArea = document.querySelector('#buttons-area');
-
-    const jwtTestButton = createButton('jwt-test-button', 'btn btn-primary', 'Test JWT');
-    jwtTestButton.onclick = () => testJwt();
-    buttonsArea.append(jwtTestButton);
-}
-
-function addLoginButton() {
-    const buttonsArea = document.querySelector('#buttons-area');
-
-    const loginButton = createButton('login-btn', 'btn btn-primary', 'Login');
-    loginButton.onclick = () => { location.href = '/login'; };
-    buttonsArea.append(loginButton);
-}
-
-function addSignUpButton() {
-    const buttonsArea = document.querySelector('#buttons-area');
-
-    const signUpButton = createButton('sign-up-btn', 'btn btn-primary', 'Sign up');
-    signUpButton.onclick = () => { location.href = '/signUp'; };
-    buttonsArea.append(signUpButton);
-}
-
-function addBoardListButton() {
-    const buttonsArea = document.querySelector('#buttons-area');
-
-    const getBoardButton = createButton('get-board-btn', 'btn btn-primary', 'Board List');
-    getBoardButton.onclick = () => { location.href = '/boards'; };
-    buttonsArea.append(getBoardButton);
-}    

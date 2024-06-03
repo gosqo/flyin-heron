@@ -1,140 +1,98 @@
-window.addEventListener('load', async () => {
-    if (_404Flag) return;
+import BoardFetcher from './BoardFetcher.js'
+import BoardUtility from './BoardUtility.js'
+import DomCreate from "../domUtils/DomCreate.js";
+import Fetcher from "../common/Fetcher.js"
+import Handle404 from '../exception/handle404.js';
 
-    const boardId = getBoardId();
-    const boardData = await getBoard(boardId);
-    
+const boardDOM = new BoardDOM();
+const boardFetcher = new BoardFetcher();
+const handle404 = new Handle404();
+
+window.addEventListener('load', async () => {
+    if (handle404._404Flag) return;
+
+    const boardId = boardDOM.getBoardId();
+    const boardData = await boardFetcher.getBoard(boardId, handle404);
+
     if (boardData === undefined) return;
 
-    fillContents(boardData);
+    boardDOM.placeData(boardData);
 
-    if (!hasAuth()) return;
-
-    if (isWriterOf(boardData)) {
-        addModifyButton(boardId);
-        addDeleteButton(boardId);
+    if (BoardUtility.isWriterOf(boardData)) {
+        boardDOM.addModifyButton(boardId);
+        boardDOM.addDeleteButton(boardId);
     }
 });
 
-function getBoardId() {
-    const path = window.location.pathname.split('/');
-    const boardId = path[path.length - 1];
-    return boardId;
-}
-
-function fillContents(boardData) {
-    document.querySelector('#board-id').textContent = boardData.boardId;
-    document.querySelector('#board-title').textContent = boardData.title;
-    document.querySelector('#board-writer').textContent = boardData.writer;
-    document.querySelector('#board-hits').textContent = `조회 ${boardData.viewCount}`;
-    document.querySelector('#board-date').textContent =
-        gapBetweenDateTimes(boardData.updateDate, boardData.registerDate) === 0
-            ? formatDate(boardData.registerDate)
-            : '수정됨 ' + formatDate(boardData.updateDate);
-    document.querySelector('#board-content').textContent = boardData.content;
-}
-
-function isWriterOf(boardData) {
-    const decodedJwt = parseJwt(localStorage.getItem('access_token'));
-    const userId = decodedJwt.id;
-    const writerId = boardData.writerId;
-
-    return userId === writerId;
-}
-
-function addDeleteButton(boardId) {
-    const buttonsArea = document.querySelector('#buttons-area');
-
-    const deleteButton = createButton('delete-btn', 'btn btn-primary', 'delete');
-    deleteButton.addEventListener('click', async () => {
-        const confirmation = confirmDelete();
-
-        if (!confirmation) {
-            alert('게시물 삭제를 취소합니다.');
-            return;
-        }
-
-        await deleteBoard(boardId);
-    });
-    buttonsArea.append(deleteButton);
-}
-
-async function deleteBoard(id) {
-    const url = `/api/v1/board/${id}`;
-    let options = {
-        headers: {
-            'Authorization': localStorage.getItem('access_token')
-        },
-        method: `DELETE`
-    };
-
-    try {
-
-        const data = await fetchWithToken(url, options);
-        if (data.message === null) {
-            alert("게시물 삭제에 문제가 발생했습니다.");
-            throw new Error("게시물 삭제에 문제 발생.");
-        }
-        alert(data.message);
-        location.replace(`/boards`);
-
-    } catch (error) {
-        console.error('Error ' + error);
+class BoardDOM {
+    getBoardId() {
+        const path = window.location.pathname.split('/');
+        const boardId = path[path.length - 1];
+        return boardId;
     }
-}
 
-function addModifyButton(boardId) {
-    const buttonsArea = document.querySelector('#buttons-area');
+    placeData(boardData) {
+        document.querySelector('#board-id').textContent = boardData.boardId;
+        document.querySelector('#board-title').textContent = boardData.title;
+        document.querySelector('#board-writer').textContent = boardData.writer;
+        document.querySelector('#board-hits').textContent = `조회 ${boardData.viewCount}`;
+        document.querySelector('#board-date').textContent = BoardUtility.getRecentBoardDate();
+        document.querySelector('#board-content').textContent = boardData.content;
+    }
 
-    const modifyButton = createButton('modify-btn', 'btn btn-primary', 'Modify');
-    modifyButton.onclick = () => { location.replace(`/board/${boardId}/modify`); };
-    buttonsArea.append(modifyButton);
-}
+    addDeleteButton(boardId) {
+        const buttonsArea = document.querySelector('#buttons-area');
 
-function confirmDelete() {
-    return confirm(
-        '게시물을 삭제하시겠습니까?\n'
-        + '확인을 누르면 해당 게시물은 삭제되어 복구할 수 없습니다.'
-    );
-}
+        const deleteButton = DomCreate.button('delete-btn', 'btn btn-primary', 'delete');
+        deleteButton.addEventListener('click', async () => {
+            if (!confirmDelete()) {
+                alert('게시물 삭제를 취소합니다.');
+                return;
+            }
 
-function parseJwt(token) {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(window.atob(base64)
-        .split('')
-        .map(function (c) {
-            return '%'
-                + ('00' + c.charCodeAt(0).toString(16))
-                    .slice(-2);
-        })
-        .join('')
-    );
+            await this.deleteBoard(boardId);
+        });
+        buttonsArea.append(deleteButton);
+    }
 
-    return JSON.parse(jsonPayload);
-}
+    async deleteBoard(boardId) {
+        const url = `/api/v1/board/${boardId}`;
+        let options = {
+            headers: {
+                'Authorization': localStorage.getItem('access_token')
+            },
+            method: `DELETE`
+        };
 
-function formatDate(data) {
+        try {
+            const data = await Fetcher.withAuth(url, options);
 
-    // LocalDateTime 형식의 JSON 값을 Date 객체로 변환
-    const date = new Date(data);
+            // TODO Response DTO status 필드, 빌더 추가. 여타 REST Response DTO 도 확인 및 적용.
+            // 하드코딩 된 메세지로만 처리하기엔 대비하지 못할 경우의 수의 존재 가능성 때문.
+            if (data.message === "잘못된 요청입니다.") {
+                alert("게시물 삭제에 문제가 발생했습니다.");
+                throw new Error("게시물 삭제에 문제 발생.");
+            }
 
-    // 원하는 형식(yyyy-MM-dd)으로 변환
-    const formattedDate = date.getFullYear() + '-' +
-        String(date.getMonth() + 1).padStart(2, '0') + '-' +
-        String(date.getDate()).padStart(2, '0');
+            alert(data.message);
+            location.replace(`/boards`);
+        } catch (error) {
+            console.error('Error ' + error);
+        }
+    }
 
-    return formattedDate;
-}
+    addModifyButton(boardId) {
+        const buttonsArea = document.querySelector('#buttons-area');
 
-function gapBetweenDateTimes(later, earlier) {
-    const date1 = new Date(later);
-    const date2 = new Date(earlier);
+        const modifyButton = DomCreate.button('modify-btn', 'btn btn-primary', 'Modify');
+        modifyButton.onclick = () => { location.replace(`/board/${boardId}/modify`); };
+        buttonsArea.append(modifyButton);
+    }
 
-    console.log(date1.getTime());
-    console.log(date2.getTime());
-
-    const gap = date1.getTime() - date2.getTime();
-
-    return gap;
+    confirmDelete() {
+        return confirm(
+            '게시물을 삭제하시겠습니까?\n'
+            + '확인을 누르면 해당 게시물은 삭제되어 복구할 수 없습니다.'
+        );
+    }
 }

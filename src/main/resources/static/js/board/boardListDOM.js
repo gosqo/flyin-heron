@@ -1,12 +1,21 @@
+import AuthChecker from '../token/AuthChecker.js'
+import BoardFetcher from './BoardFetcher.js';
+import BoardUtility from './BoardUtility.js';
+import DomCreate from "../domUtils/DomCreate.js";
+import Handle404 from '../exception/handle404.js';
+
+const boardFetcher = new BoardFetcher();
+const boardListDOM = new BoardListDOM();
+const handle404 = new Handle404();
+
 window.addEventListener('load', async () => {
-    if (_404Flag) return;
+    if (handle404._404Flag) return;
 
-    if (hasAuth()) {
-        addNewBoardButton();
-    }
+    if (AuthChecker.hasAuth())
+        boardListDOM.addNewBoardButton();
 
-    const uriPageNumber = getPageNumber();
-    const data = await getBoardList(uriPageNumber);
+    const uriPageNumber = boardListDOM.getPageNumber();
+    const data = await boardFetcher.getBoardList(uriPageNumber, handle404);
 
     if (data === undefined) return;
 
@@ -16,176 +25,157 @@ window.addEventListener('load', async () => {
     const boardPageNumber = boardPage.number;
 
     boardPageContent.forEach(board => {
-        createBoardNodes(board);
-        addClickEvent(board.boardId);
+        boardListDOM.createBoardNodes(board);
+        boardListDOM.addClickEvent(board.boardId);
     });
 
-    createPageItemsWrapper(boardPageTotalPages, boardPageNumber);
+    boardListDOM.createPageItemsWrapper(boardPageTotalPages, boardPageNumber);
 });
 
-function addNewBoardButton() {
-    const boardListHeader = document.querySelector('#board-list-header');
+class BoardListDOM {
+    addNewBoardButton() {
+        const boardListHeader = document.querySelector('#board-list-header');
 
-    const newBoardButton = createButton('register-board', 'btn btn-primary', 'New Board');
-    newBoardButton.onclick = () => { location.href = '/board/new'; };
-    boardListHeader.append(newBoardButton);
-}
+        const newBoardButton = DomCreate.button('register-board', 'btn btn-primary', 'New Board');
+        newBoardButton.onclick = () => { location.href = '/board/new'; };
+        boardListHeader.append(newBoardButton);
+    }
 
-function getPageNumber() {
-    const path = window.location.pathname.split('/');
-    const uriPageNumber = path[path.length - 1] === 'boards'
-        ? 1
-        : parseInt(path[path.length - 1]);
-    return uriPageNumber;
-}
+    getPageNumber() {
+        const path = window.location.pathname.split('/');
+        const uriPageNumber = path[path.length - 1] === 'boards'
+            ? 1
+            : parseInt(path[path.length - 1]);
+        return uriPageNumber;
+    }
 
-function createPageItem(targetNumber, boardPageNumber) {
+    addClickEvent(boardId) {
+        const targetNode = document.querySelector(`#board${boardId}`);
+        targetNode.addEventListener('mouseover', () => {
+            targetNode.style.cursor = 'pointer';
+        });
+        targetNode.addEventListener('click', () => {
+            location.href = `/board/${boardId}`;
+        });
+    }
 
-    const pageItem = createElement('li', null, 'page-item');
+    createBoardNodes(board) {
+        const boardListContainer = document.querySelector('#board-list-container');
 
-    const pageLink = createAnchor(
-        null
-        , 'page-link'
-        , `/boards/${targetNumber + 1}`
-        , targetNumber + 1
-    );
+        // <div class="card mb-3">
+        //   <div class="card-body">
+        //     <div class=" d-flex justify-content-between">
+        //       <h5 class="card-title" id="board-title">Card title</h5>
+        //       <p>writer</p>
+        //     </div>
+        //     <p class="card-text" id="board-content">This is a wider card with supporting text below as a natural lead-in to
+        //       additional content. This content is a little bit longer.</p>
+        //     <p class="card-text"><small class="text-body-secondary" id="board-date">Last updated 3 mins ago</small></p>
+        //   </div>
+        // </div>
 
-    if (boardPageNumber === targetNumber)
-        pageLink.classList.add('active');
+        const boardWrapper = DomCreate.division(null, 'card mb-3', null);
+        boardListContainer.append(boardWrapper);
 
-    pageItem.append(pageLink);
+        const boardBody = DomCreate.division(`board${board.boardId}`, 'card-body', null);
+        boardWrapper.append(boardBody);
 
-    return pageItem;
-}
+        const topWrapper = DomCreate.division(null, 'd-flex justify-content-between', null);
+        boardBody.append(topWrapper);
 
-function createPageItemsWrapper(boardPageTotalPages, boardPageNumber) {
+        const boardTitle = DomCreate.division(null, 'card-title', board.title);
+        topWrapper.append(boardTitle);
 
-    const paginationContainer = document.querySelector('#pagination-container');
+        const boardWriter = DomCreate.paragraph('board-writer', null, board.writer);
+        topWrapper.append(boardWriter);
 
-    // variables for iteration (start|endNumber)
-    const startNumber = boardPageNumber > 1
-        ? boardPageNumber - 2
-        : 0;
+        const boardContentPreview = DomCreate.paragraph(null, 'card-text', this.trimOver150(board.content));
+        boardBody.append(boardContentPreview);
 
-    const endNumber = boardPageNumber + 3 > boardPageTotalPages
-        ? boardPageTotalPages
-        : boardPageNumber + 3;
+        const boardDateWrapper = DomCreate.paragraph(null, 'card-text', null);
+        boardBody.append(boardDateWrapper);
 
-    const pagination = createElement('ul', 'pagination-ul', 'pagination justify-content-center');
-    paginationContainer.append(pagination);
+        const boardDate = DomCreate.element('small', null, 'text-body-secondary');
+        boardDate.textContent = BoardUtility.getRecentBoardDate();
+        boardDateWrapper.append(boardDate);
+    }
 
-    if (boardPageNumber > 2) {
-        const prevItem = createElement('li', null, 'page-item');
+    trimOver150(content) {
+        return content.length > 151
+            ? this.trimIn150(content)
+            : content;
+    }
+
+    trimIn150(content) {
+        return content.substring(0, 150) + '...';
+    }
+
+    createPageItemsWrapper(boardPageTotalPages, boardPageNumber) {
+        const paginationContainer = document.querySelector('#pagination-container');
+
+        // variables for iteration (start|endNumber)
+        const startNumber = boardPageNumber > 1
+            ? boardPageNumber - 2
+            : 0;
+
+        const endNumber = boardPageNumber + 3 > boardPageTotalPages
+            ? boardPageTotalPages
+            : boardPageNumber + 3;
+
+        const pagination = DomCreate.element('ul', 'pagination-ul', 'pagination justify-content-center');
+        paginationContainer.append(pagination);
+
+        if (boardPageNumber > 2)
+            this.addPrevButton(pagination, boardPageNumber);
+
+        for (i = startNumber; i < endNumber; i++)
+            pagination.append(this.createPageItem(i, boardPageNumber));
+
+        if (boardPageNumber < boardPageTotalPages - 3)
+            this.addNextButton(pagination, boardPageNumber);
+
+    }
+
+    addPrevButton(pagination, boardPageNumber) {
+        const prevItem = DomCreate.element('li', null, 'page-item');
         pagination.append(prevItem);
 
-        const pageLink = createAnchor(null, 'page-link', `/boards/${boardPageNumber + 1 - 3}`, null);
+        const pageLink = DomCreate.anchor(null, 'page-link', `/boards/${boardPageNumber + 1 - 3}`, null);
         prevItem.append(pageLink);
 
-        const prevChar = createElement('span', null, null);
+        const prevChar = DomCreate.element('span', null, null);
         prevChar.ariaHidden = 'true';
         prevChar.textContent = '«';
         pageLink.append(prevChar);
     }
 
-    for (i = startNumber; i < endNumber; i++)
-        pagination.append(createPageItem(i, boardPageNumber));
-
-    if (boardPageNumber < boardPageTotalPages - 3) {
-        const nextItem = createElement('li', null, 'page-item');
+    addNextButton(pagination, boardPageNumber) {
+        const nextItem = DomCreate.element('li', null, 'page-item');
         pagination.append(nextItem);
 
-        const pageLink = createAnchor(null, 'page-link', `/boards/${boardPageNumber + 1 + 3}`, null);
+        const pageLink = DomCreate.anchor(null, 'page-link', `/boards/${boardPageNumber + 1 + 3}`, null);
         nextItem.append(pageLink);
 
-        const nextChar = createElement('span', null, null);
+        const nextChar = DomCreate.element('span', null, null);
         nextChar.ariaHidden = 'true';
         nextChar.textContent = '»';
         pageLink.append(nextChar);
     }
-}
 
-function addClickEvent(boardId) {
-    const targetNode = document.querySelector(`#board${boardId}`);
-    targetNode.addEventListener('mouseover', () => {
-        targetNode.style.cursor = 'pointer';
-    });
-    targetNode.addEventListener('click', () => {
-        location.href = `/board/${boardId}`;
-    });
-}
+    createPageItem(targetNumber, boardPageNumber) {
+        const pageItem = DomCreate.element('li', null, 'page-item');
+        const pageLink = DomCreate.anchor(
+            null
+            , 'page-link'
+            , `/boards/${targetNumber + 1}`
+            , targetNumber + 1
+        );
 
-function createBoardNodes(board) {
+        if (boardPageNumber === targetNumber)
+            pageLink.classList.add('active');
 
-    const boardListContainer = document.querySelector('#board-list-container');
+        pageItem.append(pageLink);
 
-    // <div class="card mb-3">
-    //   <div class="card-body">
-    //     <div class=" d-flex justify-content-between">
-    //       <h5 class="card-title" id="board-title">Card title</h5>
-    //       <p>writer</p>
-    //     </div>
-    //     <p class="card-text" id="board-content">This is a wider card with supporting text below as a natural lead-in to
-    //       additional content. This content is a little bit longer.</p>
-    //     <p class="card-text"><small class="text-body-secondary" id="board-date">Last updated 3 mins ago</small></p>
-    //   </div>
-    // </div>
-
-    const boardWrapper = createDivision(null, 'card mb-3');
-    boardListContainer.append(boardWrapper);
-
-    const boardBody = createDivision(`board${board.boardId}`, 'card-body');
-    boardWrapper.append(boardBody);
-
-    const topWrapper = createDivision(null, 'd-flex justify-content-between');
-    boardBody.append(topWrapper);
-
-    const boardTitle = createDivision(null, 'card-title');
-    boardTitle.textContent = board.title;
-
-    topWrapper.append(boardTitle);
-
-    const boardWriter = createParagraph('board-writer', null, board.writer);
-    topWrapper.append(boardWriter);
-
-    const contentPreview = board.content.length > 151
-        ? trimIn150(board.content)
-        : board.content;
-    const boardContentPreview = createParagraph(null, 'card-text', contentPreview);
-    boardBody.append(boardContentPreview);
-
-    const boardDateWrapper = createParagraph(null, 'card-text', null);
-    boardBody.append(boardDateWrapper);
-
-    const boardDate = document.createElement('small', null, 'text-body-secondary');
-    boardDate.textContent =
-        gapBetweenDateTimes(board.updateDate, board.registerDate) === 0
-            ? formatDate(board.registerDate)
-            : '수정됨 ' + formatDate(board.updateDate);
-    boardDateWrapper.append(boardDate);
-
-    function trimIn150(content) {
-        return content.substring(0, 150) + '...';
+        return pageItem;
     }
-}
-
-function formatDate(data) {
-
-    // LocalDateTime 형식의 JSON 값을 Date 객체로 변환
-    const date = new Date(data);
-
-    // 원하는 형식(yyyy-MM-dd)으로 변환
-    const formattedDate = date.getFullYear() + '-' +
-        String(date.getMonth() + 1).padStart(2, '0') + '-' +
-        String(date.getDate()).padStart(2, '0');
-
-    return formattedDate;
-}
-
-function gapBetweenDateTimes(later, earlier) {
-    const date1 = new Date(later);
-    const date2 = new Date(earlier);
-
-    const gap = date1.getTime() - date2.getTime();
-
-    return gap;
 }

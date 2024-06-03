@@ -1,16 +1,16 @@
-let _404Flag = false;
+export default class Handle404 {
+    _404Flag;
 
-async function page404(response) {
-    _404Flag = true;
+    constructor() {
+        this._404Flag = false;
+    }
 
-    const data = await response.text();
+    async page404(response) {
+        this._404Flag = true;
 
-    // const parser = new DOMParser();
-    // const doc = parser.parseFromString(data, 'text/html');
+        const data = await response.text();
 
-    // document.documentElement.innerHTML = doc.documentElement.innerHTML;
-    document.documentElement.innerHTML = data;
-
-    // document.dispatchEvent(new Event('DOMContentLoaded', { bubbles: true, cancelable: true }));
-    window.dispatchEvent(new Event('load', { bubbles: true, cancelable: true }));
+        document.documentElement.innerHTML = data;
+        window.dispatchEvent(new Event('load', { bubbles: true, cancelable: true }));
+    }
 }

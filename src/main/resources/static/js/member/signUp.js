@@ -1,3 +1,5 @@
+import FormUtility from "../common/FormUtility";
+
 let isValidEmail = false;
 let isValidPassword = false;
 let isValidPasswordCheck = false;
@@ -62,8 +64,7 @@ window.addEventListener('load', () => {
     submitButton.addEventListener('click', async (event) => {
         event.preventDefault();
 
-        const body = getBodyFromForm();
-
+        const body = FormUtility.formToBody();
         const url = '/api/v1/member';
         const options = {
             headers: {
@@ -72,19 +73,10 @@ window.addEventListener('load', () => {
             method: 'POST',
             body: JSON.stringify(body)
         };
+        
         await fetchSubmit(url, options);
     });
 
-    function getBodyFromForm() {
-        const form = document.querySelector('#form');
-        const formData = new FormData(form);
-        const body = {};
-
-        formData.forEach((value, key) => {
-            body[key] = value;
-        });
-        return body;
-    }
 
     async function fetchSubmit(url, options) {
         try {

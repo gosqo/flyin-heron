@@ -1,3 +1,5 @@
+import DomCreate from "../domUtils/DomCreate";
+
 // main
 window.addEventListener('load', () => {
     // 변수를 사용하는 함수들을 현재 코드 블록 내부에 위치시키는 것을 검토.
@@ -88,7 +90,7 @@ function addMessageIfValid(targetElement) {
 
 function assignTargetAndMessage(event) {
     const targetElement = event.target;
-    const message = createElement('small', `${targetElement.name}ValidationMessage`, null);
+    const message = DomCreate.element('small', `${targetElement.name}ValidationMessage`, null);
     return { targetElement, message };
 }
 
