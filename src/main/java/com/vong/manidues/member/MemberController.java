@@ -31,7 +31,7 @@ public class MemberController {
                 .body("회원가입에 성공했습니다.");
     }
 
-    @PostMapping("/isPresentEmail")
+    @PostMapping("/isUniqueEmail")
     public ResponseEntity<Object> isPresentEmail(
             @Valid @RequestBody IsPresentEmailRequest request
     ) {

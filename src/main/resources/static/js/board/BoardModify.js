@@ -3,7 +3,7 @@ import BoardUtility from "../libs/board/BoardUtility.js";
 import { BoardModifyDOM } from "../libs/board/BoardModifyDOM.js";
 import AuthChecker from "../libs/token/AuthChecker.js";
 
-window.addEventListener('load', async () => {
+window.addEventListener("load", async () => {
     // Spring Security PreAuthorize
     if (!AuthChecker.hasAuth()) {
         AuthChecker.redirectToHome();

@@ -33,13 +33,13 @@ export default class DomCreate {
         if (href !== null)
             element.href = href;
         if (textContent !== null)
-            element.textContent = textContent
+            element.textContent = textContent;
 
         return element;
     }
 
     static division(id, className, textContent) {
-        const element = document.createElement('div');
+        const element = document.createElement("div");
 
         if (id !== null)
             element.id = id;
@@ -59,7 +59,20 @@ export default class DomCreate {
         if (className !== null)
             element.className = className;
         if (textContent !== null)
-            element.textContent = textContent
+            element.textContent = textContent;
+
+        return element;
+    }
+
+    static small(id, className, textContent) {
+        const element = document.createElement("create");
+
+        if (id !== null)
+            element.id = id;
+        if (className !== null)
+            element.className = className;
+        if (textContent !== null)
+            element.textContent = textContent;
 
         return element;
     }

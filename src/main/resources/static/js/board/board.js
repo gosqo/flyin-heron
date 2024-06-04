@@ -3,7 +3,7 @@ import BoardFetcher from "../libs/board/BoardFetcher.js";
 import BoardUtility from "../libs/board/BoardUtility.js";
 import AuthChecker from "../libs/token/AuthChecker.js";
 
-window.addEventListener('load', async () => {
+window.addEventListener("load", async () => {
     const boardDOM = new BoardDOM();
     const boardFetcher = new BoardFetcher();
     

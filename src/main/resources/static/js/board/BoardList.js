@@ -2,7 +2,7 @@ import BoardFetcher from "../libs/board/BoardFetcher.js";
 import AuthChecker from "../libs/token/AuthChecker.js";
 import { BoardListDOM } from "../libs/board/BoardListDOM.js";
 
-window.addEventListener('load', async () => {
+window.addEventListener("load", async () => {
     const boardFetcher = new BoardFetcher();
     const boardListDOM = new BoardListDOM();
     

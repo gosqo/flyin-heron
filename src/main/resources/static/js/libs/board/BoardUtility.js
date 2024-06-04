@@ -1,9 +1,9 @@
-import JwtUtility from "../token/JwtUtility.js"
+import TokenUtility from "../token/TokenUtility.js"
 import DateTimeUtility from "../common/DateTimeUtility.js";
 
 export default class BoardUtility {
     static isWriterOf(boardData) {
-        const decodedJwt = JwtUtility.parseJwt(localStorage.getItem('access_token'));
+        const decodedJwt = TokenUtility.parseJwt(localStorage.getItem("access_token"));
         const userId = decodedJwt.id;
 
         if (userId === undefined) 
@@ -17,6 +17,6 @@ export default class BoardUtility {
     static getRecentBoardDate(data) {
         return DateTimeUtility.gapBetweenDateTimes(data.updateDate, data.registerDate) === 0
                 ? DateTimeUtility.formatDate(data.registerDate)
-                : '수정됨 ' + DateTimeUtility.formatDate(data.updateDate);
+                : "수정됨 " + DateTimeUtility.formatDate(data.updateDate);
     }
 }

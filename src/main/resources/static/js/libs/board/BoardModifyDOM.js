@@ -5,24 +5,24 @@ import BoardUtility from "./BoardUtility.js";
 
 export class BoardModifyDOM {
     getBoardId() {
-        const path = window.location.pathname.split('/');
+        const path = window.location.pathname.split("/");
         const boardId = path[path.length - 2];
         return boardId;
     }
 
     placeData(boardData) {
-        document.querySelector('#board-id').textContent = boardData.boardId;
-        document.querySelector('#board-title').value = boardData.title;
-        document.querySelector('#board-writer').value = boardData.writer;
-        document.querySelector('#board-date').textContent = BoardUtility.getRecentBoardDate(boardData);
-        document.querySelector('#board-content').value = boardData.content;
+        document.querySelector("#board-id").textContent = boardData.boardId;
+        document.querySelector("#board-title").value = boardData.title;
+        document.querySelector("#board-writer").value = boardData.writer;
+        document.querySelector("#board-date").textContent = BoardUtility.getRecentBoardDate(boardData);
+        document.querySelector("#board-content").value = boardData.content;
     }
 
     addModifyButton(boardId) {
-        const buttonsArea = document.querySelector('#buttons-area');
+        const buttonsArea = document.querySelector("#buttons-area");
 
-        const modifyButton = DomCreate.button('modify-btn', 'btn btn-primary', 'Modify');
-        modifyButton.addEventListener('click', async () => {
+        const modifyButton = DomCreate.button("modify-btn", "btn btn-primary", "Modify");
+        modifyButton.addEventListener("click", async () => {
             await this.modifyBoard(boardId);
         }
         );
@@ -34,10 +34,10 @@ export class BoardModifyDOM {
         const url = `/api/v1/board/${boardId}`;
         let options = {
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': localStorage.getItem('access_token')
+                "Content-Type": "application/json",
+                "Authorization": localStorage.getItem("access_token")
             },
-            method: 'PUT',
+            method: "PUT",
             body: JSON.stringify(FormUtility.formToBody())
         };
 
@@ -52,15 +52,15 @@ export class BoardModifyDOM {
             alert(data.message);
             location.replace(`/board/${data.id}`);
         } catch (error) {
-            console.error('Error: ', error);
+            console.error("Error: ", error);
         }
     }
 
     addCancelButton() {
-        const buttonsArea = document.querySelector('#buttons-area');
+        const buttonsArea = document.querySelector("#buttons-area");
 
-        const cancelButton = DomCreate.button('cancel-btn', 'btn btn-secondary', 'Cancel');
-        cancelButton.addEventListener('click', () => {
+        const cancelButton = DomCreate.button("cancel-btn", "btn btn-secondary", "Cancel");
+        cancelButton.addEventListener("click", () => {
             if (this.confirmCancel()) {
                 history.back();
             }
@@ -69,6 +69,6 @@ export class BoardModifyDOM {
     }
 
     confirmCancel() {
-        return confirm('수정을 취소하시겠습니까?\n 확인을 클릭 시, 수정 내용을 저장하지 않고 목록으로 이동합니다.');
+        return confirm("수정을 취소하시겠습니까?\n 확인을 클릭 시, 수정 내용을 저장하지 않고 목록으로 이동합니다.");
     }
 }

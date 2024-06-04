@@ -4,27 +4,27 @@ import BoardUtility from "./BoardUtility.js";
 
 export default class BoardDOM {
     getBoardId() {
-        const path = window.location.pathname.split('/');
+        const path = window.location.pathname.split("/");
         const boardId = path[path.length - 1];
         return boardId;
     }
 
     placeData(boardData) {
-        document.querySelector('#board-id').textContent = boardData.boardId;
-        document.querySelector('#board-title').textContent = boardData.title;
-        document.querySelector('#board-writer').textContent = boardData.writer;
-        document.querySelector('#board-hits').textContent = `조회 ${boardData.viewCount}`;
-        document.querySelector('#board-date').textContent = BoardUtility.getRecentBoardDate(boardData);
-        document.querySelector('#board-content').textContent = boardData.content;
+        document.querySelector("#board-id").textContent = boardData.boardId;
+        document.querySelector("#board-title").textContent = boardData.title;
+        document.querySelector("#board-writer").textContent = boardData.writer;
+        document.querySelector("#board-hits").textContent = `조회 ${boardData.viewCount}`;
+        document.querySelector("#board-date").textContent = BoardUtility.getRecentBoardDate(boardData);
+        document.querySelector("#board-content").textContent = boardData.content;
     }
 
     addDeleteButton(boardId) {
-        const buttonsArea = document.querySelector('#buttons-area');
+        const buttonsArea = document.querySelector("#buttons-area");
 
-        const deleteButton = DomCreate.button('delete-btn', 'btn btn-primary', 'delete');
-        deleteButton.addEventListener('click', async () => {
+        const deleteButton = DomCreate.button("delete-btn", "btn btn-primary", "delete");
+        deleteButton.addEventListener("click", async () => {
             if (!this.confirmDelete()) {
-                alert('게시물 삭제를 취소합니다.');
+                alert("게시물 삭제를 취소합니다.");
                 return;
             }
 
@@ -37,7 +37,7 @@ export default class BoardDOM {
         const url = `/api/v1/board/${boardId}`;
         let options = {
             headers: {
-                'Authorization': localStorage.getItem('access_token')
+                "Authorization": localStorage.getItem("access_token")
             },
             method: `DELETE`
         };
@@ -55,22 +55,22 @@ export default class BoardDOM {
             alert(data.message);
             location.replace(`/boards`);
         } catch (error) {
-            console.error('Error ' + error);
+            console.error("Error " + error);
         }
     }
 
     addModifyButton(boardId) {
-        const buttonsArea = document.querySelector('#buttons-area');
+        const buttonsArea = document.querySelector("#buttons-area");
 
-        const modifyButton = DomCreate.button('modify-btn', 'btn btn-primary', 'Modify');
+        const modifyButton = DomCreate.button("modify-btn", "btn btn-primary", "Modify");
         modifyButton.onclick = () => { location.replace(`/board/${boardId}/modify`); };
         buttonsArea.append(modifyButton);
     }
 
     confirmDelete() {
         return confirm(
-            '게시물을 삭제하시겠습니까?\n'
-            + '확인을 누르면 해당 게시물은 삭제되어 복구할 수 없습니다.'
+            "게시물을 삭제하시겠습니까?\n"
+            + "확인을 누르면 해당 게시물은 삭제되어 복구할 수 없습니다."
         );
     }
 }

@@ -4,9 +4,9 @@ export default class DateTimeUtility {
         const date = new Date(data);
 
         // 원하는 형식(yyyy-MM-dd)으로 변환
-        const formattedDate = date.getFullYear() + '-' +
-            String(date.getMonth() + 1).padStart(2, '0') + '-' +
-            String(date.getDate()).padStart(2, '0');
+        const formattedDate = date.getFullYear() + "-" +
+            String(date.getMonth() + 1).padStart(2, "0") + "-" +
+            String(date.getDate()).padStart(2, "0");
 
         return formattedDate;
     }

@@ -3,16 +3,16 @@ import BoardUtility from "./BoardUtility.js";
 
 export class BoardListDOM {
     addNewBoardButton() {
-        const boardListHeader = document.querySelector('#board-list-header');
+        const boardListHeader = document.querySelector("#board-list-header");
 
-        const newBoardButton = DomCreate.button('register-board', 'btn btn-primary', 'New Board');
-        newBoardButton.onclick = () => { location.href = '/board/new'; };
+        const newBoardButton = DomCreate.button("register-board", "btn btn-primary", "New Board");
+        newBoardButton.onclick = () => { location.href = "/board/new"; };
         boardListHeader.append(newBoardButton);
     }
 
     getPageNumber() {
-        const path = window.location.pathname.split('/');
-        const uriPageNumber = path[path.length - 1] === 'boards'
+        const path = window.location.pathname.split("/");
+        const uriPageNumber = path[path.length - 1] === "boards"
             ? 1
             : parseInt(path[path.length - 1]);
         return uriPageNumber;
@@ -20,16 +20,16 @@ export class BoardListDOM {
 
     addClickEvent(boardId) {
         const targetNode = document.querySelector(`#board${boardId}`);
-        targetNode.addEventListener('mouseover', () => {
-            targetNode.style.cursor = 'pointer';
+        targetNode.addEventListener("mouseover", () => {
+            targetNode.style.cursor = "pointer";
         });
-        targetNode.addEventListener('click', () => {
+        targetNode.addEventListener("click", () => {
             location.href = `/board/${boardId}`;
         });
     }
 
     createBoardNodes(board) {
-        const boardListContainer = document.querySelector('#board-list-container');
+        const boardListContainer = document.querySelector("#board-list-container");
 
         // <div class="card mb-3">
         //   <div class="card-body">
@@ -42,28 +42,28 @@ export class BoardListDOM {
         //     <p class="card-text"><small class="text-body-secondary" id="board-date">Last updated 3 mins ago</small></p>
         //   </div>
         // </div>
-        const boardWrapper = DomCreate.division(null, 'card mb-3', null);
+        const boardWrapper = DomCreate.division(null, "card mb-3", null);
         boardListContainer.append(boardWrapper);
 
-        const boardBody = DomCreate.division(`board${board.boardId}`, 'card-body', null);
+        const boardBody = DomCreate.division(`board${board.boardId}`, "card-body", null);
         boardWrapper.append(boardBody);
 
-        const topWrapper = DomCreate.division(null, 'd-flex justify-content-between', null);
+        const topWrapper = DomCreate.division(null, "d-flex justify-content-between", null);
         boardBody.append(topWrapper);
 
-        const boardTitle = DomCreate.division(null, 'card-title', board.title);
+        const boardTitle = DomCreate.division(null, "card-title", board.title);
         topWrapper.append(boardTitle);
 
-        const boardWriter = DomCreate.paragraph('board-writer', null, board.writer);
+        const boardWriter = DomCreate.paragraph("board-writer", null, board.writer);
         topWrapper.append(boardWriter);
 
-        const boardContentPreview = DomCreate.paragraph(null, 'card-text', this.trimOver150(board.content));
+        const boardContentPreview = DomCreate.paragraph(null, "card-text", this.trimOver150(board.content));
         boardBody.append(boardContentPreview);
 
-        const boardDateWrapper = DomCreate.paragraph(null, 'card-text', null);
+        const boardDateWrapper = DomCreate.paragraph(null, "card-text", null);
         boardBody.append(boardDateWrapper);
 
-        const boardDate = DomCreate.element('small', null, 'text-body-secondary');
+        const boardDate = DomCreate.element("small", null, "text-body-secondary");
         boardDate.textContent = BoardUtility.getRecentBoardDate(board);
         boardDateWrapper.append(boardDate);
     }
@@ -75,11 +75,11 @@ export class BoardListDOM {
     }
 
     trimIn150(content) {
-        return content.substring(0, 150) + '...';
+        return content.substring(0, 150) + "...";
     }
 
     createPageItemsWrapper(boardPageTotalPages, boardPageNumber) {
-        const paginationContainer = document.querySelector('#pagination-container');
+        const paginationContainer = document.querySelector("#pagination-container");
 
         // variables for iteration (start|endNumber)
         const startNumber = boardPageNumber > 1
@@ -90,7 +90,7 @@ export class BoardListDOM {
             ? boardPageTotalPages
             : boardPageNumber + 3;
 
-        const pagination = DomCreate.element('ul', 'pagination-ul', 'pagination justify-content-center');
+        const pagination = DomCreate.element("ul", "pagination-ul", "pagination justify-content-center");
         paginationContainer.append(pagination);
 
         if (boardPageNumber > 2)
@@ -105,42 +105,42 @@ export class BoardListDOM {
     }
 
     addPrevButton(pagination, boardPageNumber) {
-        const prevItem = DomCreate.element('li', null, 'page-item');
+        const prevItem = DomCreate.element("li", null, "page-item");
         pagination.append(prevItem);
 
-        const pageLink = DomCreate.anchor(null, 'page-link', `/boards/${boardPageNumber + 1 - 3}`, null);
+        const pageLink = DomCreate.anchor(null, "page-link", `/boards/${boardPageNumber + 1 - 3}`, null);
         prevItem.append(pageLink);
 
-        const prevChar = DomCreate.element('span', null, null);
-        prevChar.ariaHidden = 'true';
-        prevChar.textContent = '«';
+        const prevChar = DomCreate.element("span", null, null);
+        prevChar.ariaHidden = "true";
+        prevChar.textContent = "«";
         pageLink.append(prevChar);
     }
 
     addNextButton(pagination, boardPageNumber) {
-        const nextItem = DomCreate.element('li', null, 'page-item');
+        const nextItem = DomCreate.element("li", null, "page-item");
         pagination.append(nextItem);
 
-        const pageLink = DomCreate.anchor(null, 'page-link', `/boards/${boardPageNumber + 1 + 3}`, null);
+        const pageLink = DomCreate.anchor(null, "page-link", `/boards/${boardPageNumber + 1 + 3}`, null);
         nextItem.append(pageLink);
 
-        const nextChar = DomCreate.element('span', null, null);
-        nextChar.ariaHidden = 'true';
-        nextChar.textContent = '»';
+        const nextChar = DomCreate.element("span", null, null);
+        nextChar.ariaHidden = "true";
+        nextChar.textContent = "»";
         pageLink.append(nextChar);
     }
 
     createPageItem(targetNumber, boardPageNumber) {
-        const pageItem = DomCreate.element('li', null, 'page-item');
+        const pageItem = DomCreate.element("li", null, "page-item");
         const pageLink = DomCreate.anchor(
             null,
-            'page-link',
+            "page-link",
             `/boards/${targetNumber + 1}`,
             targetNumber + 1
         );
 
         if (boardPageNumber === targetNumber)
-            pageLink.classList.add('active');
+            pageLink.classList.add("active");
 
         pageItem.append(pageLink);
 

@@ -1,17 +1,17 @@
-window.addEventListener('load', () => {
+window.addEventListener("load", () => {
     initDarkMode();
 });
 
 function initDarkMode() {
-    console.log('darkMode.js initiated.');
+    console.log("darkMode.js initiated.");
 
-    const themeToggleButton = document.querySelector('#theme-toggle-button');
-    var localTheme = localStorage.getItem('themePreference');
+    const themeToggleButton = document.querySelector("#theme-toggle-button");
+    var localTheme = localStorage.getItem("themePreference");
 
     if (!localTheme) {
 
-        localStorage.setItem('themePreference', 'light');
-        localTheme = localStorage.getItem('themePreference');
+        localStorage.setItem("themePreference", "light");
+        localTheme = localStorage.getItem("themePreference");
 
         themeToggleButtonText(themeToggleButton, localTheme);
 
@@ -21,19 +21,19 @@ function initDarkMode() {
 
     }
 
-    themeToggleButton.addEventListener('click', () => {
+    themeToggleButton.addEventListener("click", () => {
 
-        if (localTheme === 'light') {
+        if (localTheme === "light") {
 
-            localStorage.setItem('themePreference', 'dark');
-            localTheme = localStorage.getItem('themePreference');
+            localStorage.setItem("themePreference", "dark");
+            localTheme = localStorage.getItem("themePreference");
 
             toggleTheme(themeToggleButton, localTheme);
 
         } else {
 
-            localStorage.setItem('themePreference', 'light');
-            localTheme = localStorage.getItem('themePreference');
+            localStorage.setItem("themePreference", "light");
+            localTheme = localStorage.getItem("themePreference");
 
             toggleTheme(themeToggleButton, localTheme);
 
@@ -43,12 +43,12 @@ function initDarkMode() {
 
 function toggleTheme(themeToggleButton, preference) {
 
-    if (preference === 'dark') {
+    if (preference === "dark") {
 
         themeToggleButtonText(themeToggleButton, preference);
         toggleDarkModeCss(preference);
 
-    } else if (preference === 'light') {
+    } else if (preference === "light") {
 
         themeToggleButtonText(themeToggleButton, preference);
         toggleDarkModeCss(preference);
@@ -58,24 +58,24 @@ function toggleTheme(themeToggleButton, preference) {
 
 function themeToggleButtonText(themeToggleButton, preference) {
 
-    themeToggleButton.textContent = preference === 'light'
-        ? 'Dark mode'
-        : 'Light mode';
+    themeToggleButton.textContent = preference === "light"
+        ? "Dark mode"
+        : "Light mode";
 }
 
 function toggleDarkModeCss(preference) {
 
-    if (preference === 'dark') {
+    if (preference === "dark") {
 
-        var darkModeCss = document.createElement('link');
-        darkModeCss.setAttribute('rel', 'stylesheet');
-        darkModeCss.setAttribute('href', '/css/darkMode.css');
+        var darkModeCss = document.createElement("link");
+        darkModeCss.setAttribute("rel", "stylesheet");
+        darkModeCss.setAttribute("href", "/css/darkMode.css");
 
-        document.querySelector('head').appendChild(darkModeCss);
+        document.querySelector("head").appendChild(darkModeCss);
 
     } else {
 
-        var targetNode = document.querySelector('link[href="/css/darkMode.css"]');
+        var targetNode = document.querySelector(`link[href="/css/darkMode.css"]`);
         if (targetNode) targetNode.remove();
 
     }

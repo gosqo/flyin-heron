@@ -12,7 +12,7 @@ export default class BoardFetcher {
 
             return await response.json();
         } catch (error) {
-            console.error('Error ' + error);
+            console.error("Error " + error);
         }
     }
 
@@ -29,7 +29,7 @@ export default class BoardFetcher {
 
             return await response.json();
         } catch (error) {
-            console.error('Error ' + error);
+            console.error("Error " + error);
         }
     }
 

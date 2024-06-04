@@ -4,23 +4,23 @@ import DomCreate from "../dom/DomCreate.js";
 
 export class BoardNewDOM {
     addButtons() {
-        const buttonsArea = document.querySelector('#buttons-area');
+        const buttonsArea = document.querySelector("#buttons-area");
 
-        const submitButton = DomCreate.button('submit-btn', 'btn btn-primary', 'Submit');
-        submitButton.addEventListener('click', async () => {
+        const submitButton = DomCreate.button("submit-btn", "btn btn-primary", "Submit");
+        submitButton.addEventListener("click", async () => {
             this.registerBoard();
         });
         buttonsArea.append(submitButton);
 
-        const resetButton = DomCreate.button('reset-btn', 'btn btn-secondary', 'Reset');
-        resetButton.addEventListener('click', () => {
+        const resetButton = DomCreate.button("reset-btn", "btn btn-secondary", "Reset");
+        resetButton.addEventListener("click", () => {
             if (this.confirmReset())
                 this.emptyInputs();
         });
         buttonsArea.append(resetButton);
 
-        const cancelButton = DomCreate.button('cancel-btn', 'btn btn-secondary', 'Cancel');
-        cancelButton.addEventListener('click', () => {
+        const cancelButton = DomCreate.button("cancel-btn", "btn btn-secondary", "Cancel");
+        cancelButton.addEventListener("click", () => {
             if (this.confirmCancel()) {
                 this.emptyInputs();
                 history.back();
@@ -30,20 +30,20 @@ export class BoardNewDOM {
     }
 
     async registerBoard() {
-        const url = `/api/v1/board`;
+        const url = "/api/v1/board";
         let options = {
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': localStorage.getItem('access_token')
+                "Content-Type": "application/json",
+                "Authorization": localStorage.getItem("access_token")
             },
-            method: 'POST',
+            method: "POST",
             body: JSON.stringify(FormUtility.formToBody())
         };
 
         try {
             const data = await Fetcher.withAuth(url, options);
 
-            if (data.message.includes('Validation')) {
+            if (data.message.includes("Validation")) {
                 alert(data.errors[0].defaultMessage);
                 return;
             }
@@ -56,22 +56,22 @@ export class BoardNewDOM {
             alert(data.message);
             location.replace(`/board/${data.id}`);
         } catch (error) {
-            console.error('Error: ', error);
+            console.error("Error: ", error);
         }
     }
 
     confirmCancel() {
-        return confirm('작성을 취소하시겠습니까?\n 확인을 클릭 시, 작성 내용을 저장하지 않고 이전 페이지로 이동합니다.');
+        return confirm("작성을 취소하시겠습니까?\n 확인을 클릭 시, 작성 내용을 저장하지 않고 이전 페이지로 이동합니다.");
     }
 
     confirmReset() {
-        return confirm('작성하신 내용을 지우시겠습니까?');
+        return confirm("작성하신 내용을 지우시겠습니까?");
     }
 
     emptyInputs() {
-        const inputs = document.querySelectorAll('.form-control');
+        const inputs = document.querySelectorAll(".form-control");
         inputs.forEach((input) => {
-            input.value = '';
+            input.value = "";
         });
     }
 }
