@@ -1,30 +1,8 @@
-import BoardFetcher from './BoardFetcher.js'
-import BoardUtility from './BoardUtility.js'
-import DomCreate from "../domUtils/DomCreate.js";
-import Fetcher from "../common/Fetcher.js"
-import Handle404 from '../exception/handle404.js';
+import Fetcher from "../common/Fetcher.js";
+import DomCreate from "../dom/DomCreate.js";
+import BoardUtility from "./BoardUtility.js";
 
-const boardDOM = new BoardDOM();
-const boardFetcher = new BoardFetcher();
-const handle404 = new Handle404();
-
-window.addEventListener('load', async () => {
-    if (handle404._404Flag) return;
-
-    const boardId = boardDOM.getBoardId();
-    const boardData = await boardFetcher.getBoard(boardId, handle404);
-
-    if (boardData === undefined) return;
-
-    boardDOM.placeData(boardData);
-
-    if (BoardUtility.isWriterOf(boardData)) {
-        boardDOM.addModifyButton(boardId);
-        boardDOM.addDeleteButton(boardId);
-    }
-});
-
-class BoardDOM {
+export default class BoardDOM {
     getBoardId() {
         const path = window.location.pathname.split('/');
         const boardId = path[path.length - 1];
@@ -36,7 +14,7 @@ class BoardDOM {
         document.querySelector('#board-title').textContent = boardData.title;
         document.querySelector('#board-writer').textContent = boardData.writer;
         document.querySelector('#board-hits').textContent = `조회 ${boardData.viewCount}`;
-        document.querySelector('#board-date').textContent = BoardUtility.getRecentBoardDate();
+        document.querySelector('#board-date').textContent = BoardUtility.getRecentBoardDate(boardData);
         document.querySelector('#board-content').textContent = boardData.content;
     }
 
@@ -45,7 +23,7 @@ class BoardDOM {
 
         const deleteButton = DomCreate.button('delete-btn', 'btn btn-primary', 'delete');
         deleteButton.addEventListener('click', async () => {
-            if (!confirmDelete()) {
+            if (!this.confirmDelete()) {
                 alert('게시물 삭제를 취소합니다.');
                 return;
             }

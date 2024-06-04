@@ -1,19 +1,10 @@
-import AuthChecker from "../token/AuthChecker.js";
-import DomCreate from "../domUtils/DomCreate.js";
-import Fetcher from "../common/Fetcher.js"
+import Fetcher from "../common/Fetcher.js";
 import FormUtility from "../common/FormUtility.js";
+import DomCreate from "../dom/DomCreate.js";
 
-const boardNewDOM = new BoardNewDOM();
-
-window.addEventListener('load', async () => {
-    if (AuthChecker.hasAuth()) {
-        boardNewDOM.addButtons();
-    }
-});
-
-class BoardNewDOM {
+export class BoardNewDOM {
     addButtons() {
-        const buttonsArea = document.querySelector('#buttons-area')
+        const buttonsArea = document.querySelector('#buttons-area');
 
         const submitButton = DomCreate.button('submit-btn', 'btn btn-primary', 'Submit');
         submitButton.addEventListener('click', async () => {
@@ -24,7 +15,7 @@ class BoardNewDOM {
         const resetButton = DomCreate.button('reset-btn', 'btn btn-secondary', 'Reset');
         resetButton.addEventListener('click', () => {
             if (this.confirmReset())
-                emptyInputs();
+                this.emptyInputs();
         });
         buttonsArea.append(resetButton);
 

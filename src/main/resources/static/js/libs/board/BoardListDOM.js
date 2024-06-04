@@ -1,38 +1,7 @@
-import AuthChecker from '../token/AuthChecker.js'
-import BoardFetcher from './BoardFetcher.js';
-import BoardUtility from './BoardUtility.js';
-import DomCreate from "../domUtils/DomCreate.js";
-import Handle404 from '../exception/handle404.js';
+import DomCreate from "../dom/DomCreate.js";
+import BoardUtility from "./BoardUtility.js";
 
-const boardFetcher = new BoardFetcher();
-const boardListDOM = new BoardListDOM();
-const handle404 = new Handle404();
-
-window.addEventListener('load', async () => {
-    if (handle404._404Flag) return;
-
-    if (AuthChecker.hasAuth())
-        boardListDOM.addNewBoardButton();
-
-    const uriPageNumber = boardListDOM.getPageNumber();
-    const data = await boardFetcher.getBoardList(uriPageNumber, handle404);
-
-    if (data === undefined) return;
-
-    const boardPage = data.boardPage;
-    const boardPageContent = boardPage.content;
-    const boardPageTotalPages = boardPage.totalPages;
-    const boardPageNumber = boardPage.number;
-
-    boardPageContent.forEach(board => {
-        boardListDOM.createBoardNodes(board);
-        boardListDOM.addClickEvent(board.boardId);
-    });
-
-    boardListDOM.createPageItemsWrapper(boardPageTotalPages, boardPageNumber);
-});
-
-class BoardListDOM {
+export class BoardListDOM {
     addNewBoardButton() {
         const boardListHeader = document.querySelector('#board-list-header');
 
@@ -73,7 +42,6 @@ class BoardListDOM {
         //     <p class="card-text"><small class="text-body-secondary" id="board-date">Last updated 3 mins ago</small></p>
         //   </div>
         // </div>
-
         const boardWrapper = DomCreate.division(null, 'card mb-3', null);
         boardListContainer.append(boardWrapper);
 
@@ -96,7 +64,7 @@ class BoardListDOM {
         boardBody.append(boardDateWrapper);
 
         const boardDate = DomCreate.element('small', null, 'text-body-secondary');
-        boardDate.textContent = BoardUtility.getRecentBoardDate();
+        boardDate.textContent = BoardUtility.getRecentBoardDate(board);
         boardDateWrapper.append(boardDate);
     }
 
@@ -128,7 +96,7 @@ class BoardListDOM {
         if (boardPageNumber > 2)
             this.addPrevButton(pagination, boardPageNumber);
 
-        for (i = startNumber; i < endNumber; i++)
+        for (let i = startNumber; i < endNumber; i++)
             pagination.append(this.createPageItem(i, boardPageNumber));
 
         if (boardPageNumber < boardPageTotalPages - 3)
@@ -165,10 +133,10 @@ class BoardListDOM {
     createPageItem(targetNumber, boardPageNumber) {
         const pageItem = DomCreate.element('li', null, 'page-item');
         const pageLink = DomCreate.anchor(
-            null
-            , 'page-link'
-            , `/boards/${targetNumber + 1}`
-            , targetNumber + 1
+            null,
+            'page-link',
+            `/boards/${targetNumber + 1}`,
+            targetNumber + 1
         );
 
         if (boardPageNumber === targetNumber)

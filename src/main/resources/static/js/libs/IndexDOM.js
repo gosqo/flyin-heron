@@ -1,16 +1,9 @@
-import DomCreate from "./domUtils/DomCreate.js";
+import AuthChecker from "./token/AuthChecker.js";
+import DomCreate from "./dom/DomCreate.js";
 import Logout from "./member/Logout.js";
-import TestJwt from './token/TestJwt.js';
+import TestJwt from "./token/TestJwt.js";
 
-const indexDOM = new IndexDOM();
-
-window.addEventListener('load', () => {
-    indexDOM.addAuthDependButtons();
-    indexDOM.addBoardListButton();
-});
-
-
-class IndexDOM {
+export class IndexDOM {
     logout = new Logout();
     testJwt = new TestJwt();
 
@@ -18,14 +11,14 @@ class IndexDOM {
         if (AuthChecker.hasAuth()) {
             this.addLogoutButton();
             this.addJwtTestButton();
-    
+
             return;
         }
-    
+
         this.addLoginButton();
         this.addSignUpButton();
     }
-    
+
     addLogoutButton() {
         const buttonsArea = document.querySelector('#buttons-area');
 
@@ -69,4 +62,3 @@ class IndexDOM {
         buttonsArea.append(getBoardButton);
     }
 }
-

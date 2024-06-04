@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<thymeleaf th:replace="~{fragment/htmlHead}"></thymeleaf>
+  <title>403 Forbidden</title>
+</head>
+
+<body>
+<div th:replace="~{fragment/header :: header}"></div>
+
+  <div class="container">
+    <div class="mb-3 row" style="margin-top: 2rem;">
+      <h2>올바른 접근이 아닙니다. 사용자 인증이 필요합니다.</h2>
+      <h2>Request is not allowed. The resource requires authentication.</h2>
+    </div>
+    <div class="mb-3" id="buttons-area">
+      <button class="btn btn-secondary" onclick="location.href = '/';">메인으로</button>
+    </div>
+  </div>
+
+<thymeleaf th:replace="~{fragment/footer}"></thymeleaf>

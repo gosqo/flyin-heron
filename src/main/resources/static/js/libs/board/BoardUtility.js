@@ -1,5 +1,5 @@
-import JwtUtility from '../token/JwtUtility'
-import DateTimeUtility from '../common/DateTimeUtility';
+import JwtUtility from "../token/JwtUtility.js"
+import DateTimeUtility from "../common/DateTimeUtility.js";
 
 export default class BoardUtility {
     static isWriterOf(boardData) {

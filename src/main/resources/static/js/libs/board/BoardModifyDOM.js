@@ -1,31 +1,9 @@
-import BoardFetcher from './BoardFetcher.js';
-import BoardUtility from './BoardUtility.js'
-import DomCreate from "../domUtils/DomCreate.js";
-import Fetcher from "../common/Fetcher.js"
-import FormUtility from '../common/FormUtility.js';
-import Handle404 from '../exception/handle404.js';
+import Fetcher from "../common/Fetcher.js";
+import FormUtility from "../common/FormUtility.js";
+import DomCreate from "../dom/DomCreate.js";
+import BoardUtility from "./BoardUtility.js";
 
-const boardFetcher = new BoardFetcher();
-const boardModifyDOM = new BoardModifyDOM();
-const handle404 = new Handle404();
-
-window.addEventListener('load', async () => {
-    if (handle404._404Flag) return;
-
-    const boardId = boardModifyDOM.getBoardId();
-    const boardData = await boardFetcher.getBoard(boardId, handle404);
-
-    if (boardData === undefined) return;
-
-    boardModifyDOM.placeData(boardData);
-
-    if (BoardUtility.isWriterOf(boardData)) {
-        boardModifyDOM.addModifyButton(boardId);
-        boardModifyDOM.addCancelButton();
-    }
-});
-
-class BoardModifyDOM {
+export class BoardModifyDOM {
     getBoardId() {
         const path = window.location.pathname.split('/');
         const boardId = path[path.length - 2];
@@ -36,10 +14,7 @@ class BoardModifyDOM {
         document.querySelector('#board-id').textContent = boardData.boardId;
         document.querySelector('#board-title').value = boardData.title;
         document.querySelector('#board-writer').value = boardData.writer;
-        document.querySelector('#board-date').textContent =
-            boardData.registerDate !== boardData.updateDate
-                ? DateTimeUtility.formatDate(boardData.registerDate)
-                : '수정됨 ' + DateTimeUtility.formatDate(boardData.updateDate);
+        document.querySelector('#board-date').textContent = BoardUtility.getRecentBoardDate(boardData);
         document.querySelector('#board-content').value = boardData.content;
     }
 
@@ -48,8 +23,8 @@ class BoardModifyDOM {
 
         const modifyButton = DomCreate.button('modify-btn', 'btn btn-primary', 'Modify');
         modifyButton.addEventListener('click', async () => {
-                await this.modifyBoard(boardId);
-            }
+            await this.modifyBoard(boardId);
+        }
         );
         buttonsArea.append(modifyButton);
         return buttonsArea;
