@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -16,7 +17,6 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 public class BoardController {
 
     private final BoardService service;
-
     @GetMapping("/{id}")
     public ResponseEntity<BoardGetResponse> getBoard(
             @PathVariable("id") Long id
@@ -28,6 +28,7 @@ public class BoardController {
                 .body(service.get(id, request, response));
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<BoardDeleteResponse> deleteBoard(
             HttpServletRequest request,
@@ -38,6 +39,7 @@ public class BoardController {
                 .body(service.delete(id, request));
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PutMapping("/{id}")
     public ResponseEntity<BoardUpdateResponse> updateBoard(
             HttpServletRequest request,
@@ -49,6 +51,7 @@ public class BoardController {
                 .body(service.update(id, request, body));
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("")
     public ResponseEntity<BoardRegisterResponse> registerBoard(
             HttpServletRequest request,

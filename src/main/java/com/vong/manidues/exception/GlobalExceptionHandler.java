@@ -1,9 +1,11 @@
 package com.vong.manidues.exception;
 
 import com.vong.manidues.exception.custom.DebugNeededException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -24,26 +26,43 @@ public class GlobalExceptionHandler {
     private static final String PROJECT_ROOT_PACKAGE = "com.vong.manidues";
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAccessDeniedException(
+    public <T> Object handleAccessDeniedException(
             AccessDeniedException ex
+            , HttpServletRequest request
+            , HttpServletResponse response
     ) {
         logException(ex);
         logErrorStackTrace(ex);
-        String userMessage = "잘못된 요청입니다.";
 
-        return buildResponseEntity(HttpStatus.BAD_REQUEST, userMessage);
+        if (request.getMethod().equalsIgnoreCase(HttpMethod.GET.name())) {
+            response.setStatus(HttpStatus.FORBIDDEN.value());
+            return "error/403";
+        }
+
+        String userMessage = "올바른 접근이 아닙니다.";
+
+        return buildResponseEntity(HttpStatus.FORBIDDEN, userMessage);
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public String handleNoResourceFoundException(
+    public <T> Object handleNoResourceFoundException(
             NoResourceFoundException ex
+            , HttpServletRequest request
             , HttpServletResponse response
     ) {
         logException(ex);
         logWhereThrows(ex);
-        response.setStatus(404);
 
-        return "error/404";
+        if (request.getMethod().equalsIgnoreCase(HttpMethod.GET.name())) {
+            response.setStatus(404);
+            return "error/404";
+        }
+
+        String userMessage = "존재하지 않는 자원에 대한 요청입니다.";
+
+        return buildResponseEntity(HttpStatus.NOT_FOUND, userMessage);
+
+
     }
 
     @ExceptionHandler(BadCredentialsException.class)
