@@ -2,8 +2,8 @@ package com.vong.manidues.member;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vong.manidues.member.dto.IsPresentEmailRequest;
-import com.vong.manidues.member.dto.IsPresentNicknameRequest;
+import com.vong.manidues.member.dto.IsUniqueEmailRequest;
+import com.vong.manidues.member.dto.IsUniqueNicknameRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -30,12 +30,12 @@ public class MemberRegisterIsPresentTest {
 
     private static String getNicknameRequestBodyAsString(String nickname)
             throws JsonProcessingException {
-        return new ObjectMapper().writeValueAsString(new IsPresentNicknameRequest(nickname));
+        return new ObjectMapper().writeValueAsString(new IsUniqueNicknameRequest(nickname));
     }
 
     private static String getEmailRequestBodyAsString(String email)
             throws JsonProcessingException {
-        return new ObjectMapper().writeValueAsString(new IsPresentEmailRequest(email));
+        return new ObjectMapper().writeValueAsString(new IsUniqueEmailRequest(email));
     }
 
     // === tests for nickname validation ===

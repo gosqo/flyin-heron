@@ -1,9 +1,6 @@
 package com.vong.manidues.member;
 
-import com.vong.manidues.member.dto.IsPresentEmailRequest;
-import com.vong.manidues.member.dto.IsPresentNicknameRequest;
-import com.vong.manidues.member.dto.MemberRegisterRequest;
-import com.vong.manidues.utility.JsonResponse;
+import com.vong.manidues.member.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,36 +29,22 @@ public class MemberController {
     }
 
     @PostMapping("/isUniqueEmail")
-    public ResponseEntity<Object> isPresentEmail(
-            @Valid @RequestBody IsPresentEmailRequest request
+    public ResponseEntity<Object> isUniqueEmail(
+            @Valid @RequestBody IsUniqueEmailRequest request
     ) {
-        return repository.findByEmail(request.getEmail()).isPresent()
-                ? ResponseEntity.status(409).body(
-                JsonResponse.builder()
-                        .message("이미 가입한 이메일 주소입니다.")
-                        .build()
-        )
-                : ResponseEntity.status(200).body(
-                JsonResponse.builder()
-                        .message("사용 가능한 이메일 주소입니다.")
-                        .build()
-        );
+        IsUniqueEmailResponse response = service.isUniqueEmail(request);
+        return ResponseEntity
+                .status(response.getStatus())
+                .body(response);
     }
 
-    @PostMapping("/isPresentNickname")
-    public ResponseEntity<Object> isPresentNickname(
-            @Valid @RequestBody IsPresentNicknameRequest request
+    @PostMapping("/isUniqueNickname")
+    public ResponseEntity<Object> isUniqueNickname(
+            @Valid @RequestBody IsUniqueNicknameRequest request
     ) {
-        return repository.findByNickname(request.getNickname()).isPresent()
-                ? ResponseEntity.status(409).body(
-                JsonResponse.builder()
-                        .message("이미 존재하는 닉네임입니다.")
-                        .build()
-        )
-                : ResponseEntity.status(200).body(
-                JsonResponse.builder()
-                        .message("사용 가능한 닉네임입니다.")
-                        .build()
-        );
+        IsUniqueNicknameResponse response = service.isUniqueNickname(request);
+        return ResponseEntity
+                .status(response.getStatus())
+                .body(response);
     }
 }

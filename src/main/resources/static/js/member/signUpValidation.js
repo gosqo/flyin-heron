@@ -13,7 +13,7 @@ window.addEventListener("load", () => {
 
     // regular expressions
     const emailRegex = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d~!@#$%^&*()+{}|:"<>?`=\[\]-_\\;']{8,20}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d|.*[\W\S])[A-Za-z\d|\W\S]{8,20}$/;
     const nicknameRegex = /^[0-9a-zA-Z가-힣]{2,20}$/;
 
     // validation messages

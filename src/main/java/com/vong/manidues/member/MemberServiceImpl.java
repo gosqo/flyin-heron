@@ -1,10 +1,9 @@
 package com.vong.manidues.member;
 
-import com.vong.manidues.member.dto.ChangeMemberPasswordRequest;
-import com.vong.manidues.member.dto.MemberRegisterRequest;
-import com.vong.manidues.member.dto.MemberVerificationRequest;
+import com.vong.manidues.member.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +45,28 @@ public class MemberServiceImpl implements MemberService {
 
         final Member member = request.toEntity(passwordEncoder.encode(request.getPassword()));
         memberRepository.save(member);
+    }
+
+    @Override
+    public IsUniqueEmailResponse isUniqueEmail(IsUniqueEmailRequest request) {
+        if (memberRepository.findByEmail(request.getEmail()).isPresent())
+            throw new DataIntegrityViolationException("존재하는 이메일.");
+
+        return IsUniqueEmailResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("사용 가능한 이메일 주소입니다.")
+                .build();
+    }
+
+    @Override
+    public IsUniqueNicknameResponse isUniqueNickname(IsUniqueNicknameRequest request) {
+        if (memberRepository.findByNickname(request.getNickname()).isPresent())
+            throw new DataIntegrityViolationException("존재하는 닉네임.");
+
+        return IsUniqueNicknameResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("사용 가능한 이메일 주소입니다.")
+                .build();
     }
 
     private boolean isDuplicated(MemberRegisterRequest request) {

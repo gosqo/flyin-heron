@@ -1,7 +1,8 @@
 export class SignUpDOM {
+    submitButton = document.querySelector("#submit-form-btn");
+
     addSubmitEvent() {
-        const submitButton = document.querySelector("#submit-form-btn");
-        submitButton.addEventListener("click", async (event) => {
+        this.submitButton.addEventListener("click", async (event) => {
             event.preventDefault();
             registerMember();
         });

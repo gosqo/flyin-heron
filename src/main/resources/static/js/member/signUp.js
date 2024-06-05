@@ -1,12 +1,12 @@
-import { SignUpRegex, UniqueCheck } from "../libs/member/SignUpValidator.js";
+import { ValidChecker, UniqueChecker } from "../libs/member/SignUpValidator.js";
 import { SignUpDOM } from "../libs/member/SignUpDOM.js";
 
 window.addEventListener("load", () => {
     const signUpDOM = new SignUpDOM();
-    const uniqueCheck = new UniqueCheck();
+    const uniqueChecker = new UniqueChecker();
 
     signUpDOM.addSubmitEvent();
-    uniqueCheck.addPresentEmailEvent();
-    uniqueCheck.addPresentNicknameEvent();
+    uniqueChecker.addUniqueEmailEvent();
+    uniqueChecker.addUniqueNicknameEvent();
 
 });

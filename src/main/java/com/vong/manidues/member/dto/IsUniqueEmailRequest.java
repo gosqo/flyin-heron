@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class IsPresentEmailRequest {
+public class IsUniqueEmailRequest {
     @NotBlank(message = "중복 확인할 값을 입력해주세요.")
     @Email(
             regexp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*[.][a-zA-Z]{2,3}$",

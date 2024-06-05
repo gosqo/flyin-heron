@@ -83,7 +83,20 @@ public class GlobalExceptionHandler {
     ) {
         logException(ex);
         logErrorStackTrace(ex);
-        String userMessage = "자원의 입력 및 수정이 지정된 형식에 맞지 않거나 중복을 발생시킵니다.";
+
+        String userMessage;
+
+        switch (whichMethodThrow(ex)) {
+            case "isUniqueEmail" -> {
+                userMessage = "이미 가입한 이메일입니다.";
+                return buildResponseEntity(HttpStatus.CONFLICT, userMessage);
+            }
+            case "isUniqueNickname" -> {
+                userMessage = "사용 중인 닉네임입니다.";
+                return buildResponseEntity(HttpStatus.CONFLICT, userMessage);
+            }
+            default -> userMessage = "자원의 입력 및 수정이 지정된 형식에 맞지 않거나 중복을 발생시킵니다.";
+        }
 
         return buildResponseEntity(HttpStatus.BAD_REQUEST, userMessage);
     }
@@ -203,6 +216,14 @@ public class GlobalExceptionHandler {
 
     private static StackTraceElement getFirstFileFromStackTrace(Exception ex) {
         return ex.getStackTrace()[0];
+    }
+
+    private static String whichFileThrow(Exception ex) {
+        return getFirstFileFromStackTrace(ex).getFileName();
+    }
+
+    private static String whichMethodThrow(Exception ex) {
+        return getFirstFileFromStackTrace(ex).getMethodName();
     }
 
     private ResponseEntity<ErrorResponse> buildResponseEntity(

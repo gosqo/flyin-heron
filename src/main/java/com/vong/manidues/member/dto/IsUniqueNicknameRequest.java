@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class IsPresentNicknameRequest {
+public class IsUniqueNicknameRequest {
     @NotBlank(message = "중복 확인할 값을 입력해주세요.")
     @Size(
             min = 2
