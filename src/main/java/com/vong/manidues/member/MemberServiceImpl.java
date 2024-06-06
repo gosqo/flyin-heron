@@ -65,7 +65,7 @@ public class MemberServiceImpl implements MemberService {
 
         return IsUniqueNicknameResponse.builder()
                 .status(HttpStatus.OK.value())
-                .message("사용 가능한 이메일 주소입니다.")
+                .message("사용 가능한 닉네임입니다.")
                 .build();
     }
 

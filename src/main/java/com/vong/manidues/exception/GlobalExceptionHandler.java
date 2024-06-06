@@ -82,7 +82,7 @@ public class GlobalExceptionHandler {
             DataIntegrityViolationException ex
     ) {
         logException(ex);
-        logErrorStackTrace(ex);
+        logWhereThrows(ex);
 
         String userMessage;
 
@@ -97,6 +97,8 @@ public class GlobalExceptionHandler {
             }
             default -> userMessage = "자원의 입력 및 수정이 지정된 형식에 맞지 않거나 중복을 발생시킵니다.";
         }
+
+        logErrorStackTrace(ex);
 
         return buildResponseEntity(HttpStatus.BAD_REQUEST, userMessage);
     }

@@ -1,10 +1,12 @@
+import FormUtility from "../common/FormUtility.js";
+
 export class SignUpDOM {
     submitButton = document.querySelector("#submit-form-btn");
 
     addSubmitEvent() {
         this.submitButton.addEventListener("click", async (event) => {
             event.preventDefault();
-            registerMember();
+            this.registerMember();
         });
     }
 

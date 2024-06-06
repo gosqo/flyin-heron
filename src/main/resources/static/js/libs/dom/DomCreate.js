@@ -65,7 +65,7 @@ export default class DomCreate {
     }
 
     static small(id, className, textContent) {
-        const element = document.createElement("create");
+        const element = document.createElement("small");
 
         if (id !== null)
             element.id = id;

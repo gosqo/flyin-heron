@@ -19,7 +19,7 @@ public class IsUniqueNicknameRequest {
     )
     @Pattern(
             regexp = "^[A-Za-z가-힣\\d-_./]{2,20}$",
-            message = "닉네임은 2 ~ 20 자리, 영/한문과 특수문자{'-', '_', '.'} 을 사용해 구성할 수 있습니다."
+            message = "닉네임은 2 ~ 20 자리, 한글/영문/숫자/특수문자(- _ .)로 구성할 수 있습니다."
     )
     private String nickname;
 }
