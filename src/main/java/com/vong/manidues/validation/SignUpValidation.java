@@ -10,9 +10,12 @@ public enum SignUpValidation {
             , "닉네임은 2 ~ 20 자리, 숫자, 영/한문과 특수문자{'-', '_', '.'} 을 사용해 구성할 수 있습니다."
     )
     , PASSWORD(
-            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d|.*[\\W\\S])[A-Za-z\\d|\\W\\S]{8,20}$"
+            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d|.*[!@#$%^&*\\(\\)_+`~\\-=\\[\\]\\{\\}\\\\\\|;':\",\\./<>?₩])[A-Za-z\\d!@#$%^&*\\(\\)_+`~\\-=\\[\\]\\{\\}\\\\\\|;':\",\\./<>?₩]{8,20}$"
             , "비밀번호는 8 ~ 20 자리, 영문 대소문자와 숫자 혹은 특수문자를 하나 이상 조합해주세요."
     );
+    // removed redundant escape "\\" in password as compiler tell is like below
+    // using on attribute regex of @Pattern annotation in MemberRegisterRequest.
+    // ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d|.*[!@#$%^&*()_+`~\-=\[\]{}\\|;':",./<>?₩])[A-Za-z\d!@#$%^&*()_+`~\-=\[\]{}\\|;':",./<>?₩]{8,20}$
 
     private static final SignUpValidation[] VALUES;
 

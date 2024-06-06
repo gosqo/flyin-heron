@@ -27,7 +27,7 @@ class SubmitChecker {
 
 class Regex {
     static email = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z]){0,63}@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z]){0,251}\.[a-zA-Z]{2,3}$/;
-    static password = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d|.*[\W\S])[A-Za-z\d|\W\S]{8,20}$/;
+    static password = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d|.*[!@#$%^&*\(\)_+`~\-=\[\]\{\}\\\|;':",\./<>?₩])[A-Za-z\d!@#$%^&*\(\)_+`~\-=\[\]\{\}\\\|;':",\./<>?₩]{8,20}$/;
     static nickname = /^[0-9a-zA-Z가-힣]{2,20}$/;
     static { Object.freeze(this); }
 }
@@ -38,12 +38,12 @@ class Messenger {
         Messenger.Utility.appendResultMessage(data.status, target, messageElement);
     }
 
-    static Utility = class {
-        static removeMessageIfExist(target, appendingId) {
-            const targetElement = document.querySelector(`#${target.name}${appendingId}`);
-            if (targetElement) targetElement.remove();
-        }
+    static removeMessageIfExist(target, appendingId) {
+        const targetElement = document.querySelector(`#${target.name}${appendingId}`);
+        if (targetElement) targetElement.remove();
+    }
 
+    static Utility = class {
         static appendResultMessage(status, target, messageElement) {
             Messenger.Utility.colorMessage(status, messageElement);
             target.closest("div").nextElementSibling.nextElementSibling.append(messageElement);
@@ -142,8 +142,8 @@ export class ValidChecker {
 
     addIsSameEvent(object) {
         object.element1.addEventListener("input", () => {
-            Messenger.Utility.removeMessageIfExist(object.element1, "ResultIsSame");
-            Messenger.Utility.removeMessageIfExist(object.element2, "ResultIsSame");
+            Messenger.removeMessageIfExist(object.element1, "IsSame");
+            Messenger.removeMessageIfExist(object.element2, "IsSame");
 
             if (ValidChecker.password.status === CheckStatus.FAIL
                 || ValidChecker.passwordCheck.status === CheckStatus.FAIL
@@ -152,19 +152,19 @@ export class ValidChecker {
             this.checkSame(object.element1, object.element2, object);
             this.setMessageOf(object);
 
-            Messenger.Utility.removeMessageIfExist(object.element1, "ResultIsValid")
+            Messenger.removeMessageIfExist(object.element1, "IsValid")
 
             if (object.status === CheckStatus.PASS) {
-                Messenger.Utility.removeMessageIfExist(object.element2, "ResultIsValid")
+                Messenger.removeMessageIfExist(object.element2, "IsValid")
             }
 
-            Messenger.addResultMessage(object.element1, object, "ResultIsSame");
+            Messenger.addResultMessage(object.element1, object, "IsSame");
             SubmitChecker.changeSubmitAvailability;
         });
 
         object.element2.addEventListener("input", () => {
-            Messenger.Utility.removeMessageIfExist(object.element1, "ResultIsSame");
-            Messenger.Utility.removeMessageIfExist(object.element2, "ResultIsSame");
+            Messenger.removeMessageIfExist(object.element1, "IsSame");
+            Messenger.removeMessageIfExist(object.element2, "IsSame");
 
             if (ValidChecker.password.status === CheckStatus.FAIL
                 || ValidChecker.passwordCheck.status === CheckStatus.FAIL
@@ -173,13 +173,13 @@ export class ValidChecker {
             this.checkSame(object.element1, object.element2, object);
             this.setMessageOf(object);
 
-            Messenger.Utility.removeMessageIfExist(object.element2, "ResultIsValid")
+            Messenger.removeMessageIfExist(object.element2, "IsValid")
 
             if (object.status === CheckStatus.PASS) {
-                Messenger.Utility.removeMessageIfExist(object.element1, "ResultIsValid")
+                Messenger.removeMessageIfExist(object.element1, "IsValid")
             }
 
-            Messenger.addResultMessage(object.element2, object, "ResultIsSame");
+            Messenger.addResultMessage(object.element2, object, "IsSame");
             SubmitChecker.changeSubmitAvailability();
         });
     }
@@ -191,13 +191,13 @@ export class ValidChecker {
     addIsValidEvent(targetName, object) {
         const target = document.querySelector(`#${targetName}`);
         target.addEventListener("input", () => {
-            Messenger.Utility.removeMessageIfExist(target, "ResultIsUnique");
-            Messenger.Utility.removeMessageIfExist(target, "ResultIsValid");
+            Messenger.removeMessageIfExist(target, "IsUnique");
+            Messenger.removeMessageIfExist(target, "IsValid");
 
             this.checkValueValid(target, object);
             this.setMessageOf(object); // object.matched, unmatched class Message 로 분리
 
-            Messenger.addResultMessage(target, object, "ResultIsValid");
+            Messenger.addResultMessage(target, object, "IsValid");
             SubmitChecker.changeSubmitAvailability();
         });
     }
@@ -240,15 +240,15 @@ export class UniqueChecker {
             event.preventDefault();
             const target = document.querySelector(`input[name="${targetName}"]`);
 
-            Messenger.Utility.removeMessageIfExist(target, "ResultIsUnique");
-            Messenger.Utility.removeMessageIfExist(target, "ResultIsValid");
+            Messenger.removeMessageIfExist(target, "IsUnique");
+            Messenger.removeMessageIfExist(target, "IsValid");
 
             const data = await this.checkIsUnique(target);
 
             this.statusToFlag(data);
             toCheck.status = data.status;
 
-            Messenger.addResultMessage(target, data, "ResultIsUnique");
+            Messenger.addResultMessage(target, data, "IsUnique");
             SubmitChecker.changeSubmitAvailability();
         });
     }
