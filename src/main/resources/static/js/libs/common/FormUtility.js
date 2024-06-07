@@ -9,4 +9,13 @@ export default class FormUtility {
 
         return body;
     }
+
+    static inputToBody(element) {
+        const key = element.name;
+        const value = element.value;
+        const body = {};
+        body[key] = value;
+
+        return body;
+    }
 }
