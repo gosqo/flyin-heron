@@ -12,7 +12,7 @@ export default class TestJwt {
         };
 
         try {
-            const data = await Fetcher.withAuth(url, options);
+            const data = await Fetcher.fetchObjectWithAuth(url, options);
 
             if (data === undefined) return;
 

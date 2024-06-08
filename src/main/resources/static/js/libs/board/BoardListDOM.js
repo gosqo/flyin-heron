@@ -1,12 +1,23 @@
 import DomCreate from "../dom/DomCreate.js";
 import BoardUtility from "./BoardUtility.js";
+import Fetcher from "../common/Fetcher.js";
 
 export class BoardListDOM {
     addNewBoardButton() {
         const boardListHeader = document.querySelector("#board-list-header");
 
         const newBoardButton = DomCreate.button("register-board", "btn btn-primary", "New Board");
-        newBoardButton.onclick = () => { location.href = "/board/new"; };
+        newBoardButton.onclick = async () => {
+            // location.href = "/board/new";
+            const url = "/board/new";
+            let options = {
+                headers: {
+                    "Authorization": localStorage.getItem("access_token")
+                }
+            }
+            const data = await Fetcher.fetchPageWithAuth(url, options);
+            console.log(data);
+        };
         boardListHeader.append(newBoardButton);
     }
 

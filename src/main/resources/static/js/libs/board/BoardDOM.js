@@ -43,7 +43,7 @@ export default class BoardDOM {
         };
 
         try {
-            const data = await Fetcher.withAuth(url, options);
+            const data = await Fetcher.fetchObjectWithAuth(url, options);
 
             // TODO Response DTO status 필드, 빌더 추가. 여타 REST Response DTO 도 확인 및 적용.
             // 하드코딩 된 메세지로만 처리하기엔 대비하지 못할 경우의 수의 존재 가능성 때문.

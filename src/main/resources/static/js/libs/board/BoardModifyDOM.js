@@ -42,7 +42,7 @@ export class BoardModifyDOM {
         };
 
         try {
-            const data = await Fetcher.withAuth(url, options);
+            const data = await Fetcher.fetchObjectWithAuth(url, options);
 
             if (data.id === undefined) {
                 alert(data.message);

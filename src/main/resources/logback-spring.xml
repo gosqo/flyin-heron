@@ -42,10 +42,10 @@
         <appender-ref ref="FILE-INFO" />
     </root>
 
-<!--    <logger name="org.apache.coyote.http11.Http11Processor" level="TRACE" additivity="false">-->
-<!--        <appender-ref ref="CONSOLE" />-->
-<!--        <appender-ref ref="FILE-INFO" />-->
-<!--    </logger>-->
+    <logger name="org.springframework.security.authorization" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE-INFO" />
+    </logger>
 
 <!--    <logger name="org.apache.coyote.http11.Http11InputBuffer" level="TRACE" additivity="false">-->
 <!--        <appender-ref ref="CONSOLE" />-->
