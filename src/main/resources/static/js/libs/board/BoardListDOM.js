@@ -1,6 +1,7 @@
 import DomCreate from "../dom/DomCreate.js";
 import BoardUtility from "./BoardUtility.js";
 import Fetcher from "../common/Fetcher.js";
+import { DocumentRewriter } from "../dom/DomRewriter.js";
 
 export class BoardListDOM {
     addNewBoardButton() {
@@ -15,8 +16,8 @@ export class BoardListDOM {
                     "Authorization": localStorage.getItem("access_token")
                 }
             }
-            const data = await Fetcher.fetchPageWithAuth(url, options);
-            console.log(data);
+            const data = await Fetcher.withAuth(url, options);
+            DocumentRewriter.rewriteWith(data);
         };
         boardListHeader.append(newBoardButton);
     }

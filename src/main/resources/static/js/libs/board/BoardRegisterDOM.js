@@ -41,7 +41,7 @@ export class BoardNewDOM {
         };
 
         try {
-            const data = await Fetcher.fetchObjectWithAuth(url, options);
+            const data = await Fetcher.withAuth(url, options);
 
             if (data.message.includes("Validation")) {
                 alert(data.errors[0].defaultMessage);

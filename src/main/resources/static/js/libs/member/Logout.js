@@ -15,7 +15,7 @@ export default class Logout {
         };
 
         try {
-            const data = await Fetcher.fetchObjectWithAuth(url, requestInit);
+            const data = await Fetcher.withAuth(url, requestInit);
 
             if (data.status === 200) {
                 localStorage.removeItem("access_token");

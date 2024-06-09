@@ -5,7 +5,7 @@ import { BoardListDOM } from "../libs/board/BoardListDOM.js";
 window.addEventListener("load", async () => {
     const boardFetcher = new BoardFetcher();
     const boardListDOM = new BoardListDOM();
-    
+
     if (AuthChecker.hasAuth())
         boardListDOM.addNewBoardButton();
 
@@ -26,5 +26,3 @@ window.addEventListener("load", async () => {
 
     boardListDOM.createPageItemsWrapper(boardPageTotalPages, boardPageNumber);
 });
-
-
