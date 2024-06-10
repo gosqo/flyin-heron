@@ -6,10 +6,10 @@ import AuthChecker from "../libs/token/AuthChecker.js";
 window.addEventListener("load", async () => {
     const boardDOM = new BoardDOM();
     const boardFetcher = new BoardFetcher();
-    
+
     const boardId = boardDOM.getBoardId();
     const boardData = await boardFetcher.getBoard(boardId);
-    
+
     if (boardData === undefined) return;
 
     boardDOM.placeData(boardData);

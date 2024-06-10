@@ -76,4 +76,17 @@ export default class DomCreate {
 
         return element;
     }
+
+    static span(id, className, textContent) {
+        const element = document.createElement("span");
+
+        if (id !== null)
+            element.id = id;
+        if (className !== null)
+            element.className = className;
+        if (textContent !== null)
+            element.textContent = textContent;
+
+        return element;
+    }
 }

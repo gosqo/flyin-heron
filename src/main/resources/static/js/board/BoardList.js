@@ -1,28 +1,30 @@
-import BoardFetcher from "../libs/board/BoardFetcher.js";
 import AuthChecker from "../libs/token/AuthChecker.js";
-import { BoardListDOM } from "../libs/board/BoardListDOM.js";
+import { BoardList } from "../libs/board/BoardList.js";
 
 window.addEventListener("load", async () => {
-    const boardFetcher = new BoardFetcher();
-    const boardListDOM = new BoardListDOM();
+    const state = {
+        page_name: "boardList"
+        , page_url: "/boards/" + BoardList.Utility.getPageNumber()
+        , AuthHeaderRequired: false
+    }
+    history.replaceState(state, "", "");
 
     if (AuthChecker.hasAuth())
-        boardListDOM.addNewBoardButton();
+        BoardList.DOM.addNewBoardButton();
 
-    const uriPageNumber = boardListDOM.getPageNumber();
-    const data = await boardFetcher.getBoardList(uriPageNumber);
-
-    if (data === undefined) return;
-
-    const boardPage = data.boardPage;
-    const boardPageContent = boardPage.content;
-    const boardPageTotalPages = boardPage.totalPages;
-    const boardPageNumber = boardPage.number;
-
-    boardPageContent.forEach(board => {
-        boardListDOM.createBoardNodes(board);
-        boardListDOM.addClickEvent(board.boardId);
-    });
-
-    boardListDOM.createPageItemsWrapper(boardPageTotalPages, boardPageNumber);
+    BoardList.DOM.presentBoardList();
 });
+
+window.addEventListener("popstate", () => {
+    console.log("popstate boardList.js");
+
+    if (history.state.AuthHeaderRequired) {
+        console.log(history.state);
+        alert("인증이 필요한 접근입니다. 로그인 상태라면 화면의 버튼을 이용해주세요.");
+        history.back();
+        return;
+    }
+
+    if (history.state.page_url !== null)
+        location.href = history.state.page_url;
+})

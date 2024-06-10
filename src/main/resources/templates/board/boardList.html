@@ -6,13 +6,33 @@
 
 <body>
   <div th:replace="~{fragment/header :: header}"></div>
+  <div th:replace="~{fragment/board/boardListHeader}"></div>
 
   <div class="container mb-3" id="board-list-container">
-
-    <div th:replace="~{fragment/board/boardListHeader}"></div>
-
+    <div class="card mb-3" id="board-sample">
+      <div class="card-body">
+        <div class=" d-flex justify-content-between">
+          <h5 class="card-title" id="board-title"></h5>
+          <p id="board-writer"></p>
+        </div>
+        <p class="card-text" id="board-content"></p>
+        <p class="card-text"><small class="text-body-secondary" id="board-date"></small></p>
+      </div>
+    </div>
   </div>
 
-  <div class="container mb-3" id="pagination-container"></div>
+  <div class="container mb-3" id="pagination-container">
+    <ul id="pagination-ul" class="pagination justify-content-center">
+      <li id="previous-button" class="page-item">
+          <a class="page-link" href="#"><span aria-hidden="true">«</span></a>
+      </li>
+      <li id="page-button-sample" class="page-item">
+          <a class="page-link" href="#"></a>
+      </li>
+      <li id="next-button" class="page-item">
+          <a class="page-link" href="#"><span aria-hidden="true">»</span></a>
+      </li>
+  </ul>
+  </div>
 
 <thymeleaf th:replace="~{fragment/footer}"></thymeleaf>

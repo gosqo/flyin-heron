@@ -8,3 +8,9 @@ window.addEventListener("load", async () => {
         boardNewDOM.addButtons();
     }
 });
+
+window.addEventListener("popstate", (state) => {
+    console.log(state)
+    console.log("popstate. boardNew.js");
+    location.href = history.state.page_url;
+})
