@@ -1,6 +1,6 @@
 import Fetcher from "../common/Fetcher.js";
 import DomCreate from "../dom/DomCreate.js";
-import { DocumentRewriter } from "../dom/DomRewriter.js";
+import { State } from "../state/StateManage.js";
 import BoardFetcher from "./BoardFetcher.js";
 import BoardUtility from "./BoardUtility.js";
 
@@ -21,23 +21,24 @@ export class BoardList {
             const newBoardButton = DomCreate.button("register-board", "btn btn-primary", "New Board");
 
             boardListHeader.append(newBoardButton);
-            newBoardButton.addEventListener("click", () => {
+            newBoardButton.addEventListener("click", async () => {
+                await fetchThenReplaceBody();
                 pushNewBoardState();
-                handleNewBoardButton();
+                State.Event.dispatchDOMContentLoaded();
             });
 
             function pushNewBoardState() {
                 const state = {
-                    page_name: "boardNew"
-                    , page_url: "/board/new"
+                    pathname: "/board/new"
+                    , body: document.querySelector("body").outerHTML
                     , AuthHeaderRequired: true
                 }
                 const url = "/board/new";
-                
+
                 history.pushState(state, "", url);
             }
 
-            async function handleNewBoardButton() {
+            async function fetchThenReplaceBody() {
                 const url = "/board/new";
                 let options = {
                     headers: {
@@ -45,7 +46,7 @@ export class BoardList {
                     }
                 }
                 const data = await Fetcher.withAuth(url, options);
-                DocumentRewriter.rewriteWith(data);
+                State.Body.replaceCurrentBodyWith(data);
             }
         }
 
@@ -151,8 +152,10 @@ export class BoardList {
                     pageAnchor.href = `/boards/${presentNumber}`;
                     pageAnchor.textContent = presentNumber;
 
-                    if (boardPageNumber === targetNumber)
+                    if (boardPageNumber === targetNumber) {
                         pageAnchor.classList.add("active");
+                        pageAnchor.removeAttribute("href");
+                    }
 
                     return pageItem;
                 }

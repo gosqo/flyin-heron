@@ -42,7 +42,7 @@
         <appender-ref ref="FILE-INFO" />
     </root>
 
-    <logger name="org.springframework.security.authorization" level="DEBUG" additivity="false">
+    <logger name="org.springframework.security" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE-INFO" />
     </logger>

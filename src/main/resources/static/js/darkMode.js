@@ -1,4 +1,4 @@
-window.addEventListener("load", () => {
+document.addEventListener("DOMContentLoaded", () => {
     initDarkMode();
 });
 
@@ -64,15 +64,25 @@ function themeToggleButtonText(themeToggleButton, preference) {
 }
 
 function toggleDarkModeCss(preference) {
+    const mightExist = document.querySelector(`link[href="/css/darkMode.css"]`);
 
-    if (preference === "dark") {
+    if (preference === "dark" && mightExist === null) {
 
-        var darkModeCss = document.createElement("link");
+        let darkModeCss = document.createElement("link");
         darkModeCss.setAttribute("rel", "stylesheet");
         darkModeCss.setAttribute("href", "/css/darkMode.css");
 
         document.querySelector("head").appendChild(darkModeCss);
 
+    } else if (preference === "dark" && mightExist !== null) {
+        mightExist.remove()
+
+        let darkModeCss = document.createElement("link");
+        darkModeCss.setAttribute("rel", "stylesheet");
+        darkModeCss.setAttribute("href", "/css/darkMode.css");
+
+        document.querySelector("head").appendChild(darkModeCss);
+        
     } else {
 
         var targetNode = document.querySelector(`link[href="/css/darkMode.css"]`);

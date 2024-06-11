@@ -1,10 +1,13 @@
-import AuthChecker from "../libs/token/AuthChecker.js";
 import { BoardList } from "../libs/board/BoardList.js";
+import AuthChecker from "../libs/token/AuthChecker.js";
+import { State } from "../libs/state/StateManage.js";
 
-window.addEventListener("load", async () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    if (!location.pathname.startsWith("/boards")) return;
+
     const state = {
-        page_name: "boardList"
-        , page_url: "/boards/" + BoardList.Utility.getPageNumber()
+        pathname: location.pathname + "/" + BoardList.Utility.getPageNumber()
+        , body: document.querySelector("body").outerHTML
         , AuthHeaderRequired: false
     }
     history.replaceState(state, "", "");
@@ -15,16 +18,7 @@ window.addEventListener("load", async () => {
     BoardList.DOM.presentBoardList();
 });
 
-window.addEventListener("popstate", () => {
-    console.log("popstate boardList.js");
-
-    if (history.state.AuthHeaderRequired) {
-        console.log(history.state);
-        alert("인증이 필요한 접근입니다. 로그인 상태라면 화면의 버튼을 이용해주세요.");
-        history.back();
-        return;
-    }
-
-    if (history.state.page_url !== null)
-        location.href = history.state.page_url;
+window.addEventListener("popstate", async () => {
+    State.Body.replaceCurrentBodyWith(history.state.body);
+    State.Event.dispatchDOMContentLoaded();
 })
