@@ -6,8 +6,6 @@ import AuthChecker from "../token/AuthChecker.js";
 import BoardUtility from "./BoardUtility.js";
 
 export class BoardView {
-    static buttonsArea = document.querySelector("#buttons-area");
-
     static Utility = class {
         static getBoardId() {
             const path = window.location.pathname.split("/");
@@ -40,68 +38,71 @@ export class BoardView {
             }
 
             function addButtons(boardId) {
-                BoardView.DOM.addModifyButton(boardId);
-                BoardView.DOM.addDeleteButton(boardId);
-            }
-        }
+                const buttonsArea = document.querySelector("#buttons-area");
 
-        static addDeleteButton(boardId) {
-            const deleteButton = DomCreate.button("delete-btn", "btn btn-primary", "Delete");
+                addModifyButton(boardId, buttonsArea);
+                addDeleteButton(boardId, buttonsArea);
 
-            deleteButton.addEventListener("click", async () => {
-                if (!confirmDelete()) {
-                    alert("게시물 삭제를 취소합니다.");
-                    return;
-                }
+                function addDeleteButton(boardId, buttonsArea) {
+                    const deleteButton = DomCreate.button("delete-btn", "btn btn-primary", "Delete");
 
-                await deleteBoard(boardId);
-            });
-            BoardView.buttonsArea.append(deleteButton);
+                    deleteButton.addEventListener("click", async () => {
+                        if (!confirmDelete()) {
+                            alert("게시물 삭제를 취소합니다.");
+                            return;
+                        }
 
-            function confirmDelete() {
-                return confirm(
-                    "게시물을 삭제하시겠습니까?\n"
-                    + "확인을 누르면 해당 게시물은 삭제되어 복구할 수 없습니다."
-                );
-            }
+                        await deleteBoard(boardId);
+                    });
+                    buttonsArea.append(deleteButton);
 
-            async function deleteBoard(boardId) {
-                const url = `/api/v1/board/${boardId}`;
-                let options = {
-                    method: `DELETE`
-                    , headers: {
-                        "Authorization": localStorage.getItem("access_token")
-                    }
-                };
-
-                try {
-                    const data = await Fetcher.withAuth(url, options);
-
-                    // TODO Response DTO status 필드, 빌더 추가. 여타 REST Response DTO 도 확인 및 적용.
-                    // 하드코딩 된 메세지로만 처리하기엔 대비하지 못할 경우의 수의 존재 가능성 때문.
-                    if (data.message === "잘못된 요청입니다.") {
-                        alert("게시물 삭제에 문제가 발생했습니다.");
-                        throw new Error("게시물 삭제에 문제 발생.");
+                    function confirmDelete() {
+                        return confirm(
+                            "게시물을 삭제하시겠습니까?\n"
+                            + "확인을 누르면 해당 게시물은 삭제되어 복구할 수 없습니다."
+                        );
                     }
 
-                    alert(data.message);
-                    location.replace(`/boards`);
-                } catch (error) {
-                    console.error("Error " + error);
+                    async function deleteBoard(boardId) {
+                        const url = `/api/v1/board/${boardId}`;
+                        let options = {
+                            method: `DELETE`
+                            , headers: {
+                                "Authorization": localStorage.getItem("access_token")
+                            }
+                        };
+
+                        try {
+                            const data = await Fetcher.withAuth(url, options);
+
+                            // TODO Response DTO status 필드, 빌더 추가. 여타 REST Response DTO 도 확인 및 적용.
+                            // 하드코딩 된 메세지로만 처리하기엔 대비하지 못할 경우의 수의 존재 가능성 때문.
+                            if (data.message === "잘못된 요청입니다.") {
+                                alert("게시물 삭제에 문제가 발생했습니다.");
+                                throw new Error("게시물 삭제에 문제 발생.");
+                            }
+
+                            alert(data.message);
+                            location.replace(`/boards`);
+                        } catch (error) {
+                            console.error("Error " + error);
+                        }
+                    }
+                }
+
+                function addModifyButton(boardId, buttonsArea) {
+                    const modifyButton = DomCreate.button("modify-btn", "btn btn-primary", "Modify");
+
+                    modifyButton.addEventListener("click", async () => {
+                        const pathToGet = `/board/${boardId}/modify`;
+                        const authRequiredView = await Fetcher.getAuthRequiredView(pathToGet);
+
+                        State.pushHistory(authRequiredView, pathToGet);
+                    });
+                    buttonsArea.append(modifyButton);
                 }
             }
         }
 
-        static addModifyButton(boardId) {
-            const modifyButton = DomCreate.button("modify-btn", "btn btn-primary", "Modify");
-
-            modifyButton.addEventListener("click", async () => {
-                const pathToGet = `/board/${boardId}/modify`;
-                const authRequiredView = await Fetcher.getAuthRequiredView(pathToGet);
-
-                State.pushHistory(authRequiredView, pathToGet);
-            });
-            BoardView.buttonsArea.append(modifyButton);
-        }
     }
 }
