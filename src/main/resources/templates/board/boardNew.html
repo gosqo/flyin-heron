@@ -1,16 +1,16 @@
-
 <thymeleaf th:replace="~{fragment/htmlHead}"></thymeleaf>
-  <script defer type="module" src="/js/board/boardNew.js"></script>
-  <title>New Board</title>
+<script defer type="module" src="/js/board/boardNew.js"></script>
+<title>New Board</title>
 </head>
+
 <body>
   <div th:replace="~{fragment/header :: header}"></div>
 
   <div class="container">
 
-      <div th:replace="~{fragment/board/boardHeader}"></div>
-      <h2>Hello, you can post here.</h2>
-      
+    <div th:replace="~{fragment/board/boardHeader}"></div>
+    <h2>Hello, you can post here.</h2>
+
     <form id="form">
       <div class="mb-3">
         <label class="form-label" for="board-title">title
@@ -31,4 +31,4 @@
   </div>
 
 
-<thymeleaf th:replace="~{fragment/footer}"></thymeleaf>
+  <thymeleaf th:replace="~{fragment/footer}"></thymeleaf>

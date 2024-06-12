@@ -1,7 +1,6 @@
-
 <thymeleaf th:replace="~{fragment/htmlHead}"></thymeleaf>
-  <script defer type="module" src="/js/member/login.js"></script>
-  <title>Login</title>
+<script defer type="module" src="/js/member/login.js"></script>
+<title>Login</title>
 </head>
 
 <body>
@@ -17,14 +16,14 @@
             <label for="staticEmail" class="col-sm-2 col-form-label">Email</label>
             <div class="col-sm-10">
               <input type="email" class="form-control" id="email" name="email" placeholder="email@example.com"
-                     autocomplete="username">
+                autocomplete="username">
             </div>
           </div>
           <div class="mb-3 row">
             <label for="password" class="col-sm-2 col-form-label">Password</label>
             <div class="col-sm-10">
               <input type="password" class="form-control" id="password" name="password" placeholder="password"
-                     autocomplete="current-password">
+                autocomplete="current-password">
             </div>
           </div>
 
@@ -39,4 +38,4 @@
     </div>
   </div>
 
-<thymeleaf th:replace="~{fragment/footer}"></thymeleaf>
+  <thymeleaf th:replace="~{fragment/footer}"></thymeleaf>

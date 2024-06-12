@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<thymeleaf th:replace="~{fragment/htmlHead}"></thymeleaf>
+  <thymeleaf th:replace="~{fragment/htmlHead}"></thymeleaf>
   <title>500 Internal Server Error</title>
 </head>
 
 <body>
-<div th:replace="~{fragment/header :: header}"></div>
+  <div th:replace="~{fragment/header :: header}"></div>
 
   <div class="container">
     <div class="mb-3 row" style="margin-top: 2rem;">
       <h2>서버에 오류가 발생했습니다. 오류가 지속되는 경우 운영진에게 알려주시면 신속히 처리하겠습니다.</h2>
-      <h2>An error occurred on the server. If the error lasts, please let us know and we will take care of it quickly.</h2>
+      <h2>An error occurred on the server. If the error lasts, please let us know and we will take care of it quickly.
+      </h2>
     </div>
     <div class="mb-3" id="buttons-area">
       <button class="btn btn-secondary" onclick="location.href = '/';">메인으로</button>
     </div>
   </div>
 
-<thymeleaf th:replace="~{fragment/footer}"></thymeleaf>
+  <thymeleaf th:replace="~{fragment/footer}"></thymeleaf>

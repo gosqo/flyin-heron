@@ -1,8 +1,7 @@
-
 <thymeleaf th:replace="~{fragment/htmlHead}"></thymeleaf>
-  <script defer type="module" src="/js/board/boardList.js"></script>
-  <script defer type="module" src="/js/board/boardNew.js"></script>
-  <title>Board List</title>
+<script defer type="module" src="/js/board/boardList.js"></script>
+<script defer type="module" src="/js/board/boardNew.js"></script>
+<title>Board List</title>
 </head>
 
 <body>
@@ -25,15 +24,15 @@
   <div class="container mb-3" id="pagination-container">
     <ul id="pagination-ul" class="pagination justify-content-center">
       <li id="previous-button" class="page-item">
-          <a class="page-link" href="#"><span aria-hidden="true">«</span></a>
+        <a class="page-link" href="#"><span aria-hidden="true">«</span></a>
       </li>
       <li id="page-button-sample" class="page-item">
-          <a class="page-link" href="#"></a>
+        <a class="page-link" href="#"></a>
       </li>
       <li id="next-button" class="page-item">
-          <a class="page-link" href="#"><span aria-hidden="true">»</span></a>
+        <a class="page-link" href="#"><span aria-hidden="true">»</span></a>
       </li>
-  </ul>
+    </ul>
   </div>
 
-<thymeleaf th:replace="~{fragment/footer}"></thymeleaf>
+  <thymeleaf th:replace="~{fragment/footer}"></thymeleaf>
