@@ -22,32 +22,8 @@ export class BoardList {
 
             boardListHeader.append(newBoardButton);
             newBoardButton.addEventListener("click", async () => {
-                await fetchThenReplaceBody();
-                pushNewBoardState();
-                State.Event.dispatchDOMContentLoaded();
+                State.getViewWithAuth("/board/new");
             });
-
-            function pushNewBoardState() {
-                const state = {
-                    pathname: "/board/new"
-                    , body: document.querySelector("body").outerHTML
-                    , AuthHeaderRequired: true
-                }
-                const url = "/board/new";
-
-                history.pushState(state, "", url);
-            }
-
-            async function fetchThenReplaceBody() {
-                const url = "/board/new";
-                let options = {
-                    headers: {
-                        "Authorization": localStorage.getItem("access_token")
-                    }
-                }
-                const data = await Fetcher.withAuth(url, options);
-                State.Body.replaceCurrentBodyWith(data);
-            }
         }
 
         static async presentBoardList() {

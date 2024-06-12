@@ -6,9 +6,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!location.pathname.startsWith("/boards")) return;
 
     const state = {
-        pathname: location.pathname + "/" + BoardList.Utility.getPageNumber()
+        pathname: location.pathname
         , body: document.querySelector("body").outerHTML
-        , AuthHeaderRequired: false
     }
     history.replaceState(state, "", "");
 
@@ -19,6 +18,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 window.addEventListener("popstate", async () => {
-    State.Body.replaceCurrentBodyWith(history.state.body);
+    State.replaceCurrentBodyWith(history.state.body);
     State.Event.dispatchDOMContentLoaded();
 })

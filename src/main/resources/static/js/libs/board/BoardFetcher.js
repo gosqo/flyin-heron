@@ -12,7 +12,7 @@ export default class BoardFetcher {
                 && response.headers.get("Content-Type") === "text/html;charset=UTF-8"
             ) {
                 const data = await response.text();
-                DocumentRewriter.rewriteWith(data);
+                State.replaceHistory(data, "/404-not-found");
                 return;
             }
 
@@ -33,7 +33,7 @@ export default class BoardFetcher {
                 && response.headers.get("Content-Type") === "text/html;charset=UTF-8"
             ) {
                 const data = await response.text();
-                DocumentRewriter.rewriteWith(data);
+                State.replaceHistory(data, "/404-not-found");
                 return;
             }
 
