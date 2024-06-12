@@ -6,16 +6,9 @@ import AuthChecker from "../token/AuthChecker.js";
 import Board from "./Board.js";
 
 export class BoardView {
-    static Utility = class {
-        static getBoardId() {
-            const path = window.location.pathname.split("/");
-            const boardId = path[path.length - 1];
-            return boardId;
-        }
-    }
     static DOM = class {
         static async present() {
-            const boardId = BoardView.Utility.getBoardId();
+            const boardId = Board.Utility.getBoardId();
             const boardData = await BoardFetcher.getBoard(boardId);
 
             if (boardData === undefined) return;

@@ -5,18 +5,9 @@ import { BoardFetcher } from "./BoardFetcher.js";
 import Board from "./Board.js";
 
 export class BoardModifyView {
-    static Utility = class {
-        static getBoardId() {
-            const path = window.location.pathname.split("/");
-            const boardId = path[path.length - 2];
-
-            return boardId;
-        }
-    }
-
     static DOM = class {
         static async present() {
-            const boardId = BoardModifyView.Utility.getBoardId();
+            const boardId = Board.Utility.getBoardId();
             const boardData = await BoardFetcher.getBoard(boardId);
 
             if (boardData === undefined) return;
