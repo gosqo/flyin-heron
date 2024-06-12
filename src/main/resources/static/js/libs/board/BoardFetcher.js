@@ -1,10 +1,8 @@
 import { State } from "../state/StateManage.js";
 import { BoardList } from "./BoardList.js";
-import { BoardView } from "./BoardView.js";
 
 export class BoardFetcher {
-    static async getBoard() {
-        const boardId = BoardView.Utility.getBoardId();
+    static async getBoard(boardId) {
         const url = `/api/v1/board/${boardId}`;
 
         try {

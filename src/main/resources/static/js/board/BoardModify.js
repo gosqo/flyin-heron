@@ -1,26 +1,9 @@
-import { BoardFetcher } from "../libs/board/BoardFetcher.js";
-import BoardUtility from "../libs/board/BoardUtility.js";
-import { BoardModifyDOM } from "../libs/board/BoardModifyDOM.js";
-import AuthChecker from "../libs/token/AuthChecker.js";
+import { BoardModifyView } from "../libs/board/BoardModify.js";
 
-window.addEventListener("load", async () => {
-    // Spring Security PreAuthorize
-    if (!AuthChecker.hasAuth()) {
-        AuthChecker.redirectToHome();
-    }
-    
-    const boardFetcher = new BoardFetcher();
-    const boardModifyDOM = new BoardModifyDOM();
+document.addEventListener("DOMContentLoaded", async () => {
+    const boardId = BoardModifyView.Utility.getBoardId();
 
-    const boardId = boardModifyDOM.getBoardId();
-    const boardData = await boardFetcher.getBoard(boardId);
+    if (location.pathname !== (`/board/${boardId}/modify`)) return;
 
-    if (boardData === undefined) return;
-
-    boardModifyDOM.placeData(boardData);
-
-    if (BoardUtility.isWriterOf(boardData)) {
-        boardModifyDOM.addModifyButton(boardId);
-        boardModifyDOM.addCancelButton();
-    }
+    BoardModifyView.DOM.present();
 });
