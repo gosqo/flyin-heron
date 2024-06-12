@@ -17,7 +17,7 @@ public class ViewController {
 
     @GetMapping("/board/{id}")
     public String getBoard(@NotNull @PathVariable("id") Long id) {
-        return "board/board";
+        return "board/boardView";
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
