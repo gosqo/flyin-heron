@@ -3,7 +3,7 @@ import { BoardFetcher } from "./BoardFetcher.js";
 import { DomCreate } from "../dom/DomCreate.js";
 import { State } from "../state/StateManage.js";
 import AuthChecker from "../token/AuthChecker.js";
-import BoardUtility from "./BoardUtility.js";
+import Board from "./Board.js";
 
 export class BoardView {
     static Utility = class {
@@ -24,7 +24,7 @@ export class BoardView {
 
             if (!AuthChecker.hasAuth()) return;
 
-            if (BoardUtility.isWriterOf(boardData)) {
+            if (Board.Utility.isWriterOf(boardData)) {
                 addButtons(boardId);
             }
 
@@ -33,7 +33,7 @@ export class BoardView {
                 document.querySelector("#board-title").textContent = boardData.title;
                 document.querySelector("#board-writer").textContent = boardData.writer;
                 document.querySelector("#board-hits").textContent = `조회 ${boardData.viewCount}`;
-                document.querySelector("#board-date").textContent = BoardUtility.getRecentBoardDate(boardData);
+                document.querySelector("#board-date").textContent = Board.Utility.getRecentBoardDate(boardData);
                 document.querySelector("#board-content").textContent = boardData.content;
             }
 

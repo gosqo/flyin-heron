@@ -2,7 +2,7 @@ import { Fetcher } from "../common/Fetcher.js";
 import FormUtility from "../common/FormUtility.js";
 import { DomCreate } from "../dom/DomCreate.js";
 import { BoardFetcher } from "./BoardFetcher.js";
-import BoardUtility from "./BoardUtility.js";
+import Board from "./Board.js";
 
 export class BoardModifyView {
     static Utility = class {
@@ -23,7 +23,7 @@ export class BoardModifyView {
 
             placeData(boardData);
 
-            if (BoardUtility.isWriterOf(boardData)) {
+            if (Board.Utility.isWriterOf(boardData)) {
                 addButtons(boardId);
             }
 
@@ -31,7 +31,7 @@ export class BoardModifyView {
                 document.querySelector("#board-id").textContent = boardData.boardId;
                 document.querySelector("#board-title").value = boardData.title;
                 document.querySelector("#board-writer").value = boardData.writer;
-                document.querySelector("#board-date").textContent = BoardUtility.getRecentBoardDate(boardData);
+                document.querySelector("#board-date").textContent = Board.Utility.getRecentBoardDate(boardData);
                 document.querySelector("#board-content").value = boardData.content;
             }
 

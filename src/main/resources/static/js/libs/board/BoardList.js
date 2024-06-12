@@ -2,7 +2,7 @@ import { DomCreate } from "../dom/DomCreate.js";
 import { State } from "../state/StateManage.js";
 import { BoardFetcher } from "./BoardFetcher.js";
 import { Fetcher } from "../common/Fetcher.js";
-import BoardUtility from "./BoardUtility.js";
+import Board from "./Board.js";
 
 export class BoardList {
     static Utility = class {
@@ -60,7 +60,7 @@ export class BoardList {
                 clonedBoard.querySelector("#board-title").textContent = board.title;
                 clonedBoard.querySelector("#board-writer").textContent = board.writer;
                 clonedBoard.querySelector("#board-content").textContent = trimOver150(board.content);
-                clonedBoard.querySelector("#board-date").textContent = BoardUtility.getRecentBoardDate(board);
+                clonedBoard.querySelector("#board-date").textContent = Board.Utility.getRecentBoardDate(board);
 
                 addMouseOverEvent(clonedBoard);
                 addClickEvent(clonedBoard);
