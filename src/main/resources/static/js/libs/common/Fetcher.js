@@ -1,7 +1,7 @@
 import TokenUtility from "../token/TokenUtility.js"
 import { DocumentRewriter } from "../dom/DomRewriter.js";
 
-export default class Fetcher {
+export class Fetcher {
     static async withAuth(url, options) {
         const response1 = await fetch(url, options);
 
@@ -31,7 +31,6 @@ export default class Fetcher {
                     "Authorization": refreshToken
                 }
             };
-
             const response = await fetch(url, options);
 
             if (response.status !== 200) {

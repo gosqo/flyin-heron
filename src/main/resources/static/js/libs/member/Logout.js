@@ -1,4 +1,4 @@
-import Fetcher from "../common/Fetcher.js"
+import { Fetcher } from "../common/Fetcher.js"
 
 export default class Logout {
     logoutConfirm() {

@@ -1,4 +1,4 @@
-export default class DomCreate {
+export class DomCreate {
     static element(elementName, id, className) {
         const element = document.createElement(elementName);
 

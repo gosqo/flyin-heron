@@ -1,6 +1,6 @@
-import Fetcher from "../common/Fetcher.js";
+import { Fetcher } from "../common/Fetcher.js";
 import FormUtility from "../common/FormUtility.js";
-import DomCreate from "../dom/DomCreate.js";
+import { DomCreate } from "../dom/DomCreate.js";
 import BoardUtility from "./BoardUtility.js";
 
 export class BoardModifyDOM {

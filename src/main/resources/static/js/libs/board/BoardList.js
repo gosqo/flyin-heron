@@ -1,7 +1,6 @@
-import Fetcher from "../common/Fetcher.js";
-import DomCreate from "../dom/DomCreate.js";
+import { DomCreate } from "../dom/DomCreate.js";
 import { State } from "../state/StateManage.js";
-import BoardFetcher from "./BoardFetcher.js";
+import { BoardFetcher } from "./BoardFetcher.js";
 import BoardUtility from "./BoardUtility.js";
 
 export class BoardList {

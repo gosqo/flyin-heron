@@ -1,4 +1,4 @@
-import DomCreate from "../dom/DomCreate.js"
+import { DomCreate } from "../dom/DomCreate.js"
 import FormUtility from "../common/FormUtility.js";
 import { StringUtility } from "../common/StringUtility.js";
 

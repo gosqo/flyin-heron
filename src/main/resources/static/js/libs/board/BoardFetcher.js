@@ -1,8 +1,10 @@
 import { DocumentRewriter } from "../dom/DomRewriter.js";
+import { State } from "../state/StateManage.js";
 import { BoardList } from "./BoardList.js";
 
-export default class BoardFetcher {
-    static async getBoard(boardId) {
+export class BoardFetcher {
+    static async getBoard() {
+        const boardId = BoardView.Utility.getBoardId();
         const url = `/api/v1/board/${boardId}`;
 
         try {
