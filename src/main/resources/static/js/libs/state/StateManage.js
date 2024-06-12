@@ -1,4 +1,12 @@
 export class State {
+    static replaceCurrentState() {
+        const state = {
+            pathname: location.pathname
+            , body: document.querySelector("body").outerHTML
+        }
+        history.replaceState(state, "", "");
+    }
+
     static pushHistory(rawHTML, pathToGet) {
         State.replaceCurrentBodyWith(rawHTML);
         State.pushStateWith(pathToGet);

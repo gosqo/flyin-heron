@@ -5,11 +5,7 @@ import { State } from "../libs/state/StateManage.js";
 document.addEventListener("DOMContentLoaded", async () => {
     if (!location.pathname.startsWith("/boards")) return;
 
-    const state = {
-        pathname: location.pathname
-        , body: document.querySelector("body").outerHTML
-    }
-    history.replaceState(state, "", "");
+    State.replaceCurrentState();
 
     if (AuthChecker.hasAuth())
         BoardList.DOM.addNewBoardButton();
