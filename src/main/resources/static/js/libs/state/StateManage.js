@@ -1,24 +1,4 @@
-import { Fetcher } from "../common/Fetcher.js";
-
 export class State {
-    static Event = class {
-        static dispatchDOMContentLoaded() {
-            document.dispatchEvent(new Event("DOMContentLoaded"));
-        }
-    }
-
-    static async getViewWithAuth(pathToGet) {
-        const url = pathToGet;
-        let options = {
-            headers: {
-                "Authorization": localStorage.getItem("access_token")
-            }
-        }
-        const data = await Fetcher.withAuth(url, options);
-
-        State.pushHistory(data, pathToGet);
-    }
-
     static pushHistory(rawHTML, pathToGet) {
         State.replaceCurrentBodyWith(rawHTML);
         State.pushStateWith(pathToGet);
@@ -32,13 +12,19 @@ export class State {
     }
 
     static replaceCurrentBodyWith(rawHtml) {
-        const parser = new DOMParser();
-        const parsedDOM = parser.parseFromString(rawHtml, "text/html");
-        const newBody = parsedDOM.querySelector("body");
+        const newBody = getParsedBodyFrom(rawHtml);
         const currentBody = document.querySelector("body");
         const currentHtml = document.querySelector("html");
 
         currentHtml.replaceChild(newBody, currentBody);
+
+        function getParsedBodyFrom(rawHtml) {
+            const parser = new DOMParser();
+            const parsedDOM = parser.parseFromString(rawHtml, "text/html");
+            const getParsedBody = parsedDOM.querySelector("body");
+
+            return getParsedBody;
+        }
     }
 
     static pushStateWith(pathToGet) {
@@ -59,5 +45,11 @@ export class State {
         const url = pathToGet;
 
         history.replaceState(state, "", url);
+    }
+
+    static Event = class {
+        static dispatchDOMContentLoaded() {
+            document.dispatchEvent(new Event("DOMContentLoaded"));
+        }
     }
 }

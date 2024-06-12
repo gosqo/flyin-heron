@@ -97,8 +97,9 @@ export class BoardView {
 
             modifyButton.addEventListener("click", async () => {
                 const pathToGet = `/board/${boardId}/modify`;
+                const authRequiredView = await Fetcher.getAuthRequiredView(pathToGet);
 
-                State.getViewWithAuth(pathToGet);
+                State.pushHistory(authRequiredView, pathToGet);
             });
             BoardView.buttonsArea.append(modifyButton);
         }

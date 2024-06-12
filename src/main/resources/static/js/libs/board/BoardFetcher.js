@@ -1,4 +1,3 @@
-import { DocumentRewriter } from "../dom/DomRewriter.js";
 import { State } from "../state/StateManage.js";
 import { BoardList } from "./BoardList.js";
 import { BoardView } from "./BoardView.js";

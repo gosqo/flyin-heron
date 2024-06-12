@@ -1,6 +1,7 @@
 import { DomCreate } from "../dom/DomCreate.js";
 import { State } from "../state/StateManage.js";
 import { BoardFetcher } from "./BoardFetcher.js";
+import { Fetcher } from "../common/Fetcher.js";
 import BoardUtility from "./BoardUtility.js";
 
 export class BoardList {
@@ -21,7 +22,10 @@ export class BoardList {
 
             boardListHeader.append(newBoardButton);
             newBoardButton.addEventListener("click", async () => {
-                State.getViewWithAuth("/board/new");
+                const pathToGet = "/board/new"
+                const authRequiredView = await Fetcher.getAuthRequiredView(pathToGet);
+
+                State.pushHistory(authRequiredView, pathToGet);
             });
         }
 

@@ -1,5 +1,4 @@
 import TokenUtility from "../token/TokenUtility.js"
-import { DocumentRewriter } from "../dom/DomRewriter.js";
 
 export class Fetcher {
     static async withAuth(url, options) {
@@ -58,5 +57,16 @@ export class Fetcher {
                 })
                 .catch(error => { console.error("Error: ", error); });
         }
+    }
+
+    static async getAuthRequiredView(pathToGet) {
+        const url = pathToGet;
+        let options = {
+            headers: {
+                "Authorization": localStorage.getItem("access_token")
+            }
+        };
+        const data = await Fetcher.withAuth(url, options);
+        return data;
     }
 }
