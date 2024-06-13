@@ -18,4 +18,11 @@ export default class FormUtility {
 
         return body;
     }
+
+    static emptyInputs() {
+        const inputs = document.querySelectorAll(".form-control");
+        inputs.forEach((input) => {
+            input.value = "";
+        });
+    }
 }
