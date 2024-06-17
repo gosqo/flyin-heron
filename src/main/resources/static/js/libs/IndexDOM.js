@@ -4,7 +4,6 @@ import Logout from "./member/Logout.js";
 import TestJwt from "./token/TestJwt.js";
 
 export class IndexDOM {
-    logout = new Logout();
     testJwt = new TestJwt();
 
     addAuthDependButtons() {
@@ -24,8 +23,8 @@ export class IndexDOM {
 
         const logoutButton = DomCreate.button("logout-button", "btn btn-primary", "logout");
         logoutButton.addEventListener("click", () => {
-            if (this.logout.logoutConfirm())
-                this.logout.fetchLogout();
+            if (Logout.logoutConfirm())
+                Logout.logout();
         });
         buttonsArea.append(logoutButton);
     }
