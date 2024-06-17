@@ -16,7 +16,7 @@ export class BoardNew {
             function addCancelButton(buttonsArea) {
                 const cancelButton = DomCreate.button("cancel-btn", "btn btn-secondary", "Cancel");
                 const confirmCancel = function () {
-                    return confirm("작성을 취소하시겠습니까?\n 확인을 클릭 시, 작성 내용을 저장하지 않고 이전 페이지로 이동합니다.");
+                    return confirm("작성을 취소하시겠습니까?\n확인을 클릭 시, 작성 내용을 저장하지 않고 이전 페이지로 이동합니다.");
                 }
 
                 cancelButton.addEventListener("click", () => {
