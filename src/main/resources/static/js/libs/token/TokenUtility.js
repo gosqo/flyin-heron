@@ -16,6 +16,9 @@ export default class TokenUtility {
     }
     
     static saveTokens(refreshedTokens) {
+        if (refreshedTokens.access_token === undefined || refreshedTokens.refresh_token === undefined)
+            throw new Error("JWToken cannot be undefined.");
+        
         localStorage.setItem("access_token", `Bearer ${refreshedTokens.access_token}`);
         localStorage.setItem("refresh_token", `Bearer ${refreshedTokens.refresh_token}`);
     }

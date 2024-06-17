@@ -26,7 +26,7 @@ export class LoginDOM {
             const response = await fetch(url, options);
             const data = await response.json();
 
-            if (response.status !== 200) {
+            if (!response.ok) {
                 alert(data.message);
                 return;
             }

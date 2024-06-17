@@ -24,7 +24,7 @@ export class SignUpDOM {
         try {
             const response = await fetch(url, options);
 
-            if (response.status !== 200) {
+            if (!response.ok) {
                 const data = await response.json();
                 alert(data.message);
                 return;

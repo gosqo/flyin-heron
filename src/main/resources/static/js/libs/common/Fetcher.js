@@ -2,21 +2,23 @@ import TokenUtility from "../token/TokenUtility.js"
 
 export class Fetcher {
     static async withAuth(url, options) {
-        const response1 = await fetch(url, options);
-
-        if (response1.status === 401) {
-            const currentRefreshToken = localStorage.getItem("refresh_token")
-            const reissuedTokens = await reissueTokenWith(currentRefreshToken);
-            TokenUtility.saveTokens(reissuedTokens);
-            putReissuedTokenOnHeader(options);
-            return await retryWithReissuedToken(url, options);
-        }
-
         try {
+            const response1 = await fetch(url, options);
+
+            if (response1.status === 401) {
+                const currentRefreshToken = localStorage.getItem("refresh_token")
+                const reissuedTokens = await reissueTokenWith(currentRefreshToken);
+
+                TokenUtility.saveTokens(reissuedTokens);
+                putReissuedTokenOnHeader(options);
+                return await retryWithReissuedToken(url, options);
+            }
+
             if (response1.headers.get("Content-Type") === "text/html;charset=UTF-8") {
                 const data = await response1.text();
                 return data;
             }
+
             return response1.json();
         } catch (error) {
             console.error("Error: ", error);
@@ -30,15 +32,20 @@ export class Fetcher {
                     "Authorization": refreshToken
                 }
             };
-            const response = await fetch(url, options);
 
-            if (response.status !== 200) {
-                alert("인증 정보에 문제가 있습니다.\n로그아웃 후 다시 로그인해주십시오.");
-                throw new Error("Failed to refresh access token");
+            try {
+                const response = await fetch(url, options);
+
+                if (!response.ok) {
+                    alert("인증 정보에 문제가 있습니다.\n로그아웃 후 다시 로그인해주십시오.");
+                    throw new Error("Failed to refresh access token");
+                }
+
+                console.log("refreshed, success");
+                return await response.json();
+            } catch (error) {
+                console.error("Error: ", error);
             }
-
-            console.log("refreshed, success");
-            return await response.json();
         }
 
         function putReissuedTokenOnHeader(options) {
@@ -55,7 +62,9 @@ export class Fetcher {
                     }
                     return response2.json();
                 })
-                .catch(error => { console.error("Error: ", error); });
+                .catch(error => {
+                    console.error("Error: ", error);
+                });
         }
     }
 
@@ -66,7 +75,12 @@ export class Fetcher {
                 "Authorization": localStorage.getItem("access_token")
             }
         };
-        const data = await Fetcher.withAuth(url, options);
-        return data;
+
+        try {
+            const data = await Fetcher.withAuth(url, options);
+            return data;
+        } catch (error) {
+            console.error("Error: ", error);
+        }
     }
 }
