@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <include resource="logging/console-logging.xml"/>
+
+    <SpringProfile name="win">
+        <include resource="logging/file-info-logging.xml"/>
+        <include resource="logging/file-warn-logging.xml"/>
+        <include resource="logging/file-error-logging.xml"/>
+        <include resource="logging/file-trace-http-1.1-logging.xml"/>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE-INFO"/>
+            <appender-ref ref="FILE-WARN"/>
+            <appender-ref ref="FILE-ERROR"/>
+        </root>
+
+        <logger name="org.apache.coyote.http11" level="TRACE" additivity="false">
+            <appender-ref ref="TRACE-HTTP-1.1"/>
+        </logger>
+    </SpringProfile>
+</included>

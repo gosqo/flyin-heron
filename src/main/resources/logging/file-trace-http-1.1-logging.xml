@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <property name="TRACE_HTTP_1.1_FILE_PATH" value="./log/trace_http_1.1"/>
+
+    <appender name="TRACE-HTTP-1.1" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${TRACE_HTTP_1.1_FILE_PATH}/trace-http-1.1-${BY_DATE}.log</file>
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <charset>${LOG_CHARSET}</charset>
+        </encoder>
+
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>TRACE</level>
+        </filter>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${TRACE_HTTP_1.1_FILE_PATH}/trace-http-1.1-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+</included>
