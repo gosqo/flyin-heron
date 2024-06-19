@@ -6,5 +6,7 @@
         <root level="DEBUG">
             <appender-ref ref="CONSOLE"/>
         </root>
+
+        <include resource="logging/exclude-while-debug.xml"/>
     </SpringProfile>
 </included>
