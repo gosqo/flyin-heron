@@ -60,7 +60,7 @@ public class JwtService {
                 .addClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration ))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -79,12 +79,30 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+
     public String extractUserEmail(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+    public Claims extractAllClaimWhetherExpired(String token) {
+        return Jwts
+                .parserBuilder()
+                .setSigningKey(getSignInKey())
+                .build()
+                .parseClaimsJwt(token)
+                .getBody();
+    }
+
+    public <T> T extractClaimWhetherExpired(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaimWhetherExpired(token);
+        return claimsResolver.apply(claims);
+    }
+
+    public Date extractExpirationWhetherExpired(String token) {
+        return extractClaimWhetherExpired(token, Claims::getExpiration);
     }
 
     private Key getSignInKey() {
