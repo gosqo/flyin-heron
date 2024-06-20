@@ -87,24 +87,6 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public Claims extractAllClaimWhetherExpired(String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(getSignInKey())
-                .build()
-                .parseClaimsJwt(token)
-                .getBody();
-    }
-
-    public <T> T extractClaimWhetherExpired(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaimWhetherExpired(token);
-        return claimsResolver.apply(claims);
-    }
-
-    public Date extractExpirationWhetherExpired(String token) {
-        return extractClaimWhetherExpired(token, Claims::getExpiration);
-    }
-
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);

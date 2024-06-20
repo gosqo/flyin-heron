@@ -24,7 +24,7 @@ public class TokenScheduler {
                 .map(Token::getToken)
                 .filter(token -> {
                     try {
-                        return jwtService.extractExpirationWhetherExpired(token).before(new Date(System.currentTimeMillis()));
+                        return jwtService.extractExpiration(token).before(new Date(System.currentTimeMillis()));
                     } catch (JwtException e) {
                         return true;
                     }
