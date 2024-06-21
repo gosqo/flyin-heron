@@ -125,7 +125,7 @@ public class BoardServiceImpl implements BoardService {
     private void addValueCookieBbv(Long id, HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
 
-        if (cookies == null) {
+        if (!cookieUtility.hasCookieNamed(BOARDS_BEEN_VIEWED, cookies)) {
             initializeCookieBbv(id, response);
             return;
         }
