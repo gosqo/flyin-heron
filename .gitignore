@@ -204,3 +204,6 @@ src/main/resources/config
 
 # nohup.out
 *.out
+
+# PKCS12
+*.p12
