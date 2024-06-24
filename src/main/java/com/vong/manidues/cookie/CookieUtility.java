@@ -79,6 +79,8 @@ public class CookieUtility {
      * @return cookieName 을 이름으로 가진 쿠키가 배열에 존재하면 true, 아니면 false.
      */
     public boolean hasCookieNamed(String cookieName, Cookie[] cookies) {
+        if (cookies == null) return false;
+
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(cookieName)) return true;
         }
