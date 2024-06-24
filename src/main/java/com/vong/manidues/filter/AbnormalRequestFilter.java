@@ -36,23 +36,21 @@ public class AbnormalRequestFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
         String requestMethod = request.getMethod();
         String userAgent = request.getHeader("User-Agent");
-/*
         String connection = request.getHeader("Connection");
-*/
 
         if (isStaticUri(requestURI)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        if (isAbnormalUserAgent(userAgent)
-                /*|| isAbnormalConnection(connection)*/
+       /* if (isAbnormalUserAgent(userAgent)
+                || isAbnormalConnection(connection)
         ) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             log.warn("*** Request from not allowed UA or Connection *** response with {}", response.getStatus());
 
             return;
-        }
+        }*/
 
         if (authUtility.isNotAuthenticated(request)
                 && isNotPermittedToAll(requestMethod, requestURI)) {
