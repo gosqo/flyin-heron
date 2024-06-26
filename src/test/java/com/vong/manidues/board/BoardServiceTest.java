@@ -3,6 +3,7 @@ package com.vong.manidues.board;
 import com.vong.manidues.board.dto.BoardDeleteResponse;
 import com.vong.manidues.board.dto.BoardGetResponse;
 import com.vong.manidues.board.dto.BoardUpdateResponse;
+import com.vong.manidues.cookie.CookieUtility;
 import com.vong.manidues.member.Member;
 import com.vong.manidues.member.MemberRepository;
 import com.vong.manidues.utility.AuthHeaderUtility;
@@ -40,6 +41,8 @@ public class BoardServiceTest {
     private MemberRepository memberRepository;
     @Mock
     private AuthHeaderUtility authHeaderUtility;
+    @Mock
+    private CookieUtility cookieUtility;
 
     private MockHttpServletRequest mockRequest;
     private MockHttpServletResponse mockResponse;
@@ -58,7 +61,8 @@ public class BoardServiceTest {
     void getBoardAddedViewCount() throws NoResourceFoundException {
         // given
         var expectedObj = BoardGetResponse.of(boardViewCountAdded);
-        when(boardRepository.findById(1L)).thenReturn(Optional.of(boardActiveViewCount));
+        when(boardRepository.findById(any())).thenReturn(Optional.of(boardActiveViewCount));
+        when(cookieUtility.hasCookieNamed(any(), any())).thenReturn(false);
 
         // when
         var returns = service.get(1L, mockRequest, mockResponse);
@@ -71,7 +75,8 @@ public class BoardServiceTest {
     void getBoardViewCountNull() throws NoResourceFoundException {
         // given
         var expectedObj = BoardGetResponse.of(boardViewCountNull);
-        when(boardRepository.findById(1L)).thenReturn(Optional.of(boardViewCountNull));
+        when(boardRepository.findById(any())).thenReturn(Optional.of(boardViewCountNull));
+        when(cookieUtility.hasCookieNamed(any(), any())).thenReturn(false);
 
         // when
         var returns = service.get(1L, mockRequest, mockResponse);
