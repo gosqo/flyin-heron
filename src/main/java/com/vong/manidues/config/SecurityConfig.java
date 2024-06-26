@@ -50,7 +50,6 @@ public class SecurityConfig {
             , "/api/v1/exception"
             , "/h2-console"
             , "/h2-console/**"
-            , "/.well-known/**"
     };
 
     public static final String[] WHITE_LIST_URIS_NON_MEMBER_POST = {
