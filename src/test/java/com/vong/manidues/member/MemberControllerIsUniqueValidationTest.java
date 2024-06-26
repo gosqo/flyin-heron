@@ -19,12 +19,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class MemberRegisterIsPresentTest {
+public class MemberControllerIsUniqueValidationTest {
 
     private final MockMvc mockMvc;
 
     @Autowired
-    public MemberRegisterIsPresentTest(MockMvc mockMvc) {
+    public MemberControllerIsUniqueValidationTest(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
     }
 
@@ -44,7 +44,7 @@ public class MemberRegisterIsPresentTest {
         String requestBody = getNicknameRequestBodyAsString(null);
 
         mockMvc.perform(
-                        post("/api/v1/member/isPresentNickname")
+                        post("/api/v1/member/isUniqueNickname")
                                 .headers(DEFAULT_POST_HEADERS)
                                 .content(requestBody)
                 )
@@ -57,7 +57,7 @@ public class MemberRegisterIsPresentTest {
         String requestBody = getNicknameRequestBodyAsString("");
 
         mockMvc.perform(
-                        post("/api/v1/member/isPresentNickname")
+                        post("/api/v1/member/isUniqueNickname")
                                 .headers(DEFAULT_POST_HEADERS)
                                 .content(requestBody)
                 )
@@ -65,7 +65,7 @@ public class MemberRegisterIsPresentTest {
                 .andDo(MockMvcResultHandlers.print());
     }
     @Test
-    public void isPresentNicknameWithAppropriateNicknames() throws Exception {
+    public void isUniqueNicknameWithAppropriateNicknames() throws Exception {
         String[] appropriateNicknames = {
                 "helloWorld"
                 , "가나다라"
@@ -79,7 +79,7 @@ public class MemberRegisterIsPresentTest {
             String requestBody = getNicknameRequestBodyAsString(nickname);
 
             mockMvc.perform(
-                            post("/api/v1/member/isPresentNickname")
+                            post("/api/v1/member/isUniqueNickname")
                                     .headers(DEFAULT_POST_HEADERS)
                                     .content(requestBody)
                     )
@@ -89,7 +89,7 @@ public class MemberRegisterIsPresentTest {
     }
 
     @Test
-    public void isPresentNicknameWithInappropriateNickname() throws Exception {
+    public void isUniqueNicknameWithInappropriateNickname() throws Exception {
         String[] inappropriateNicknames = {
                 "helloWorldHelloWorldHelloWorld" // 20자 초과
                 , "h" // 2 자리 미만
@@ -101,7 +101,7 @@ public class MemberRegisterIsPresentTest {
             String requestBody = getNicknameRequestBodyAsString(nickname);
 
             mockMvc.perform(
-                            post("/api/v1/member/isPresentNickname")
+                            post("/api/v1/member/isUniqueNickname")
                                     .headers(DEFAULT_POST_HEADERS)
                                     .content(requestBody)
                     )
@@ -116,7 +116,7 @@ public class MemberRegisterIsPresentTest {
         String requestBody = getEmailRequestBodyAsString(null);
 
         mockMvc.perform(
-                        post("/api/v1/member/isPresentEmail")
+                        post("/api/v1/member/isUniqueEmail")
                                 .headers(DEFAULT_POST_HEADERS)
                                 .content(requestBody)
                 )
@@ -129,7 +129,7 @@ public class MemberRegisterIsPresentTest {
         String requestBody = getEmailRequestBodyAsString("");
 
         mockMvc.perform(
-                        post("/api/v1/member/isPresentEmail")
+                        post("/api/v1/member/isUniqueEmail")
                                 .headers(DEFAULT_POST_HEADERS)
                                 .content(requestBody)
                 )
@@ -138,7 +138,7 @@ public class MemberRegisterIsPresentTest {
     }
 
     @Test
-    public void isPresentEmailWithAppropriateEmails() throws Exception {
+    public void isUniqueEmailWithAppropriateEmails() throws Exception {
         String[] appropriateEmails = {
                 "helllo@world.cc"
                 , "hello@world00.com"
@@ -153,7 +153,7 @@ public class MemberRegisterIsPresentTest {
             String requestBody = getEmailRequestBodyAsString(email);
 
             mockMvc.perform(
-                            post("/api/v1/member/isPresentEmail")
+                            post("/api/v1/member/isUniqueEmail")
                                     .headers(DEFAULT_POST_HEADERS)
                                     .content(requestBody)
             )
@@ -164,7 +164,7 @@ public class MemberRegisterIsPresentTest {
     }
 
     @Test
-    public void isPresentEmailWithInappropriateEmail() throws Exception {
+    public void isUniqueEmailWithInappropriateEmail() throws Exception {
         String[] inappropriateEmails = {
                 "hello@world..cc" // 마지막 . 이전에 영문 대소문자 혹은 숫자가 존재하지 않음.
                 , "hello@world00.commm" // 최상위 도메인 자리수 초과
@@ -178,7 +178,7 @@ public class MemberRegisterIsPresentTest {
             String requestBody = getEmailRequestBodyAsString(email);
 
             mockMvc.perform(
-                    post("/api/v1/member/isPresentEmail")
+                    post("/api/v1/member/isUniqueEmail")
                             .headers(DEFAULT_POST_HEADERS)
                             .content(requestBody)
             )
