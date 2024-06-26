@@ -43,14 +43,14 @@ public class AbnormalRequestFilter extends OncePerRequestFilter {
             return;
         }
 
-       /* if (isAbnormalUserAgent(userAgent)
+        if (isAbnormalUserAgent(userAgent)
                 || isAbnormalConnection(connection)
         ) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             log.warn("*** Request from not allowed UA or Connection *** response with {}", response.getStatus());
 
             return;
-        }*/
+        }
 
         if (authUtility.isNotAuthenticated(request)
                 && isNotPermittedToAll(requestMethod, requestURI)) {
