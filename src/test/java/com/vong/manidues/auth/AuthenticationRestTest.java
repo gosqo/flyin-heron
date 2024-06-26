@@ -128,7 +128,7 @@ public class AuthenticationRestTest {
 
         final var response = template.exchange(request, ErrorResponse.class);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
         logResponse(response);
     }
