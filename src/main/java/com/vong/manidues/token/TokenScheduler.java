@@ -1,5 +1,6 @@
 package com.vong.manidues.token;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,13 +23,21 @@ public class TokenScheduler {
         List<Token> tokens = tokenRepository.findAll();
         tokens.stream()
                 .map(Token::getToken)
-                .filter(token -> {
-                    try {
-                        return jwtService.extractExpiration(token).before(new Date(System.currentTimeMillis()));
-                    } catch (JwtException e) {
-                        return true;
-                    }
-                })
+                .filter(this::isTokenExpired)
                 .forEach(tokenRepository::deleteByToken);
+    }
+
+    protected boolean isTokenExpired(String token) {
+        try {
+            return jwtService.extractExpiration(token).before(new Date(System.currentTimeMillis()));
+        } catch (ExpiredJwtException e) {
+            return true;
+        } catch (JwtException e) {
+            log.warn("{} occurred while checking expiration of token on database, thrown by token: {}", e.getClass().getSimpleName(), token);
+            return false;
+        } catch (RuntimeException e) {
+            log.warn("{} occurred while checking expiration of token on database, thrown by token: {}", e.getClass().getName(), token);
+            return false;
+        }
     }
 }
