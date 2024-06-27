@@ -13,8 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 public class RequestTracker {
 
-    public static final ConcurrentHashMap<String, RequestInfo> requestMap =
-            new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<String, RequestInfo> requestMap = new ConcurrentHashMap<>();
 
     public static String getWholeRequestMap() {
         return String.format("requestMap:\n%s", requestMap);
@@ -43,16 +42,6 @@ public class RequestTracker {
                 ipAddress, new RequestInfo()).getRequestCount();
     }
 
-    public static Instant getRequestTime(String ipAddress) {
-        return requestMap.getOrDefault(
-                ipAddress, new RequestInfo()).getRequestTime();
-    }
-
-    public static String getUserAgent(String ipAddress) {
-        return requestMap.getOrDefault(
-                ipAddress, new RequestInfo()).getUserAgent();
-    }
-
     public static void clearExpiredRequests() {
         Instant tenSecondsAgo = Instant.now().minusSeconds(10);
         requestMap.entrySet().removeIf(
@@ -79,22 +68,12 @@ public class RequestTracker {
                                 Connection: %s
                                 
                             """
-                    , this.requestTime.atZone(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                    , this.requestTime.atZone(ZoneId.of("Asia/Seoul"))
+                            .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                     , this.requestCount
                     , this.userAgent
                     , this.connection
             );
-//            return """
-//                    \n\tFirst request time:\s""" + this.requestTime.atZone(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + """
-//                    ,
-//                        \n\tRequest Count:\s""" + this.requestCount + """
-//                    ,
-//                        User-Agent:\s""" + this.userAgent + """
-//                    ,
-//                        Connection:\s""" + this.connection + """
-//
-//
-//                    """;
         }
     }
 }
