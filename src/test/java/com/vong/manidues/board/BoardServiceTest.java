@@ -3,7 +3,6 @@ package com.vong.manidues.board;
 import com.vong.manidues.board.dto.BoardDeleteResponse;
 import com.vong.manidues.board.dto.BoardGetResponse;
 import com.vong.manidues.board.dto.BoardUpdateResponse;
-import com.vong.manidues.cookie.CookieUtility;
 import com.vong.manidues.member.Member;
 import com.vong.manidues.member.MemberRepository;
 import com.vong.manidues.utility.AuthHeaderUtility;
@@ -32,24 +31,21 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class BoardServiceTest {
+    private final Member memberEntity = buildMockMember();
+    private final Board boardActiveViewCount = buildMockBoard(1L, memberEntity, 999L);
+    private final Board boardViewCountAdded = buildBoardAddedViewCount(boardActiveViewCount);
+    private final Board boardViewCountNull = buildMockBoard(2L, memberEntity, null);
+
     @InjectMocks
     private BoardServiceImpl service;
-
     @Mock
     private BoardRepository boardRepository;
     @Mock
     private MemberRepository memberRepository;
     @Mock
     private AuthHeaderUtility authHeaderUtility;
-    @Mock
-    private CookieUtility cookieUtility;
-
     private MockHttpServletRequest mockRequest;
     private MockHttpServletResponse mockResponse;
-    private final Member memberEntity = buildMockMember();
-    private final Board boardActiveViewCount = buildMockBoard(1L, memberEntity, 999L);
-    private final Board boardViewCountAdded = buildBoardAddedViewCount(boardActiveViewCount);
-    private final Board boardViewCountNull = buildMockBoard(2L, memberEntity, null);
 
     @BeforeEach
     void setUp() {
@@ -62,7 +58,6 @@ public class BoardServiceTest {
         // given
         var expectedObj = BoardGetResponse.of(boardViewCountAdded);
         when(boardRepository.findById(any())).thenReturn(Optional.of(boardActiveViewCount));
-        when(cookieUtility.hasCookieNamed(any(), any())).thenReturn(false);
 
         // when
         var returns = service.get(1L, mockRequest, mockResponse);
@@ -76,7 +71,6 @@ public class BoardServiceTest {
         // given
         var expectedObj = BoardGetResponse.of(boardViewCountNull);
         when(boardRepository.findById(any())).thenReturn(Optional.of(boardViewCountNull));
-        when(cookieUtility.hasCookieNamed(any(), any())).thenReturn(false);
 
         // when
         var returns = service.get(1L, mockRequest, mockResponse);

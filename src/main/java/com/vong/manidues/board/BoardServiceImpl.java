@@ -1,10 +1,10 @@
 package com.vong.manidues.board;
 
 import com.vong.manidues.board.dto.*;
-import com.vong.manidues.cookie.CookieUtility;
 import com.vong.manidues.member.Member;
 import com.vong.manidues.member.MemberRepository;
 import com.vong.manidues.utility.AuthHeaderUtility;
+import com.vong.manidues.utility.CookieUtility;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,12 +23,19 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService {
 
+    private static final String BOARDS_BEEN_VIEWED = "bbv";
+
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
-    private final CookieUtility cookieUtility;
     private final AuthHeaderUtility authHeaderUtility;
 
-    private static final String BOARDS_BEEN_VIEWED = "bbv";
+    private static PageRequest getPageRequest(int pageNumber) {
+        pageNumber = pageNumber - 1;
+        int pageSize = 3;
+        Sort sort = Sort.by(Sort.Direction.DESC, "registerDate");
+
+        return PageRequest.of(pageNumber, pageSize, sort);
+    }
 
     @Override
     public BoardPageResponse getBoardPage(int pageNumber) throws NoResourceFoundException {
@@ -36,7 +43,9 @@ public class BoardServiceImpl implements BoardService {
         Page<Board> foundPage = boardRepository.findAll(pageRequest);
 
         if (foundPage.getTotalPages() - 1 < pageRequest.getPageNumber())
-            throw new NoResourceFoundException(HttpMethod.GET, "/boards/" + (foundPage.getPageable().getPageNumber() + 1));
+            throw new NoResourceFoundException(HttpMethod.GET
+                    , "/boards/" + (foundPage.getPageable().getPageNumber() + 1)
+            );
 
         return BoardPageResponse.fromEntityPage(foundPage);
     }
@@ -96,7 +105,11 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardGetResponse get(Long id, HttpServletRequest request, HttpServletResponse response) throws NoResourceFoundException {
+    public BoardGetResponse get(
+            Long id
+            , HttpServletRequest request
+            , HttpServletResponse response
+    ) throws NoResourceFoundException {
         var entity = boardRepository.findById(id).orElseThrow(
                 () -> new NoResourceFoundException(HttpMethod.GET, request.getRequestURI())
         );
@@ -125,15 +138,16 @@ public class BoardServiceImpl implements BoardService {
     private void addValueCookieBbv(Long id, HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
 
-        if (!cookieUtility.hasCookieNamed(BOARDS_BEEN_VIEWED, cookies)) {
+        if (!CookieUtility.hasCookieNamed(BOARDS_BEEN_VIEWED, cookies)) {
             initializeCookieBbv(id, response);
             return;
         }
-        Cookie cookie = cookieUtility.getCookie(BOARDS_BEEN_VIEWED, cookies);
 
-        if (cookieUtility.getCookieValueSize(cookie) > 3500)
-            cookieUtility.cutFirst500BytesWith(cookie, '/');
-        cookieUtility.appendCookieValueWith(id, cookie, '/');
+        Cookie cookie = CookieUtility.findCookie(BOARDS_BEEN_VIEWED, cookies);
+
+        if (CookieUtility.over3500BytesOf(cookie)) CookieUtility.trimFront500Bytes(cookie, '/');
+
+        CookieUtility.appendValue(id, cookie, '/');
 
         cookie.setMaxAge(60 * 60);
         response.addCookie(cookie);
@@ -147,18 +161,10 @@ public class BoardServiceImpl implements BoardService {
 
         if (cookies == null) return false;
 
-        Cookie targetCookie = cookieUtility.getCookie(BOARDS_BEEN_VIEWED, cookies);
+        Cookie targetCookie = CookieUtility.findCookie(BOARDS_BEEN_VIEWED, cookies);
 
         if (targetCookie == null) return false;
 
-        return cookieUtility.hasSpecificValueIn(id, targetCookie);
-    }
-
-    private static PageRequest getPageRequest(int pageNumber) {
-        pageNumber = pageNumber - 1;
-        int pageSize = 3;
-        Sort sort = Sort.by(Sort.Direction.DESC, "registerDate");
-
-        return PageRequest.of(pageNumber, pageSize, sort);
+        return CookieUtility.contains(id, targetCookie);
     }
 }
