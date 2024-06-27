@@ -25,8 +25,30 @@ import java.util.NoSuchElementException;
 public class GlobalExceptionHandler {
     private static final String PROJECT_ROOT_PACKAGE = "com.vong.manidues";
 
+    private static StackTraceElement[] filterProjectStackTrace(StackTraceElement[] stackTrace) {
+        return Arrays.stream(stackTrace)
+                .filter(element -> element.getClassName().startsWith(PROJECT_ROOT_PACKAGE))
+                .toArray(StackTraceElement[]::new);
+    }
+
+    private static StackTraceElement getFirstProjectFileFromStackTrace(StackTraceElement[] stackTrace) {
+        return filterProjectStackTrace(stackTrace)[0];
+    }
+
+    private static StackTraceElement getFirstFileFromStackTrace(Exception ex) {
+        return ex.getStackTrace()[0];
+    }
+
+    private static String whichFileThrow(Exception ex) {
+        return getFirstFileFromStackTrace(ex).getFileName();
+    }
+
+    private static String whichMethodThrow(Exception ex) {
+        return getFirstFileFromStackTrace(ex).getMethodName();
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
-    public <T> Object handleAccessDeniedException(
+    public Object handleAccessDeniedException(
             AccessDeniedException ex
             , HttpServletRequest request
             , HttpServletResponse response
@@ -45,15 +67,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public <T> Object handleNoResourceFoundException(
+    public Object handleNoResourceFoundException(
             NoResourceFoundException ex
-            , HttpServletRequest request
             , HttpServletResponse response
     ) {
         logException(ex);
         logWhereThrows(ex);
 
-        if (request.getMethod().equalsIgnoreCase(HttpMethod.GET.name())) {
+        if (ex.getHttpMethod().matches(HttpMethod.GET.name())) {
             response.setStatus(404);
             return "error/404";
         }
@@ -61,8 +82,6 @@ public class GlobalExceptionHandler {
         String userMessage = "존재하지 않는 자원에 대한 요청입니다.";
 
         return buildResponseEntity(HttpStatus.NOT_FOUND, userMessage);
-
-
     }
 
     @ExceptionHandler(BadCredentialsException.class)
@@ -75,7 +94,6 @@ public class GlobalExceptionHandler {
 
         return buildResponseEntity(HttpStatus.BAD_REQUEST, userMessage);
     }
-
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<?> handleDataIntegrityViolationException(
@@ -204,28 +222,6 @@ public class GlobalExceptionHandler {
 
     private void logErrorStackTrace(Exception ex) {
         log.error("", ex);
-    }
-
-    private static StackTraceElement[] filterProjectStackTrace(StackTraceElement[] stackTrace) {
-        return Arrays.stream(stackTrace)
-                .filter(element -> element.getClassName().startsWith(PROJECT_ROOT_PACKAGE))
-                .toArray(StackTraceElement[]::new);
-    }
-
-    private static StackTraceElement getFirstProjectFileFromStackTrace(StackTraceElement[] stackTrace) {
-        return filterProjectStackTrace(stackTrace)[0];
-    }
-
-    private static StackTraceElement getFirstFileFromStackTrace(Exception ex) {
-        return ex.getStackTrace()[0];
-    }
-
-    private static String whichFileThrow(Exception ex) {
-        return getFirstFileFromStackTrace(ex).getFileName();
-    }
-
-    private static String whichMethodThrow(Exception ex) {
-        return getFirstFileFromStackTrace(ex).getMethodName();
     }
 
     private ResponseEntity<ErrorResponse> buildResponseEntity(
