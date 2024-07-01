@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,7 @@ public class LogoutService implements LogoutHandler {
      *   사용자에게는 '정상적 처리'를 응답합니다. </pre>
      */
     @Override
+    @PreAuthorize("hasRole('ROLE_USER')")
     public void logout(
             HttpServletRequest request,
             HttpServletResponse response,

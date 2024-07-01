@@ -4,7 +4,6 @@ import com.vong.manidues.filter.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,40 +25,9 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
     private final IpEntryLogFilter ipEntryLogFilter;
     private final BlacklistFilter blacklistFilter;
-    private final AbnormalRequestFilter abnormalRequestFilter;
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final LogoutHandler logoutHandler;
     private final JwtExceptionFilter jwtExceptionFilter;
-
-    public static final String[] WHITE_LIST_URIS_NON_MEMBER_GET = {
-            "/"
-            , "/favicon.ico"
-            , "/error"
-            , "/error/**"
-            , "/img/**"
-            , "/js/**"
-            , "/css/**"
-            , "/login"
-            , "/signUp"
-            , "/api/v1/boards/**"
-            , "/api/v1/board/**"
-            , "/board/**"
-            , "/boards"
-            , "/boards/**"
-            , "/api/v1/cookie/**"
-            , "/api/v1/exception"
-            , "/h2-console"
-            , "/h2-console/**"
-    };
-
-    public static final String[] WHITE_LIST_URIS_NON_MEMBER_POST = {
-            "/api/v1/member/**"
-            , "/api/v1/member"
-            , "/api/v1/auth/authenticate"
-            , "/error"
-            , "/error/**"
-            , "/h2-console/**"
-    };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -73,16 +41,9 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.GET, WHITE_LIST_URIS_NON_MEMBER_GET).permitAll()
-                        .requestMatchers(HttpMethod.POST, WHITE_LIST_URIS_NON_MEMBER_POST).permitAll()
-                        .anyRequest().authenticated()
-                )
-
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(ipEntryLogFilter, LogoutFilter.class)
                 .addFilterBefore(blacklistFilter, LogoutFilter.class)
-                .addFilterBefore(abnormalRequestFilter, LogoutFilter.class)
                 .addFilterBefore(jwtExceptionFilter, LogoutFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
