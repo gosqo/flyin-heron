@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Service;
@@ -42,12 +41,17 @@ public class LogoutService implements LogoutHandler {
      *   사용자에게는 '정상적 처리'를 응답합니다. </pre>
      */
     @Override
-    @PreAuthorize("hasRole('ROLE_USER')")
+//    @PreAuthorize("hasRole('ROLE_USER')") // 활성 시, SecurityContext 비어있으면 500 에러
     public void logout(
             HttpServletRequest request,
             HttpServletResponse response,
             Authentication authentication
     ) {
+        if (authHeaderUtility.isNotAuthenticated(request)) {
+            responseWith400(response);
+            return;
+        }
+        // header Authorization header == null 인 경우 NullPointerException
         final String refreshToken = authHeaderUtility.extractJwtFromHeader(request);
         final List<Token> storedTokens = tokenRepository.findAllByToken(refreshToken).stream().toList();
 

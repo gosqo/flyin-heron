@@ -32,7 +32,7 @@ public class LogoutRestTest {
         final var request = buildPostRequest(null, "/api/v1/auth/logout");
         final var response = template.exchange(request, ErrorResponse.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         logResponse(response);
     }
 
