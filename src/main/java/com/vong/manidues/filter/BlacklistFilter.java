@@ -1,6 +1,6 @@
 package com.vong.manidues.filter;
 
-import com.vong.manidues.filter.trackingip.BlacklistIp;
+import com.vong.manidues.filter.trackingip.Blacklist;
 import com.vong.manidues.filter.trackingip.RequestTracker;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -13,8 +13,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-import static com.vong.manidues.filter.FilterUtility.isStaticUri;
-
 @Component
 @Slf4j
 public class BlacklistFilter extends OncePerRequestFilter {
@@ -26,33 +24,28 @@ public class BlacklistFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         String requestIp = request.getRemoteAddr();
-        String requestURI = request.getRequestURI();
 
-        if (isStaticUri(requestURI)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+        RequestTracker.trackRequest(request);
+        RequestTracker.clearExpiredRequests();
 
-        if (BlacklistIp.blacklistedIps.contains(requestIp)) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-
-            log.info("*** Request from blacklisted IP *** response with {}"
-                    , response.getStatus());
+        if (Blacklist.blacklistedIps.contains(requestIp)) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            log.info("*** blacklisted IP *** response with 404, {}", RequestLogUtility.getRequestLog(request));
 
             return;
         }
 
         if (RequestTracker.getRequestCount(requestIp) > 70) {
-            BlacklistIp.blacklistedIps.add(requestIp);
+            Blacklist.blacklistedIps.add(requestIp);
 
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
-            log.info("*** Repetitional request over 70 requests within 10 seconds.***");
-            log.info("""
+            log.warn("*** 70 requests within 10 seconds.***");
+            log.warn("""
                             Size of blacklist:{}
                                 {}"""
-                    , BlacklistIp.blacklistedIps.size()
-                    , BlacklistIp.getBlacklistedIps()
+                    , Blacklist.blacklistedIps.size()
+                    , Blacklist.getBlacklistedIps()
             );
             log.info("\n{}", RequestTracker.getWholeRequestMap());
 

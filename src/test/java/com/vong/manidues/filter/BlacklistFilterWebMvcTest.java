@@ -45,7 +45,7 @@ public class BlacklistFilterWebMvcTest {
         for (int i = 0; i < 74; i++) {
             log.info("{}", i);
             if (i >= 70) {
-                mockMvc.perform(request).andExpect(status().isForbidden());
+                mockMvc.perform(request).andExpect(status().isNotFound());
                 continue;
             }
             mockMvc.perform(request).andExpect(status().isOk());
@@ -56,7 +56,7 @@ public class BlacklistFilterWebMvcTest {
         for (int i = 0; i < 71; i++) {
             log.info("{}", i);
             if (i == 70) {
-                mockMvc.perform(request2).andExpect(status().isForbidden());
+                mockMvc.perform(request2).andExpect(status().isNotFound());
                 continue;
             }
             mockMvc.perform(request2).andExpect(status().isOk());

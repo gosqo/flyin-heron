@@ -23,7 +23,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 public class SecurityConfig {
 
     private final AuthenticationProvider authenticationProvider;
-    private final IpEntryLogFilter ipEntryLogFilter;
+    private final HttpAccessLogFilter httpAccessLogFilter;
     private final BlacklistFilter blacklistFilter;
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final LogoutHandler logoutHandler;
@@ -42,7 +42,7 @@ public class SecurityConfig {
                 )
 
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(ipEntryLogFilter, LogoutFilter.class)
+                .addFilterBefore(httpAccessLogFilter, LogoutFilter.class)
                 .addFilterBefore(blacklistFilter, LogoutFilter.class)
                 .addFilterBefore(jwtExceptionFilter, LogoutFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

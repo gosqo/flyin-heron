@@ -3,7 +3,7 @@ package com.vong.manidues.filter.trackingip;
 import java.util.HashSet;
 import java.util.Set;
 
-public class BlacklistIp {
+public class Blacklist {
     public static Set<String> blacklistedIps = new HashSet<>();
 
     public static String getBlacklistedIps() {
