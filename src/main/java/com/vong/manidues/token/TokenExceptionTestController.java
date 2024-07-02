@@ -17,17 +17,17 @@ import java.util.Map;
 @Slf4j
 public class TokenExceptionTestController {
 
-    private final JwtService jwtService;
+    private final ClaimExtractor claimExtractor;
     private final AuthHeaderUtility authHeaderUtility;
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping("/tokenValidationTest")
     public ResponseEntity<Object> tokenValidationTest(HttpServletRequest request) {
-        String jwt = authHeaderUtility.extractJwtFromHeader(request);
+        String jwt = authHeaderUtility.extractJwt(request);
         Map<String, String> map = new HashMap<>();
 
-        map.put("email", jwtService.extractUserEmail(jwt));
-        map.put("expiration", jwtService.extractExpiration(jwt).toString());
+        map.put("email", claimExtractor.extractUserEmail(jwt));
+        map.put("expiration", claimExtractor.extractExpiration(jwt).toString());
 
         log.info("""
                         requesting member email is: {}"""

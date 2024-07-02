@@ -3,11 +3,11 @@ package com.vong.manidues.auth;
 import com.vong.manidues.exception.custom.DebugNeededException;
 import com.vong.manidues.member.Member;
 import com.vong.manidues.member.MemberRepository;
+import com.vong.manidues.token.ClaimExtractor;
 import com.vong.manidues.token.JwtService;
 import com.vong.manidues.token.Token;
 import com.vong.manidues.token.TokenRepository;
 import com.vong.manidues.utility.AuthHeaderUtility;
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +28,7 @@ public class AuthenticationService {
     private final MemberRepository memberRepository;
     private final TokenRepository tokenRepository;
     private final JwtService jwtService;
+    private final ClaimExtractor claimExtractor;
     private final AuthenticationManager authenticationManager;
     private final AuthHeaderUtility authHeaderUtility;
 
@@ -57,8 +58,8 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse refreshToken(HttpServletRequest request) {
-        final String formerRefreshToken = authHeaderUtility.extractJwtFromHeader(request);
-        final String userEmail = jwtService.extractUserEmail(formerRefreshToken);
+        final String formerRefreshToken = authHeaderUtility.extractJwt(request);
+        final String userEmail = claimExtractor.extractUserEmail(formerRefreshToken);
         final Member member = memberRepository.findByEmail(userEmail).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 회원에 대한 조회.")
         );
@@ -112,8 +113,8 @@ public class AuthenticationService {
 
     private int getGapToExpiration(String refreshToken) {
         final LocalDate today = LocalDate.now();
-        final LocalDate refreshTokenExpiration = jwtService
-                .extractClaim(refreshToken, Claims::getExpiration)
+        final LocalDate refreshTokenExpiration = claimExtractor
+                .extractExpiration(refreshToken)
                 .toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();

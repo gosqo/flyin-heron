@@ -1,6 +1,6 @@
 package com.vong.manidues.filter;
 
-import com.vong.manidues.token.JwtService;
+import com.vong.manidues.token.ClaimExtractor;
 import com.vong.manidues.utility.AuthHeaderUtility;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -21,7 +21,7 @@ import java.io.IOException;
 @Slf4j
 public class JwtExceptionFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
+    private final ClaimExtractor claimExtractor;
     private final AuthHeaderUtility authHeaderUtility;
 
     @Override
@@ -30,12 +30,12 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws IOException, ServletException {
-        if (authHeaderUtility.isNotAuthenticated(request)) {
+        if (AuthHeaderUtility.isNotAuthenticated(request)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String jwToken = authHeaderUtility.extractJwtFromHeader(request);
+        String jwToken = authHeaderUtility.extractJwt(request);
 
         if (throwAnyJwtException(response, jwToken)) return;
 
@@ -48,7 +48,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
     ) throws IOException {
 
         try {
-            jwtService.extractUserEmail(jwToken);
+            claimExtractor.extractUserEmail(jwToken);
         } catch (ExpiredJwtException ex) {
             log.debug("expired token, normal user will request to POST /api/v1/auth/refresh-token");
             response.sendError(401, "토큰 만료.");

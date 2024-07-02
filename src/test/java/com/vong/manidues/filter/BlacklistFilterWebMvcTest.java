@@ -2,6 +2,7 @@ package com.vong.manidues.filter;
 
 import com.vong.manidues.common.ViewController;
 import com.vong.manidues.config.SecurityConfig;
+import com.vong.manidues.token.ClaimExtractor;
 import com.vong.manidues.token.JwtService;
 import com.vong.manidues.utility.AuthHeaderUtility;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,8 @@ public class BlacklistFilterWebMvcTest {
     private AuthHeaderUtility authHeaderUtility;
     @MockBean
     private JwtService jwtService;
+    @MockBean
+    private ClaimExtractor claimExtractor;
 
     @Test
     public void checkTrackRequestWith71Requests() throws Exception {

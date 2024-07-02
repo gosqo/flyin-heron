@@ -3,6 +3,7 @@ package com.vong.manidues.board;
 import com.vong.manidues.board.dto.*;
 import com.vong.manidues.member.Member;
 import com.vong.manidues.member.MemberRepository;
+import com.vong.manidues.token.ClaimExtractor;
 import com.vong.manidues.utility.AuthHeaderUtility;
 import com.vong.manidues.utility.CookieUtility;
 import jakarta.servlet.http.Cookie;
@@ -28,6 +29,7 @@ public class BoardServiceImpl implements BoardService {
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final AuthHeaderUtility authHeaderUtility;
+    private final ClaimExtractor claimExtractor;
 
     private static PageRequest getPageRequest(int pageNumber) {
         pageNumber = pageNumber - 1;
@@ -52,11 +54,12 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public BoardRegisterResponse register(HttpServletRequest request, BoardRegisterRequest requestBody) {
-        String requestUserEmail = authHeaderUtility.extractEmailFromHeader(request);
-        Member member = memberRepository.findByEmail(requestUserEmail).orElseThrow(
+        final String token = AuthHeaderUtility.extractJwt(request);
+        final String requestUserEmail = claimExtractor.extractUserEmail(token);
+        final Member member = memberRepository.findByEmail(requestUserEmail).orElseThrow(
                 () -> new NoSuchElementException("No Member present with the email.")
         );
-        Board entity = requestBody.toEntity(member);
+        final Board entity = requestBody.toEntity(member);
 
         return BoardRegisterResponse.builder()
                 .id(boardRepository.save(entity).getId())
@@ -66,7 +69,8 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public BoardUpdateResponse update(Long id, HttpServletRequest request, BoardUpdateRequest body) {
-        final String requestUserEmail = authHeaderUtility.extractEmailFromHeader(request);
+        final String token = AuthHeaderUtility.extractJwt(request);
+        final String requestUserEmail = claimExtractor.extractUserEmail(token);
         final Board storedBoard = boardRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 게시물 update 요청.")
         );
@@ -89,7 +93,8 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public BoardDeleteResponse delete(Long id, HttpServletRequest request) {
-        final String requestUserEmail = authHeaderUtility.extractEmailFromHeader(request);
+        final String token = AuthHeaderUtility.extractJwt(request);
+        final String requestUserEmail = claimExtractor.extractUserEmail(token);
         final Board storedBoard = boardRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 게시물 delete 요청.")
         );

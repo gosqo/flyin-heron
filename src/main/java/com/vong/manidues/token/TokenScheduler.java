@@ -15,7 +15,7 @@ import java.util.List;
 @Slf4j
 public class TokenScheduler {
     private final TokenRepository tokenRepository;
-    private final JwtService jwtService;
+    private final ClaimExtractor claimExtractor;
 
     @Scheduled(cron = "${schedule.cron.token.delete-expired}")
     public void deleteExpiredTokens() {
@@ -29,7 +29,7 @@ public class TokenScheduler {
 
     protected boolean isTokenExpired(String token) {
         try {
-            return jwtService.extractExpiration(token).before(new Date(System.currentTimeMillis()));
+            return claimExtractor.extractExpiration(token).before(new Date(System.currentTimeMillis()));
         } catch (ExpiredJwtException e) {
             return true;
         } catch (JwtException e) {

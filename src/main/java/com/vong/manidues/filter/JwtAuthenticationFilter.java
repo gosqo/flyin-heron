@@ -1,6 +1,6 @@
 package com.vong.manidues.filter;
 
-import com.vong.manidues.token.JwtService;
+import com.vong.manidues.token.ClaimExtractor;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +22,7 @@ import java.io.IOException;
 // 매 요청 마다 필터를 거치도록 extends
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
+    private final ClaimExtractor claimExtractor;
     private final UserDetailsService userDetailsService;
 
     @Override
@@ -41,7 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         jwt = authHeader.substring(7);
-        userEmail = jwtService.extractUserEmail(jwt);
+        userEmail = claimExtractor.extractUserEmail(jwt);
 
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);

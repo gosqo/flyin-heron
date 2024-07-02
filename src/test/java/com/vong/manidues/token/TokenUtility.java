@@ -25,6 +25,7 @@ import java.util.Map;
 public class TokenUtility {
     public static final long EXPIRATION_7_DAYS = 604800000L;
     public static final long EXPIRATION_8_DAYS = 691200000L;
+
     private final MemberRepository memberRepository;
     private final EntityManager entityManager;
     @Value("${application.security.jwt.secret-key}")

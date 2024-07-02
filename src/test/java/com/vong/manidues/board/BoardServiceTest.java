@@ -5,8 +5,8 @@ import com.vong.manidues.board.dto.BoardGetResponse;
 import com.vong.manidues.board.dto.BoardUpdateResponse;
 import com.vong.manidues.member.Member;
 import com.vong.manidues.member.MemberRepository;
+import com.vong.manidues.token.ClaimExtractor;
 import com.vong.manidues.utility.AuthHeaderUtility;
-import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,6 +44,8 @@ public class BoardServiceTest {
     private MemberRepository memberRepository;
     @Mock
     private AuthHeaderUtility authHeaderUtility;
+    @Mock
+    private ClaimExtractor claimExtractor;
     private MockHttpServletRequest mockRequest;
     private MockHttpServletResponse mockResponse;
 
@@ -83,7 +85,7 @@ public class BoardServiceTest {
     void register() {
         // given
         mockRequest.addHeader("Authorization", "Bearer some.valid.token");
-        when(authHeaderUtility.extractEmailFromHeader(any(HttpServletRequest.class))).thenReturn(MEMBER_EMAIL);
+        when(claimExtractor.extractUserEmail(any(String.class))).thenReturn(MEMBER_EMAIL);
         when(memberRepository.findByEmail(MEMBER_EMAIL)).thenReturn(Optional.of(memberEntity));
         when(boardRepository.save(any(Board.class))).thenReturn(boardActiveViewCount);
 
@@ -104,7 +106,7 @@ public class BoardServiceTest {
         var requestBody = buildBoardUpdateRequest();
         var updatedBoard = buildMockBoard(boardId, memberEntity, 0L);
 
-        when(authHeaderUtility.extractEmailFromHeader(any(HttpServletRequest.class))).thenReturn(MEMBER_EMAIL);
+        when(claimExtractor.extractUserEmail(any(String.class))).thenReturn(MEMBER_EMAIL);
         when(boardRepository.findById(boardId)).thenReturn(Optional.of(boardActiveViewCount));
         when(boardRepository.save(any(Board.class))).thenReturn(updatedBoard);
 
@@ -126,7 +128,7 @@ public class BoardServiceTest {
         var boardId = 1L;
 
         when(boardRepository.findById(boardId)).thenReturn(Optional.of(boardActiveViewCount));
-        when(authHeaderUtility.extractEmailFromHeader(any(HttpServletRequest.class))).thenReturn(MEMBER_EMAIL);
+        when(claimExtractor.extractUserEmail(any(String.class))).thenReturn(MEMBER_EMAIL);
 
         // when
         var result = service.delete(boardId, mockRequest);

@@ -22,7 +22,6 @@ public class LogoutService implements LogoutHandler {
 
     private final TokenRepository tokenRepository;
     private final ResponseBodyWriter responseBodyWriter;
-    private final AuthHeaderUtility authHeaderUtility;
 
     /**
      * <p>정상정 요청이라면 사용자는 헤더에 리프레시 토큰을 담아 요청.
@@ -47,12 +46,12 @@ public class LogoutService implements LogoutHandler {
             HttpServletResponse response,
             Authentication authentication
     ) {
-        if (authHeaderUtility.isNotAuthenticated(request)) {
+        if (AuthHeaderUtility.isNotAuthenticated(request)) {
             responseWith400(response);
             return;
         }
         // header Authorization header == null 인 경우 NullPointerException
-        final String refreshToken = authHeaderUtility.extractJwtFromHeader(request);
+        final String refreshToken = AuthHeaderUtility.extractJwt(request);
         final List<Token> storedTokens = tokenRepository.findAllByToken(refreshToken).stream().toList();
 
         if (storedTokens.isEmpty()) { // refreshToken entity 가 존재하지 않는다면,

@@ -2,6 +2,7 @@ package com.vong.manidues.auth;
 
 import com.vong.manidues.member.Member;
 import com.vong.manidues.member.MemberRepository;
+import com.vong.manidues.token.ClaimExtractor;
 import com.vong.manidues.token.JwtService;
 import com.vong.manidues.token.Token;
 import com.vong.manidues.token.TokenRepository;
@@ -39,6 +40,8 @@ class AuthenticationServiceJpaTest {
     @Mock
     private JwtService jwtService;
     @Mock
+    private ClaimExtractor claimExtractor;
+    @Mock
     private AuthenticationManager authManager;
     @Mock
     private AuthHeaderUtility authHeaderUtility;
@@ -56,6 +59,7 @@ class AuthenticationServiceJpaTest {
                 memberRepository
                 , tokenRepository
                 , jwtService
+                , claimExtractor
                 , authManager
                 , authHeaderUtility
         );

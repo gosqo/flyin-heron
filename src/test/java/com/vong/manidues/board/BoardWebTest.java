@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.vong.manidues.board.dto.BoardGetResponse;
 import com.vong.manidues.config.SecurityConfig;
 import com.vong.manidues.member.Member;
+import com.vong.manidues.token.ClaimExtractor;
 import com.vong.manidues.token.JwtService;
 import com.vong.manidues.utility.AuthHeaderUtility;
 import com.vong.manidues.web.HttpUtility;
@@ -49,6 +50,8 @@ public class BoardWebTest {
     private AuthHeaderUtility authHeaderUtility;
     @MockBean
     private JwtService jwtService;
+    @MockBean
+    private ClaimExtractor claimExtractor;
 
     private final ObjectMapper objectMapper;
 
