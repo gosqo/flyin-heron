@@ -12,17 +12,17 @@ class SubmitChecker {
     static submitButton = document.querySelector("#submit-form-btn");
 
     static checkSubmitAvailability() {
-        SubmitChecker.submitButton.disabled = SubmitChecker.isAllPassed() ? false : true;
-    }
+        SubmitChecker.submitButton.disabled = isAllPassed() ? false : true;
 
-    static isAllPassed() {
-        return UniqueChecker.email.status === CheckStatus.PASS
-            && UniqueChecker.nickname.status === CheckStatus.PASS
-            && PatternMatcher.email.status === CheckStatus.PASS
-            && PatternMatcher.password.status === CheckStatus.PASS
-            && PatternMatcher.passwordCheck.status === CheckStatus.PASS
-            && PatternMatcher.nickname.status === CheckStatus.PASS
-            && IsSameChecker.isSamePassword.status === CheckStatus.PASS
+        function isAllPassed() {
+            return UniqueChecker.email.status === CheckStatus.PASS
+                && UniqueChecker.nickname.status === CheckStatus.PASS
+                && PatternMatcher.email.status === CheckStatus.PASS
+                && PatternMatcher.password.status === CheckStatus.PASS
+                && PatternMatcher.passwordCheck.status === CheckStatus.PASS
+                && PatternMatcher.nickname.status === CheckStatus.PASS
+                && IsSameChecker.isSamePassword.status === CheckStatus.PASS
+        }
     }
 }
 
@@ -273,7 +273,7 @@ export class IsSameChecker {
     addIsSameEvent(isSameObject) {
         const applyingElement1 = isSameObject.element1;
         const applyingElement2 = isSameObject.element2;
-        
+
         applyingElement1.addEventListener("input", () => {
             this.isSameEventHandler(applyingElement1, applyingElement2, isSameObject);
         });
