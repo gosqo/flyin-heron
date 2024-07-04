@@ -30,7 +30,6 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final ClaimExtractor claimExtractor;
     private final AuthenticationManager authenticationManager;
-    private final AuthHeaderUtility authHeaderUtility;
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         // throws BadCredentialsException if request can not be authenticated
@@ -58,7 +57,7 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse refreshToken(HttpServletRequest request) {
-        final String formerRefreshToken = authHeaderUtility.extractJwt(request);
+        final String formerRefreshToken = AuthHeaderUtility.extractJwt(request);
         final String userEmail = claimExtractor.extractUserEmail(formerRefreshToken);
         final Member member = memberRepository.findByEmail(userEmail).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 회원에 대한 조회.")
