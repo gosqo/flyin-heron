@@ -47,6 +47,32 @@ public class GlobalExceptionHandler {
         return getFirstFileFromStackTrace(ex).getMethodName();
     }
 
+    private void logException(Exception ex) {
+        log.info("{}: {}", ex.getClass().getName(), ex.getMessage());
+    }
+
+    private void logWhereThrows(Exception ex) {
+        log.warn("thrown in: {}\nclosest Project files is: {}"
+                , getFirstFileFromStackTrace(ex)
+                , getFirstProjectFileFromStackTrace(ex.getStackTrace())
+        );
+    }
+
+    private void logErrorStackTrace(Exception ex) {
+        log.error("", ex);
+    }
+
+    private ResponseEntity<ErrorResponse> buildResponseEntity(
+            HttpStatus status, String message
+    ) {
+        return ResponseEntity
+                .status(status)
+                .body(ErrorResponse.builder()
+                        .status(status.value())
+                        .message(message)
+                        .build());
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public Object handleAccessDeniedException(
             AccessDeniedException ex
@@ -207,31 +233,5 @@ public class GlobalExceptionHandler {
         String userMessage = "서버 오류가 발생했습니다. 문제가 지속될 시 운영진에 연락 부탁드립니다.";
 
         return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, userMessage);
-    }
-
-    private void logException(Exception ex) {
-        log.info("{}: {}", ex.getClass().getName(), ex.getMessage());
-    }
-
-    private void logWhereThrows(Exception ex) {
-        log.warn("thrown in: {}\nclosest Project files is: {}"
-                , getFirstFileFromStackTrace(ex)
-                , getFirstProjectFileFromStackTrace(ex.getStackTrace())
-        );
-    }
-
-    private void logErrorStackTrace(Exception ex) {
-        log.error("", ex);
-    }
-
-    private ResponseEntity<ErrorResponse> buildResponseEntity(
-            HttpStatus status, String message
-    ) {
-        return ResponseEntity
-                .status(status)
-                .body(ErrorResponse.builder()
-                        .status(status.value())
-                        .message(message)
-                        .build());
     }
 }

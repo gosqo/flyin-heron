@@ -102,6 +102,7 @@ public class AuthenticationService {
         final Token token = Token.builder()
                 .member(member)
                 .token(jwtToken)
+                .expirationDate(claimExtractor.extractExpiration(jwtToken))
                 .build();
         tokenRepository.save(token);
     }
