@@ -11,6 +11,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -49,9 +50,9 @@ class TokenSchedulerTest {
         Member member = buildMockMember();
         List<String> tokens = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            long expiration = -i - 1000L;
+            long expiration = -i * 1_000_000L - 1_000_000L;
 
-            if (i == 2) expiration = System.currentTimeMillis() + 10000L;
+            if (i == 2) expiration = -expiration;
             String token = tokenUtility.buildToken(new HashMap<>(), member, expiration);
             tokens.add(token);
         }
@@ -61,6 +62,7 @@ class TokenSchedulerTest {
                     Token.builder()
                             .member(member)
                             .token(token)
+                            .expirationDate(new Date()) // dummy
                             .build()
             );
         }

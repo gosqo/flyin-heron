@@ -2,6 +2,7 @@ package com.vong.manidues.auth;
 
 import com.vong.manidues.member.Member;
 import com.vong.manidues.member.MemberRepository;
+import com.vong.manidues.token.ClaimExtractor;
 import com.vong.manidues.token.Token;
 import com.vong.manidues.token.TokenRepository;
 import com.vong.manidues.token.TokenUtility;
@@ -27,6 +28,7 @@ class AuthenticationServiceTest {
     private final AuthenticationService authService;
     private final TokenRepository tokenRepository;
     private final MemberRepository memberRepository;
+    private final ClaimExtractor claimExtractor;
     private final TokenUtility tokenUtility; // test only Utility.
 
     @Mock
@@ -38,11 +40,13 @@ class AuthenticationServiceTest {
             AuthenticationService authService
             , MemberRepository memberRepository
             , TokenRepository tokenRepository
+            , ClaimExtractor claimExtractor
             , TokenUtility tokenUtility
     ) {
         this.authService = authService;
         this.memberRepository = memberRepository;
         this.tokenRepository = tokenRepository;
+        this.claimExtractor = claimExtractor;
         this.tokenUtility = tokenUtility;
     }
 
@@ -104,6 +108,7 @@ class AuthenticationServiceTest {
         tokenRepository.save(Token.builder()
                 .token(formerRefreshToken)
                 .member(member)
+                .expirationDate(claimExtractor.extractExpiration(formerRefreshToken))
                 .build()
         );
     }

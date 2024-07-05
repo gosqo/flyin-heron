@@ -3,6 +3,7 @@ package com.vong.manidues.auth;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vong.manidues.exception.ErrorResponse;
 import com.vong.manidues.member.MemberRepository;
+import com.vong.manidues.token.ClaimExtractor;
 import com.vong.manidues.token.Token;
 import com.vong.manidues.token.TokenRepository;
 import com.vong.manidues.web.HttpUtility;
@@ -17,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.security.Key;
@@ -28,19 +30,25 @@ import static com.vong.manidues.web.HttpUtility.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
 public class AuthenticationRestTest {
     private final TestRestTemplate template;
     private final MemberRepository memberRepository;
     private final TokenRepository tokenRepository;
+    private final ClaimExtractor claimExtractor;
     @Value("${application.security.jwt.secret-key}")
     private String secretKey;
 
     @Autowired
-    public AuthenticationRestTest(TestRestTemplate template, MemberRepository memberRepository, TokenRepository tokenRepository) {
+    public AuthenticationRestTest(TestRestTemplate template
+            , MemberRepository memberRepository
+            , TokenRepository tokenRepository
+            , ClaimExtractor claimExtractor) {
         this.template = template;
         this.memberRepository = memberRepository;
         this.tokenRepository = tokenRepository;
+        this.claimExtractor = claimExtractor;
     }
 
     @Test
@@ -77,7 +85,7 @@ public class AuthenticationRestTest {
         final var member = memberRepository.findByEmail("check@auth.io").orElseThrow();
         final var refreshTokenIn7Days = buildToken(new HashMap<>(), member, expirationIn7Days);
         final var bearerRefreshTokenIn7Days = "Bearer " + refreshTokenIn7Days;
-        final var tokenEntityIn7Days = Token.builder().token(refreshTokenIn7Days).member(member).build();
+        final var tokenEntityIn7Days = Token.builder().token(refreshTokenIn7Days).member(member).expirationDate(claimExtractor.extractExpiration(refreshTokenIn7Days)).build();
 
         tokenRepository.save(tokenEntityIn7Days);
 
@@ -97,11 +105,11 @@ public class AuthenticationRestTest {
     void refreshTokenIn8Days() throws JsonProcessingException {
         final var expirationIn8Days = 691200000L; // 1000 * 60 * 60 * 24 * 8 (expired in 8 days)
         final var member = memberRepository.findByEmail("check@auth.io").orElseThrow();
-        final var refreshTokenIn7Days = buildToken(new HashMap<>(), member, expirationIn8Days);
-        final var bearerRefreshTokenIn7Days = "Bearer " + refreshTokenIn7Days;
-        final var tokenEntityIn7Days = Token.builder().token(refreshTokenIn7Days).member(member).build();
+        final var refreshTokenIn8Days = buildToken(new HashMap<>(), member, expirationIn8Days);
+        final var bearerRefreshTokenIn7Days = "Bearer " + refreshTokenIn8Days;
+        final var tokenEntityIn8Days = Token.builder().token(refreshTokenIn8Days).member(member).expirationDate(claimExtractor.extractExpiration(refreshTokenIn8Days)).build();
 
-        tokenRepository.save(tokenEntityIn7Days);
+        tokenRepository.save(tokenEntityIn8Days);
 
         final var uri = "/api/v1/auth/refresh-token";
         final var headers = buildPostHeadersWithAuth(bearerRefreshTokenIn7Days);
@@ -110,7 +118,7 @@ public class AuthenticationRestTest {
         final var response = template.exchange(request, AuthenticationResponse.class);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getAccessToken()).isNotNull();
-        assertThat(response.getBody().getRefreshToken()).isEqualTo(refreshTokenIn7Days);
+        assertThat(response.getBody().getRefreshToken()).isEqualTo(refreshTokenIn8Days);
 
         logResponse(response);
     }
@@ -146,7 +154,7 @@ public class AuthenticationRestTest {
                 .addClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration ))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

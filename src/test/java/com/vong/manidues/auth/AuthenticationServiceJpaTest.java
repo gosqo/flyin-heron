@@ -6,7 +6,6 @@ import com.vong.manidues.token.ClaimExtractor;
 import com.vong.manidues.token.JwtService;
 import com.vong.manidues.token.Token;
 import com.vong.manidues.token.TokenRepository;
-import com.vong.manidues.utility.AuthHeaderUtility;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,19 +32,16 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 class AuthenticationServiceJpaTest {
     private final AuthenticationRequest authRequest = AuthenticationFixture.AUTH_REQUEST;
-    private AuthenticationService authService;
     private final MemberRepository memberRepository;
     private final TokenRepository tokenRepository;
     private final EntityManager entityManager;
-
+    private AuthenticationService authService;
     @Mock
     private JwtService jwtService;
     @Mock
     private ClaimExtractor claimExtractor;
     @Mock
     private AuthenticationManager authManager;
-    @Mock
-    private AuthHeaderUtility authHeaderUtility;
 
     @Autowired
     public AuthenticationServiceJpaTest(MemberRepository memberRepository, TokenRepository tokenRepository, EntityManager entityManager) {
@@ -61,7 +58,6 @@ class AuthenticationServiceJpaTest {
                 , jwtService
                 , claimExtractor
                 , authManager
-                , authHeaderUtility
         );
     }
 
@@ -84,6 +80,7 @@ class AuthenticationServiceJpaTest {
                 .thenReturn("accessToken");
         when(jwtService.generateRefreshToken(any(Member.class)))
                 .thenReturn("refreshToken");
+        when(claimExtractor.extractExpiration(any())).thenReturn(new Date(System.currentTimeMillis() + 1_000_000L));
 
         // when
         var response = authService.authenticate(authRequest);
