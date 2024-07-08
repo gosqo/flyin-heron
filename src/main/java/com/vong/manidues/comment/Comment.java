@@ -1,6 +1,6 @@
-package com.vong.manidues.board;
+package com.vong.manidues.comment;
 
-import com.vong.manidues.comment.Comment;
+import com.vong.manidues.board.Board;
 import com.vong.manidues.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,19 +9,15 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Getter
 @Builder
-@ToString(exclude = {
-        "comments"
-})
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicInsert
-public class Board {
-
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,17 +26,17 @@ public class Board {
     @JoinColumn(
             name = "member_id"
             , referencedColumnName = "id"
+            , foreignKey = @ForeignKey(name = "fk_comment_member_member_id")
     )
     private Member member;
 
-    @OneToMany(mappedBy = "board")
-    private List<Comment> comments;
-
-    @Column(
-            nullable = false
-            , length = 50
+    @ManyToOne
+    @JoinColumn(
+            name = "board_id"
+            , referencedColumnName = "id"
+            , foreignKey = @ForeignKey(name = "fk_comment_board_board_id")
     )
-    private String title;
+    private Board board;
 
     @Column(
             nullable = false
@@ -49,7 +45,9 @@ public class Board {
     private String content;
 
     @ColumnDefault(value = "0")
-    private Long viewCount;
+    @Column(nullable = false)
+//    @Column(columnDefinition = "bigint default 0 not null")
+    private Long likeCount;
 
     @CreationTimestamp
     private LocalDateTime registerDate;
@@ -57,16 +55,17 @@ public class Board {
     @CreationTimestamp
     private LocalDateTime updateDate;
 
-    public void updateTitle(String title) {
-        this.title = title;
-    }
 
     public void updateContent(String content) {
         this.content = content;
     }
 
-    public void addViewCount() {
-        this.viewCount++;
+    public void addLikeCount() {
+        this.likeCount++;
+    }
+
+    public void subtractLikeCount() {
+        this.likeCount--;
     }
 
     public void updateUpdateDate() {

@@ -1,6 +1,7 @@
 package com.vong.manidues.member;
 
 import com.vong.manidues.board.Board;
+import com.vong.manidues.comment.Comment;
 import com.vong.manidues.token.Token;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,7 +16,9 @@ import java.util.List;
 @Entity
 @Getter
 @Builder
-@ToString
+@ToString(exclude = {
+        "tokens", "boards", "comments"
+})
 @AllArgsConstructor
 @NoArgsConstructor
 public class Member implements UserDetails {
@@ -23,6 +26,15 @@ public class Member implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @OneToMany(mappedBy = "member")
+    private List<Token> tokens;
+
+    @OneToMany(mappedBy = "member")
+    private List<Board> boards;
+
+    @OneToMany(mappedBy = "member")
+    private List<Comment> comments;
 
     @Column(
             nullable = false
@@ -50,13 +62,6 @@ public class Member implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @ToString.Exclude
-    @OneToMany(mappedBy = "member")
-    private List<Token> tokens;
-
-    @ToString.Exclude
-    @OneToMany(mappedBy = "member")
-    private List<Board> boards;
 
     void updatePassword(String changedPassword) {
         this.password = changedPassword;
