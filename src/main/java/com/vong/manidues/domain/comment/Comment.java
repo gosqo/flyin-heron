@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Builder
-@ToString
+@ToString(exclude = {"member", "board"})
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicInsert
@@ -22,17 +22,25 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(
+            targetEntity = Member.class
+            , fetch = FetchType.LAZY
+    )
     @JoinColumn(
             name = "member_id"
+            , nullable = false
             , referencedColumnName = "id"
             , foreignKey = @ForeignKey(name = "fk_comment_member_member_id")
     )
     private Member member;
 
-    @ManyToOne
+    @ManyToOne(
+            targetEntity = Board.class
+            , fetch = FetchType.LAZY
+    )
     @JoinColumn(
             name = "board_id"
+            , nullable = false
             , referencedColumnName = "id"
             , foreignKey = @ForeignKey(name = "fk_comment_board_board_id")
     )
@@ -45,6 +53,7 @@ public class Comment {
     private String content;
 
     @ColumnDefault(value = "0")
+//    @Generated
     @Column(nullable = false)
 //    @Column(columnDefinition = "bigint default 0 not null")
     private Long likeCount;
