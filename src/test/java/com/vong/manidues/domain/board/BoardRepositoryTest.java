@@ -1,7 +1,7 @@
-package com.vong.manidues.domain.comment;
+package com.vong.manidues.domain.board;
 
 import com.vong.manidues.DataJpaTestJpaRepositoryBase;
-import com.vong.manidues.domain.board.BoardRepository;
+import com.vong.manidues.domain.comment.CommentRepository;
 import com.vong.manidues.domain.member.MemberRepository;
 import com.vong.manidues.domain.token.ClaimExtractor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,19 +12,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.boot.test.mock.mockito.SpyBeans;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Slf4j
-class CommentRepositoryTest extends DataJpaTestJpaRepositoryBase {
-
+class BoardRepositoryTest extends DataJpaTestJpaRepositoryBase {
 
     @Autowired
-    public CommentRepositoryTest(
+    public BoardRepositoryTest(
             MemberRepository memberRepository
             , BoardRepository boardRepository
             , CommentRepository commentRepository
@@ -33,40 +32,40 @@ class CommentRepositoryTest extends DataJpaTestJpaRepositoryBase {
     }
 
     @Test
-    void getSliceByBoardId() {
-        Long boardId = mainBoardId;
-        Pageable pageable = PageRequest.of(0, 4, Sort.Direction.ASC, "id");
-        Slice<Comment> found = commentRepository.findByBoardId(boardId, pageable);
+    void getPageNormally() {
+        Pageable pageable = PageRequest.of(0, BoardServiceImpl.PAGE_SIZE, Sort.Direction.DESC, "id");
+        Page<Board> found = boardRepository.findAll(pageable);
 
         found.getContent().forEach(item -> log.info("{}", item));
     }
 
     @Nested
     @DisplayName("With Imported Service object")
-    @Import({CommentService.class})
+    @Import({BoardServiceImpl.class})
     @SpyBeans(@SpyBean(ClaimExtractor.class))
-    class WithService extends DataJpaTestJpaRepositoryBase{
-        private final CommentService commentService;
+    class WithService extends DataJpaTestJpaRepositoryBase {
+        private final BoardServiceImpl boardService;
 
         @Autowired
         public WithService(
                 MemberRepository memberRepository
                 , BoardRepository boardRepository
                 , CommentRepository commentRepository
-                , CommentService commentService
+                , BoardServiceImpl boardService
         ) {
             super(memberRepository, boardRepository, commentRepository);
-            this.commentService = commentService;
+            this.boardService = boardService;
         }
 
         @Test
         @DisplayName("Request page is empty, then throws")
         void emptySliceThrows() {
-            Long boardId = mainBoardId;
             // 1 for throwing exception, 1 for getPageRequest makes index begin from 0.
-            int requestPage = (COMMENT_COUNT / CommentService.PAGE_SIZE + 1 + 1);
+            int requestPage = (BOARD_COUNT / BoardServiceImpl.PAGE_SIZE + 1 + 1);
 
-            assertThatThrownBy(() -> commentService.getPageOf(boardId, requestPage));
+            assertThatThrownBy(() -> boardService.getBoardPage(requestPage));
         }
     }
 }
+
+

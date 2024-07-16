@@ -20,14 +20,19 @@ import java.util.List;
 @DataJpaTest
 @Slf4j
 public class DataJpaTestJpaRepositoryBase {
-    private static final int BOARD_COUNT = 3;
-    private static final int COMMENT_COUNT = 20;
+    protected static final int BOARD_COUNT = 3;
+    protected static final int COMMENT_COUNT = 20;
     protected final MemberRepository memberRepository;
     protected final BoardRepository boardRepository;
     protected final CommentRepository commentRepository;
-    private final Member member = buildMember();
-    private final List<Board> BOARDS = buildBoards();
-    private final List<Comment> COMMENTS = buildComments();
+    protected final Member member = buildMember();
+    protected final List<Board> boards = buildBoards();
+    protected final List<Comment> comments = buildComments();
+    protected Long mainMemberId;
+    protected Long mainBoardId;
+    protected Long mainCommentId;
+    protected long[] boardIds;
+    protected long[] commentIds;
 
     @Autowired
     public DataJpaTestJpaRepositoryBase(MemberRepository memberRepository, BoardRepository boardRepository, CommentRepository commentRepository) {
@@ -43,20 +48,6 @@ public class DataJpaTestJpaRepositoryBase {
                 .password("$2a$10$.YTh5A02ylk3nhxMltZ0F.fdPp0InH6Sin.w91kve8SEGUYR4KAZ.")
                 .role(Role.USER)
                 .build();
-    }
-
-    @BeforeEach
-    void setUp() {
-        initializeData();
-        log.info("==== Test data initialized. ====");
-    }
-
-    @AfterEach
-    void tearDown() {
-        log.info("==== Deleting test data. ====");
-        commentRepository.deleteAll();
-        boardRepository.deleteAll();
-        memberRepository.deleteAll();
     }
 
     private List<Board> buildBoards() {
@@ -79,7 +70,7 @@ public class DataJpaTestJpaRepositoryBase {
         for (int i = 0; i < COMMENT_COUNT; i++) {
             Comment comment = Comment.builder()
                     .member(member)
-                    .board(BOARDS.get(0))
+                    .board(boards.get(0))
                     .content("Hello, Comment " + i + 1)
                     .build();
             comments.add(comment);
@@ -87,9 +78,30 @@ public class DataJpaTestJpaRepositoryBase {
         return comments;
     }
 
+    @BeforeEach
+    void setUp() {
+        initializeData();
+        log.info("==== Test data initialized. ====");
+    }
+
+    @AfterEach
+    void tearDown() {
+        log.info("==== Deleting test data. ====");
+        commentRepository.deleteAll();
+        boardRepository.deleteAll();
+        memberRepository.deleteAll();
+    }
+
     private void initializeData() {
-        memberRepository.save(member);
-        boardRepository.saveAll(BOARDS);
-        commentRepository.saveAll(COMMENTS);
+        Member storedMember = memberRepository.save(member);
+        mainMemberId = storedMember.getId();
+
+        List<Board> boardList = boardRepository.saveAll(boards);
+        boardIds = boardList.stream().mapToLong(Board::getId).toArray();
+        mainBoardId = boardIds[0];
+
+        List<Comment> commentList = commentRepository.saveAll(comments);
+        commentIds = commentList.stream().mapToLong(Comment::getId).toArray();
+        mainCommentId = commentIds[0];
     }
 }

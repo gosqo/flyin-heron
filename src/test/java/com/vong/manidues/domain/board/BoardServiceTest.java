@@ -1,30 +1,34 @@
 package com.vong.manidues.domain.board;
 
-import com.vong.manidues.domain.board.dto.BoardDeleteResponse;
 import com.vong.manidues.domain.board.dto.BoardGetResponse;
 import com.vong.manidues.domain.board.dto.BoardUpdateResponse;
 import com.vong.manidues.domain.member.Member;
 import com.vong.manidues.domain.member.MemberRepository;
 import com.vong.manidues.domain.token.ClaimExtractor;
-import com.vong.manidues.global.utility.AuthHeaderUtility;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static com.vong.manidues.domain.auth.AuthenticationFixture.MEMBER_EMAIL;
-import static com.vong.manidues.domain.board.BoardDtoUtility.buildBoardRegisterRequest;
-import static com.vong.manidues.domain.board.BoardDtoUtility.buildBoardUpdateRequest;
-import static com.vong.manidues.domain.board.BoardUtility.buildMockBoard;
 import static com.vong.manidues.domain.member.MemberUtility.buildMockMember;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -42,8 +46,6 @@ public class BoardServiceTest {
     @Mock
     private MemberRepository memberRepository;
     @Mock
-    private AuthHeaderUtility authHeaderUtility;
-    @Mock
     private ClaimExtractor claimExtractor;
     private MockHttpServletRequest mockRequest;
     private MockHttpServletResponse mockResponse;
@@ -55,87 +57,110 @@ public class BoardServiceTest {
     }
 
     @Test
-    void getBoardAddedViewCount() throws NoResourceFoundException {
-        // given
-        var expectedObj = BoardGetResponse.of(boardViewCountAdded);
-        when(boardRepository.findById(any())).thenReturn(Optional.of(boardActiveViewCount));
+    @DisplayName("if page that repository returned is empty, throws NoResourceFoundException")
+    void emptyContentThrows() {
+        int requestPage = 2; // 요청에 들어갈 페이지. 1 부터 시작.
 
-        // when
-        var returns = service.get(1L, mockRequest, mockResponse);
+        int size = 2; // repository 계층에서 페이지 나눌 때 사용할 size
+        int page = 2; // repository 계층에서 제공할 pageable 인덱스
 
-        // then
-        assertThat(returns).isEqualTo(expectedObj); // @EqualsAndHashCode from lombok.
+        // repository.findAll(Pageable) 을 통해 만들어질 Page<Board> 제작을 위한 변수들.
+        Pageable pageable = PageRequest.of(page, size);
+        List<Board> emptyList = Collections.EMPTY_LIST;
+        Page<Board> emptyContentPage = new PageImpl<>(emptyList, pageable, 4);
+
+        // Page<Board> mockPage = mock(Page.class); // mockPage.getContent().isEmpty() ==> true.
+
+        when(boardRepository.findAll(any(PageRequest.class))).thenReturn(emptyContentPage);
+
+        assertThatThrownBy(() -> service.getBoardPage(requestPage));
     }
 
-    @Test
-    void getBoardViewCountNull() throws NoResourceFoundException {
-        // given
-        var expectedObj = BoardGetResponse.of(boardViewCountNull);
-        when(boardRepository.findById(any())).thenReturn(Optional.of(boardViewCountNull));
+    @Nested
+    @DisplayName("If every feature works fine,")
+    class IfWorksFine {
 
-        // when
-        var returns = service.get(1L, mockRequest, mockResponse);
+        @Test
+        void getBoardAddedViewCount() throws NoResourceFoundException {
+            // given
+            var expectedObj = BoardGetResponse.of(boardViewCountAdded);
+            when(boardRepository.findById(any())).thenReturn(Optional.of(boardActiveViewCount));
 
-        // then
-        assertThat(returns).isEqualTo(expectedObj); // @EqualsAndHashCode from lombok.
-    }
+            // when
+            var returns = service.get(1L, mockRequest, mockResponse);
 
-    @Test
-    void register() {
-        // given
-        mockRequest.addHeader("Authorization", "Bearer some.valid.token");
-        when(claimExtractor.extractUserEmail(any(String.class))).thenReturn(MEMBER_EMAIL);
-        when(memberRepository.findByEmail(MEMBER_EMAIL)).thenReturn(Optional.of(memberEntity));
-        when(boardRepository.save(any(Board.class))).thenReturn(boardActiveViewCount);
+            // then
+            assertThat(returns).isEqualTo(expectedObj); // @EqualsAndHashCode from lombok.
+        }
 
-        // when
-        var result = service.register(mockRequest, BoardDtoUtility.buildBoardRegisterRequest());
+        @Test
+        void getBoardViewCountNull() throws NoResourceFoundException {
+            // given
+            var expectedObj = BoardGetResponse.of(boardViewCountNull);
+            when(boardRepository.findById(any())).thenReturn(Optional.of(boardViewCountNull));
 
-        // then
-        assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(1L);
-        assertThat(result.getMessage()).isEqualTo("게시물이 성공적으로 등록됐습니다.");
-    }
+            // when
+            var returns = service.get(1L, mockRequest, mockResponse);
 
-    @Test
-    void update() {
-        // given
-        mockRequest.addHeader("Authorization", "Bearer some.valid.token");
-        var boardId = 1L;
-        var requestBody = BoardDtoUtility.buildBoardUpdateRequest();
-        var updatedBoard = BoardUtility.buildMockBoard(boardId, memberEntity, 0L);
+            // then
+            assertThat(returns).isEqualTo(expectedObj); // @EqualsAndHashCode from lombok.
+        }
 
-        when(claimExtractor.extractUserEmail(any(String.class))).thenReturn(MEMBER_EMAIL);
-        when(boardRepository.findById(boardId)).thenReturn(Optional.of(boardActiveViewCount));
-        when(boardRepository.save(any(Board.class))).thenReturn(updatedBoard);
+        @Test
+        void register() {
+            // given
+            mockRequest.addHeader("Authorization", "Bearer some.valid.token");
+            when(claimExtractor.extractUserEmail(any(String.class))).thenReturn(MEMBER_EMAIL);
+            when(memberRepository.findByEmail(MEMBER_EMAIL)).thenReturn(Optional.of(memberEntity));
+            when(boardRepository.save(any(Board.class))).thenReturn(boardActiveViewCount);
 
-        // when
-        var result = service.update(boardId, mockRequest, requestBody);
+            // when
+            var result = service.register(mockRequest, BoardDtoUtility.buildBoardRegisterRequest());
 
-        // then
-        assertThat(result).isEqualTo(BoardUpdateResponse.builder()
-                .id(1L)
-                .message("게시물 수정이 정상적으로 처리됐습니다.")
-                .build()
-        );
-    }
+            // then
+            assertThat(result).isNotNull();
+            assertThat(result.getId()).isEqualTo(1L);
+            assertThat(result.getMessage()).isEqualTo("게시물이 성공적으로 등록됐습니다.");
+        }
 
-    @Test
-    void delete() {
-        // given
-        mockRequest.addHeader("Authorization", "Bearer some.valid.token");
-        var boardId = 1L;
+        @Test
+        void update() {
+            // given
+            mockRequest.addHeader("Authorization", "Bearer some.valid.token");
+            var boardId = 1L;
+            var requestBody = BoardDtoUtility.buildBoardUpdateRequest();
+            var updatedBoard = BoardUtility.buildMockBoard(boardId, memberEntity, 0L);
 
-        when(boardRepository.findById(boardId)).thenReturn(Optional.of(boardActiveViewCount));
-        when(claimExtractor.extractUserEmail(any(String.class))).thenReturn(MEMBER_EMAIL);
+            when(claimExtractor.extractUserEmail(any(String.class))).thenReturn(MEMBER_EMAIL);
+            when(boardRepository.findById(boardId)).thenReturn(Optional.of(boardActiveViewCount));
+            when(boardRepository.save(any(Board.class))).thenReturn(updatedBoard);
 
-        // when
-        var result = service.delete(boardId, mockRequest);
+            // when
+            var result = service.update(boardId, mockRequest, requestBody);
 
-        // then
-        assertThat(result).isEqualTo(BoardDeleteResponse.builder()
-                .message("게시물 삭제가 정상적으로 처리됐습니다.")
-                .build()
-        );
+            // then
+            assertThat(result).isEqualTo(BoardUpdateResponse.builder()
+                    .id(1L)
+                    .message("게시물 수정이 정상적으로 처리됐습니다.")
+                    .build()
+            );
+        }
+
+        @Test
+        void delete() {
+            // given
+            mockRequest.addHeader("Authorization", "Bearer some.valid.token");
+            var boardId = 1L;
+
+            when(boardRepository.findById(boardId)).thenReturn(Optional.of(boardActiveViewCount));
+            when(claimExtractor.extractUserEmail(any(String.class))).thenReturn(MEMBER_EMAIL);
+
+            // when
+            var result = service.delete(boardId, mockRequest);
+
+            // then
+            assertThat(result.getMessage()).isEqualTo("게시물 삭제가 정상적으로 처리됐습니다.");
+        }
+
     }
 }
