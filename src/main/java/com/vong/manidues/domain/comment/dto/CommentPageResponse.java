@@ -5,20 +5,22 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class CommentPageResponse {
-    private Page<CommentGetResponse> commentPage;
+    private Slice<CommentGetResponse> commentPage;
 
-    public static CommentPageResponse of(Page<Comment> entityPage) {
+    public static CommentPageResponse of(Slice<Comment> entityPage) {
         return CommentPageResponse.builder()
-                .commentPage(new PageImpl<>(
+                .commentPage(new SliceImpl<>(
                         entityPage.get().map(CommentGetResponse::of).toList()
+                        , entityPage.getPageable()
+                        , entityPage.hasNext()
                 ))
                 .build();
     }

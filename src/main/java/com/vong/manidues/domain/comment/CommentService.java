@@ -10,10 +10,14 @@ import com.vong.manidues.global.utility.AuthHeaderUtility;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.NoSuchElementException;
 
@@ -26,12 +30,13 @@ public class CommentService {
     private final BoardRepository boardRepository;
     private final ClaimExtractor claimExtractor;
 
+    static final int PAGE_SIZE = 6;
+
     private static PageRequest getPageRequest(int pageNumber) {
         pageNumber = pageNumber - 1;
-        int pageSize = 6;
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
 
-        return PageRequest.of(pageNumber, pageSize, sort);
+        return PageRequest.of(pageNumber, PAGE_SIZE, sort);
     }
 
     public CommentDeleteResponse remove(Long id, HttpServletRequest request) {
@@ -103,9 +108,14 @@ public class CommentService {
                 () -> new NoSuchElementException("Request GET comment not exist")));
     }
 
-    public CommentPageResponse getPageOf(Long boardId, int pageNumber) {
-        PageRequest pageRequest = getPageRequest(pageNumber);
+    public CommentPageResponse getPageOf(Long boardId, int pageNumber) throws NoResourceFoundException {
+        Pageable pageable = getPageRequest(pageNumber);
+        Slice<Comment> found = commentRepository.findByBoardId(boardId, pageable);
 
-        return CommentPageResponse.of(commentRepository.findByBoardId(boardId, pageRequest));
+        if (found.getContent().isEmpty()) {
+            throw new NoResourceFoundException(HttpMethod.GET, "/api/v1/board/{boardId}/comments?page=" + pageNumber);
+        }
+
+        return CommentPageResponse.of(found);
     }
 }
