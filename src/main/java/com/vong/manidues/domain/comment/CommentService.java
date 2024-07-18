@@ -108,7 +108,7 @@ public class CommentService {
                 () -> new NoSuchElementException("Request GET comment not exist")));
     }
 
-    public CommentPageResponse getPageOf(Long boardId, int pageNumber) throws NoResourceFoundException {
+    public CommentPageResponse getCommentSliceOf(Long boardId, int pageNumber) throws NoResourceFoundException {
         Pageable pageable = getPageRequest(pageNumber);
         Slice<Comment> found = commentRepository.findByBoardId(boardId, pageable);
 

@@ -120,6 +120,7 @@ class CommentServiceTest {
 
         when(repository.findByBoardId(anyLong(), any(Pageable.class))).thenReturn(commentSlice);
 
-        assertThatThrownBy(() -> service.getPageOf(1L, requestPage));
+            assertThatThrownBy(() -> service.getCommentSliceOf(1L, requestPage));
+        }
     }
 }

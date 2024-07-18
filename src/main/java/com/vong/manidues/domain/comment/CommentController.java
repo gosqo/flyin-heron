@@ -45,7 +45,7 @@ public class CommentController {
     ) throws NoResourceFoundException {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(service.getPageOf(boardId, pageNumber));
+                .body(service.getCommentSliceOf(boardId, pageNumber));
     }
 
     @GetMapping("/comment/{id}")

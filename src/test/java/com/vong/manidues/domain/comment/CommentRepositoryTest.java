@@ -63,10 +63,11 @@ class CommentRepositoryTest extends DataJpaTestJpaRepositoryBase {
         @DisplayName("Request page is empty, then throws")
         void emptySliceThrows() {
             Long boardId = mainBoardId;
-            // 1 for throwing exception, 1 for getPageRequest makes index begin from 0.
-            int requestPage = (COMMENT_COUNT / CommentService.PAGE_SIZE + 1 + 1);
+            int pageCount = COMMENT_COUNT / CommentService.PAGE_SIZE;
+            // 1 for throwing exception, 1 for getPageRequest() which index begin from 0.
+            int requestPage = (pageCount + 1 + 1);
 
-            assertThatThrownBy(() -> commentService.getPageOf(boardId, requestPage));
+            assertThatThrownBy(() -> commentService.getCommentSliceOf(boardId, requestPage));
         }
     }
 }
