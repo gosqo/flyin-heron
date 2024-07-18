@@ -13,10 +13,9 @@ import org.springframework.data.domain.PageImpl;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardPageResponse {
-
     private Page<BoardGetResponse> boardPage;
 
-    public static BoardPageResponse fromEntityPage(Page<Board> entityPage) {
+    public static BoardPageResponse of(Page<Board> entityPage) {
         return BoardPageResponse.builder()
                 .boardPage(new PageImpl<>(
                         entityPage.get().map(BoardGetResponse::of).toList(),

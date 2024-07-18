@@ -8,7 +8,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Service
 public interface BoardService {
-    BoardPageResponse getBoardPage(int pageable) throws NoResourceFoundException;
+    BoardPageResponse getBoardPage(int pageNumber) throws NoResourceFoundException;
 
     BoardRegisterResponse register(HttpServletRequest request, BoardRegisterRequest requestBody);
 

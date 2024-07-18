@@ -28,15 +28,15 @@ public class BoardServiceImpl implements BoardService {
 
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
-    private final AuthHeaderUtility authHeaderUtility;
     private final ClaimExtractor claimExtractor;
+
+    static final int PAGE_SIZE = 3;
 
     private static PageRequest getPageRequest(int pageNumber) {
         pageNumber = pageNumber - 1;
-        int pageSize = 3;
         Sort sort = Sort.by(Sort.Direction.DESC, "registerDate");
 
-        return PageRequest.of(pageNumber, pageSize, sort);
+        return PageRequest.of(pageNumber, PAGE_SIZE, sort);
     }
 
     @Override
@@ -44,12 +44,12 @@ public class BoardServiceImpl implements BoardService {
         PageRequest pageRequest = getPageRequest(pageNumber);
         Page<Board> foundPage = boardRepository.findAll(pageRequest);
 
-        if (foundPage.getTotalPages() - 1 < pageRequest.getPageNumber())
+        if (foundPage.getContent().isEmpty()) {
             throw new NoResourceFoundException(HttpMethod.GET
-                    , "/boards/" + (foundPage.getPageable().getPageNumber() + 1)
-            );
+                    , "/boards/" + (foundPage.getPageable().getPageNumber() + 1));
+        }
 
-        return BoardPageResponse.fromEntityPage(foundPage);
+        return BoardPageResponse.of(foundPage);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardUpdateResponse update(Long id, HttpServletRequest request, BoardUpdateRequest body) {
+    public BoardUpdateResponse update(Long id, HttpServletRequest request, BoardUpdateRequest requestBody) {
         final String token = AuthHeaderUtility.extractJwt(request);
         final String requestUserEmail = claimExtractor.extractUserEmail(token);
         final Board storedBoard = boardRepository.findById(id).orElseThrow(
@@ -79,8 +79,8 @@ public class BoardServiceImpl implements BoardService {
             throw new AccessDeniedException("요청자와 저작자의 불일치");
         }
 
-        storedBoard.updateTitle(body.getTitle());
-        storedBoard.updateContent(body.getContent());
+        storedBoard.updateTitle(requestBody.getTitle());
+        storedBoard.updateContent(requestBody.getContent());
         storedBoard.updateUpdateDate();
 
         Board updatedBoard = boardRepository.save(storedBoard);
