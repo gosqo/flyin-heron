@@ -16,9 +16,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class TokenExceptionTestController {
-
     private final ClaimExtractor claimExtractor;
-    private final AuthHeaderUtility authHeaderUtility;
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping("/tokenValidationTest")

@@ -4,11 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.vong.manidues.domain.board.dto.BoardGetResponse;
-import com.vong.manidues.global.config.SecurityConfig;
 import com.vong.manidues.domain.member.Member;
 import com.vong.manidues.domain.token.ClaimExtractor;
 import com.vong.manidues.domain.token.JwtService;
-import com.vong.manidues.global.utility.AuthHeaderUtility;
+import com.vong.manidues.global.config.SecurityConfig;
 import com.vong.manidues.web.HttpUtility;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -46,8 +45,6 @@ public class BoardWebTest {
     private BoardService service;
     @MockBean
     private BoardRepository repository;
-    @MockBean
-    private AuthHeaderUtility authHeaderUtility;
     @MockBean
     private JwtService jwtService;
     @MockBean

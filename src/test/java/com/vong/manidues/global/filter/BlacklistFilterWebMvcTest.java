@@ -1,10 +1,9 @@
 package com.vong.manidues.global.filter;
 
-import com.vong.manidues.global.ViewController;
-import com.vong.manidues.global.config.SecurityConfig;
 import com.vong.manidues.domain.token.ClaimExtractor;
 import com.vong.manidues.domain.token.JwtService;
-import com.vong.manidues.global.utility.AuthHeaderUtility;
+import com.vong.manidues.global.ViewController;
+import com.vong.manidues.global.config.SecurityConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +33,6 @@ public class BlacklistFilterWebMvcTest {
     private AuthenticationProvider authProvider;
     @MockBean
     private LogoutHandler logoutHandler;
-    @MockBean
-    private AuthHeaderUtility authHeaderUtility;
     @MockBean
     private JwtService jwtService;
     @MockBean

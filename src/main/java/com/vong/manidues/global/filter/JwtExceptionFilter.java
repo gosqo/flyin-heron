@@ -22,7 +22,6 @@ import java.io.IOException;
 public class JwtExceptionFilter extends OncePerRequestFilter {
 
     private final ClaimExtractor claimExtractor;
-    private final AuthHeaderUtility authHeaderUtility;
 
     @Override
     public void doFilterInternal(
@@ -35,7 +34,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             return;
         }
 
-        String jwToken = authHeaderUtility.extractJwt(request);
+        String jwToken = AuthHeaderUtility.extractJwt(request);
 
         if (throwAnyJwtException(response, jwToken)) return;
 
