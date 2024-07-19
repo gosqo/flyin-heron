@@ -24,11 +24,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Slf4j
 public class BlacklistFilterWebMvcTest {
     private final MockMvc mockMvc;
-
-    @Autowired
-    public BlacklistFilterWebMvcTest(MockMvc mockMvc) {
-        this.mockMvc = mockMvc;
-    }
     @MockBean
     private AuthenticationProvider authProvider;
     @MockBean
@@ -37,6 +32,10 @@ public class BlacklistFilterWebMvcTest {
     private JwtService jwtService;
     @MockBean
     private ClaimExtractor claimExtractor;
+    @Autowired
+    public BlacklistFilterWebMvcTest(MockMvc mockMvc) {
+        this.mockMvc = mockMvc;
+    }
 
     @Test
     public void checkTrackRequestWith71Requests() throws Exception {

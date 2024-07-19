@@ -25,12 +25,11 @@ import java.util.NoSuchElementException;
 @Transactional
 @RequiredArgsConstructor
 public class CommentService {
+    static final int PAGE_SIZE = 6;
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final ClaimExtractor claimExtractor;
-
-    static final int PAGE_SIZE = 6;
 
     private static PageRequest getPageRequest(int pageNumber) {
         pageNumber = pageNumber - 1;
@@ -84,10 +83,10 @@ public class CommentService {
         final String token = AuthHeaderUtility.extractJwt(request);
         final String requestUserEmail = claimExtractor.extractUserEmail(token);
         final Member member = memberRepository.findByEmail(requestUserEmail).orElseThrow(
-                () -> new NoSuchElementException("Member not exist with the email.")
+                () -> new NoSuchElementException("존재하지 않는 회원의 댓글 등록 요청. (토큰 서명 키 유출 가능성)")
         );
         final Board board = boardRepository.findById(requestBody.getBoardId()).orElseThrow(
-                () -> new NoSuchElementException("Board Not Exist.")
+                () -> new NoSuchElementException("존재하지 않는 게시물에 댓글 등록 요청.")
         );
 
         Comment comment = commentRepository.save(Comment.builder()
@@ -105,7 +104,7 @@ public class CommentService {
 
     public CommentGetResponse get(Long id) {
         return CommentGetResponse.of(commentRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("Request GET comment not exist")));
+                () -> new NoSuchElementException("존재하지 않는 댓글 조회 요청")));
     }
 
     public CommentPageResponse getCommentSliceOf(Long boardId, int pageNumber) throws NoResourceFoundException {
