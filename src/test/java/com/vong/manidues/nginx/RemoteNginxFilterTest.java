@@ -2,7 +2,6 @@ package com.vong.manidues.nginx;
 
 import com.vong.manidues.web.HttpUtility;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +14,6 @@ public class RemoteNginxFilterTest {
     private static final Logger log = LoggerFactory.getLogger(RemoteNginxFilterTest.class);
     private static final TestRestTemplate restTemplate = new TestRestTemplate();
     private static final String url = "https://flyin-heron.duckdns.org";
-
-    @BeforeEach
-    void setUp() {
-    }
 
     @Test
     void passNginxFilterTest() {
