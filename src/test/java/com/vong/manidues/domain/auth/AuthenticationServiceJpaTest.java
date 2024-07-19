@@ -1,96 +1,91 @@
 package com.vong.manidues.domain.auth;
 
-import com.vong.manidues.domain.member.Member;
+import com.vong.manidues.DataJpaTestJpaRepositoryBase;
+import com.vong.manidues.domain.board.BoardRepository;
+import com.vong.manidues.domain.comment.CommentRepository;
+import com.vong.manidues.domain.member.MemberFixture;
 import com.vong.manidues.domain.member.MemberRepository;
 import com.vong.manidues.domain.token.ClaimExtractor;
 import com.vong.manidues.domain.token.JwtService;
-import com.vong.manidues.domain.token.Token;
 import com.vong.manidues.domain.token.TokenRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.boot.test.mock.mockito.SpyBeans;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
-@DataJpaTest
 @Slf4j
-@ActiveProfiles("test")
-class AuthenticationServiceJpaTest {
-    private final AuthenticationRequest authRequest = AuthenticationFixture.AUTH_REQUEST;
-    private final MemberRepository memberRepository;
-    private final TokenRepository tokenRepository;
-    private final EntityManager entityManager;
-    private AuthenticationService authService;
-    @Mock
-    private JwtService jwtService;
-    @Mock
-    private ClaimExtractor claimExtractor;
-    @Mock
-    private AuthenticationManager authManager;
+class AuthenticationServiceJpaTest/* extends DataJpaTestJpaRepositoryBase*/ {
 
-    @Autowired
-    public AuthenticationServiceJpaTest(MemberRepository memberRepository, TokenRepository tokenRepository, EntityManager entityManager) {
-        this.memberRepository = memberRepository;
-        this.tokenRepository = tokenRepository;
-        this.entityManager = entityManager;
-    }
+    /* @Autowired
+     public AuthenticationServiceJpaTest(
+             MemberRepository memberRepository
+             , BoardRepository boardRepository
+             , CommentRepository commentRepository
+             , TokenRepository tokenRepository
+     ) {
+         super(memberRepository, boardRepository, commentRepository, tokenRepository);
+     }
+ */
+    @Nested
+    @DisplayName("with imported AuthenticationService")
+    @Import(AuthenticationService.class)
+    @SpyBeans(
+            @SpyBean(
+                    classes = {
+                            JwtService.class
+                            , ClaimExtractor.class
+                    }
+            )
+    )
+    class WithService extends DataJpaTestJpaRepositoryBase {
+        private final AuthenticationService authService;
+        @MockBean
+        private final AuthenticationManager authManager;
 
-    @BeforeEach
-    void setUp() {
-        authService = new AuthenticationService(
-                memberRepository
-                , tokenRepository
-                , jwtService
-                , claimExtractor
-                , authManager
-        );
-    }
+        @Autowired
+        public WithService(
+                MemberRepository memberRepository
+                , BoardRepository boardRepository
+                , CommentRepository commentRepository
+                , TokenRepository tokenRepository
+                , AuthenticationService authService
+                , AuthenticationManager authManager
+        ) {
+            super(memberRepository, boardRepository, commentRepository, tokenRepository);
+            this.authService = authService;
+            this.authManager = authManager;
+        }
 
-    @AfterEach
-    void tearDown() {
-        Query query = entityManager.createNativeQuery("SELECT * FROM token t", Token.class);
-        List<?> resultList = query.getResultList();
-        log.info(resultList.toString());
+        @Test
+        void authenticate() throws SQLException {
+            // given
+            final var expectedAuth = UsernamePasswordAuthenticationToken
+                    .authenticated(member.getEmail(), member.getPassword(), member.getAuthorities());
 
-        tokenRepository.deleteAll();
-    }
+            when(authManager.authenticate(any(Authentication.class))).thenReturn(expectedAuth);
 
-    @Test
-    void authenticate() throws SQLException {
-        // given
-        var expectedAuth = mock(Authentication.class);
-        when(authManager.authenticate(any(Authentication.class)))
-                .thenReturn(expectedAuth);
-        when(jwtService.generateAccessToken(any(Member.class)))
-                .thenReturn("accessToken");
-        when(jwtService.generateRefreshToken(any(Member.class)))
-                .thenReturn("refreshToken");
-        when(claimExtractor.extractExpiration(any())).thenReturn(new Date(System.currentTimeMillis() + 1_000_000L));
+            // when
+            final var response = authService.authenticate(MemberFixture.AUTH_REQUEST);
 
-        // when
-        var response = authService.authenticate(authRequest);
-
-        // then
-        assertThat(response).isNotNull();
-        assertThat(response.getAccessToken()).isEqualTo("accessToken");
-        assertThat(response.getRefreshToken()).isEqualTo("refreshToken");
-        verify(authManager, times(1)).authenticate(any(Authentication.class));
-        verify(jwtService, times(1)).generateAccessToken(any(Member.class));
-        verify(jwtService, times(1)).generateRefreshToken(any(Member.class));
+            // then
+            assertThat(response).isNotNull();
+            assertThat(response.getAccessToken()).contains("eyJhbGci");
+            assertThat(response.getRefreshToken()).contains("eyJhbGci");
+            assertThat(tokenRepository.findByToken(response.getRefreshToken()).orElseThrow()).isNotNull();
+        }
     }
 }

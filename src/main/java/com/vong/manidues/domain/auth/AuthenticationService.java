@@ -1,12 +1,12 @@
 package com.vong.manidues.domain.auth;
 
-import com.vong.manidues.global.exception.custom.DebugNeededException;
 import com.vong.manidues.domain.member.Member;
 import com.vong.manidues.domain.member.MemberRepository;
 import com.vong.manidues.domain.token.ClaimExtractor;
 import com.vong.manidues.domain.token.JwtService;
 import com.vong.manidues.domain.token.Token;
 import com.vong.manidues.domain.token.TokenRepository;
+import com.vong.manidues.global.exception.custom.DebugNeededException;
 import com.vong.manidues.global.utility.AuthHeaderUtility;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +32,6 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        // throws BadCredentialsException if request can not be authenticated
-        // 해당 예외가 잡지 못하는 추가적인 예외가 있을지?
         var authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),

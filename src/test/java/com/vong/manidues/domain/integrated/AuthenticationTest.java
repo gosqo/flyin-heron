@@ -1,27 +1,29 @@
-package com.vong.manidues.domain.auth;
+package com.vong.manidues.domain.integrated;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vong.manidues.domain.auth.AuthenticationRequest;
 import com.vong.manidues.domain.auth.AuthenticationResponse;
-import com.vong.manidues.global.exception.ErrorResponse;
+import com.vong.manidues.domain.board.BoardRepository;
+import com.vong.manidues.domain.comment.CommentRepository;
+import com.vong.manidues.domain.member.MemberFixture;
 import com.vong.manidues.domain.member.MemberRepository;
 import com.vong.manidues.domain.token.ClaimExtractor;
 import com.vong.manidues.domain.token.Token;
 import com.vong.manidues.domain.token.TokenRepository;
+import com.vong.manidues.global.exception.ErrorResponse;
 import com.vong.manidues.web.HttpUtility;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.security.Key;
 import java.util.Date;
@@ -31,30 +33,33 @@ import java.util.Map;
 import static com.vong.manidues.web.HttpUtility.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@ActiveProfiles("test")
-public class AuthenticationRestTest {
-    private final TestRestTemplate template;
-    private final MemberRepository memberRepository;
-    private final TokenRepository tokenRepository;
+public class AuthenticationTest extends SpringBootTestBase {
     private final ClaimExtractor claimExtractor;
     @Value("${application.security.jwt.secret-key}")
     private String secretKey;
 
     @Autowired
-    public AuthenticationRestTest(TestRestTemplate template
-            , MemberRepository memberRepository
-            , TokenRepository tokenRepository
-            , ClaimExtractor claimExtractor) {
-        this.template = template;
-        this.memberRepository = memberRepository;
-        this.tokenRepository = tokenRepository;
+    public AuthenticationTest(
+            MemberRepository memberRepository,
+            TokenRepository tokenRepository,
+            BoardRepository boardRepository,
+            CommentRepository commentRepository,
+            TestRestTemplate template,
+            ClaimExtractor claimExtractor
+    ) {
+        super(memberRepository, tokenRepository, boardRepository, commentRepository, template);
         this.claimExtractor = claimExtractor;
     }
 
+    @BeforeEach
+    void setUp() {
+        initMember();
+    }
+
     @Test
+    @DisplayName("Bad Credential response Bad Request.")
     void badCredentialsExceptionCheck() throws JsonProcessingException {
+        // given
         var uri = "/api/v1/auth/authenticate";
         var body = AuthenticationRequest.builder()
                 .email("wrong@email.ocm")
@@ -62,18 +67,18 @@ public class AuthenticationRestTest {
                 .build();
         var request = HttpUtility.buildPostRequest(body, uri);
 
+        // when
         var response = template.exchange(request, ErrorResponse.class);
         HttpUtility.logResponse(response);
+
+        // then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
     void authSuccess() throws JsonProcessingException {
         var uri = "/api/v1/auth/authenticate";
-        var body = AuthenticationRequest.builder()
-                .email("check@auth.io")
-                .password("Password0")
-                .build();
+        var body = MemberFixture.AUTH_REQUEST;
         var request = HttpUtility.buildPostRequest(body, uri);
 
         var response = template.exchange(request, AuthenticationResponse.class);
@@ -84,7 +89,7 @@ public class AuthenticationRestTest {
     @Test
     void refreshTokenIn7Days() throws JsonProcessingException {
         final var expirationIn7Days = 604800000L; // 1000 * 60 * 60 * 24 * 7 (expired in 7 days)
-        final var member = memberRepository.findByEmail("check@auth.io").orElseThrow();
+        final var member = memberRepository.findByEmail(MemberFixture.EMAIL).orElseThrow();
         final var refreshTokenIn7Days = buildToken(new HashMap<>(), member, expirationIn7Days);
         final var bearerRefreshTokenIn7Days = "Bearer " + refreshTokenIn7Days;
         final var tokenEntityIn7Days = Token.builder().token(refreshTokenIn7Days).member(member).expirationDate(claimExtractor.extractExpiration(refreshTokenIn7Days)).build();
@@ -106,7 +111,7 @@ public class AuthenticationRestTest {
     @Test
     void refreshTokenIn8Days() throws JsonProcessingException {
         final var expirationIn8Days = 691200000L; // 1000 * 60 * 60 * 24 * 8 (expired in 8 days)
-        final var member = memberRepository.findByEmail("check@auth.io").orElseThrow();
+        final var member = memberRepository.findByEmail(MemberFixture.EMAIL).orElseThrow();
         final var refreshTokenIn8Days = buildToken(new HashMap<>(), member, expirationIn8Days);
         final var bearerRefreshTokenIn7Days = "Bearer " + refreshTokenIn8Days;
         final var tokenEntityIn8Days = Token.builder().token(refreshTokenIn8Days).member(member).expirationDate(claimExtractor.extractExpiration(refreshTokenIn8Days)).build();
@@ -128,7 +133,7 @@ public class AuthenticationRestTest {
     @Test
     void refreshTokenNotExistOnDatabase() throws JsonProcessingException {
         final var expirationIn7Days = 604800000L; // 1000 * 60 * 60 * 24 * 7 (expired in 7 days)
-        final var member = memberRepository.findByEmail("check@auth.io").orElseThrow();
+        final var member = memberRepository.findByEmail(MemberFixture.EMAIL).orElseThrow();
         final var refreshTokenIn7Days = buildToken(new HashMap<>(), member, expirationIn7Days);
         final var bearerRefreshTokenIn7Days = "Bearer " + refreshTokenIn7Days;
 

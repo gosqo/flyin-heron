@@ -1,6 +1,5 @@
 package com.vong.manidues.domain.member.validation;
 
-import com.vong.manidues.domain.member.validation.SignUpValidation;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,7 +52,7 @@ class SignUpValidationTest {
         }
     }
 
-@Test
+    @Test
     void passPasswordRegexRRE() {
         System.out.println(passwordRegexRemovedRedundantEscape);
         String[] items = {

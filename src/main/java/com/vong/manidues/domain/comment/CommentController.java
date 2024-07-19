@@ -2,6 +2,7 @@ package com.vong.manidues.domain.comment;
 
 import com.vong.manidues.domain.comment.dto.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class CommentController {
     public ResponseEntity<CommentUpdateResponse> modifyComment(
             @PathVariable("id") Long id
             , HttpServletRequest request
-            , CommentUpdateRequest requestBody
+            , @Valid @RequestBody CommentUpdateRequest requestBody
     ) {
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -59,7 +60,7 @@ public class CommentController {
     @PostMapping("/comment")
     public ResponseEntity<CommentRegisterResponse> registerComment(
             HttpServletRequest request
-            , CommentRegisterRequest requestBody
+            , @Valid @RequestBody CommentRegisterRequest requestBody
     ) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)

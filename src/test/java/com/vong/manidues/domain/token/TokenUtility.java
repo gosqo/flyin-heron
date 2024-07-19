@@ -1,7 +1,6 @@
 package com.vong.manidues.domain.token;
 
 import com.vong.manidues.domain.member.MemberRepository;
-import com.vong.manidues.domain.token.Token;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -33,7 +32,7 @@ public class TokenUtility {
     private String secretKey;
 
     public String buildToken(UserDetails userDetails) {
-        return buildToken(new HashMap<>(), userDetails, 1800000L);
+        return buildToken(new HashMap<>(), userDetails, 1_800_000L);
     }
 
     public String buildToken(
