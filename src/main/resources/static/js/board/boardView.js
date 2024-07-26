@@ -1,6 +1,7 @@
 import { BoardView } from "../libs/board/BoardView.js";
 import { State } from "../libs/state/StateManage.js";
 import Board from "../libs/board/Board.js";
+import { Comment } from "../libs/comment/Comment.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     const boardId = Board.Utility.getBoardId();
@@ -10,6 +11,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     State.replaceCurrentState();
 
     BoardView.DOM.present();
+    Comment.DOM.addRegisterEvent();
+    Comment.getComments();
 });
 
 window.addEventListener("popstate", () => {

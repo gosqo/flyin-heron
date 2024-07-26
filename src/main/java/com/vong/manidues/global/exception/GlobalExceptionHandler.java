@@ -87,7 +87,7 @@ public class GlobalExceptionHandler {
             return "error/403";
         }
 
-        String userMessage = "올바른 접근이 아닙니다.";
+        String userMessage = "로그인 후 이용해주시기 바랍니다.";
 
         return buildResponseEntity(HttpStatus.FORBIDDEN, userMessage);
     }

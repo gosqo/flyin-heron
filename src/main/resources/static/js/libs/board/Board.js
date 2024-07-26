@@ -26,8 +26,9 @@ export default class Board {
             const decodedJwt = TokenUtility.parseJwt(localStorage.getItem("access_token"));
             const userId = decodedJwt.id;
 
-            if (userId === undefined)
+            if (userId === undefined) {
                 throw new Error("No userId detected from token.");
+            }
 
             const writerId = boardData.writerId;
 

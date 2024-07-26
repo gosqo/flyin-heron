@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 public class CommentGetResponse {
     private Long id;
+    private Long writerId;
     private String writerNickname;
     private Long boardId;
     private String content;
@@ -24,6 +25,7 @@ public class CommentGetResponse {
     public static CommentGetResponse of(Comment entity) {
         return CommentGetResponse.builder()
                 .id(entity.getId())
+                .writerId(entity.getMember().getId())
                 .writerNickname(entity.getMember().getNickname())
                 .boardId(entity.getBoard().getId())
                 .content(entity.getContent())
