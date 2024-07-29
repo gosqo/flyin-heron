@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     BoardView.DOM.present();
     Comment.DOM.addRegisterEvent();
+    Comment.DOM.addModifyButtonInModalEvent();
     Comment.getComments();
 });
 

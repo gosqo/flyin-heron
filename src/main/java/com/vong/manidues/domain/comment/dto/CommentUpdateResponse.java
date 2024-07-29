@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 public class CommentUpdateResponse {
     private int status;
     private String message;
-    private String updatedContent;
+    private CommentGetResponse updatedComment;
 }

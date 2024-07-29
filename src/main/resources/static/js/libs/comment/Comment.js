@@ -7,6 +7,22 @@ export class Comment {
     static pageNumber = 1;
     static loadedCommentsCount = 0;
 
+    static async modify(id) {
+        const modifiedContent = document.querySelector("#comment-modify-textarea").value;
+        const body = { "content": modifiedContent };
+        const url = `/api/v1/comment/${id}`;
+        let options = {
+            headers: {
+                "Authorization": localStorage.getItem("access_token"),
+                "Content-Type": "application/json"
+            },
+            method: "PUT",
+            body: JSON.stringify(body)
+        }
+
+        return await Fetcher.withAuth(url, options)
+    }
+
     static async remove(id) {
         const url = `/api/v1/comment/${id}`;
         let options = {
@@ -26,7 +42,7 @@ export class Comment {
         alert(data.message);
     }
 
-    static async getRegisteredComment(id) {
+    static async getComment(id) {
         const url = `/api/v1/comment/${id}`;
 
         return await fetch(url)
@@ -105,8 +121,8 @@ export class Comment {
             }
 
             commentContent.value = '';
-            const registeredComment = await Comment.getRegisteredComment(data.comment.id);
-            Comment.DOM.appendComment(registeredComment);
+            const registeredComment = await Comment.getComment(data.comment.id);
+            Comment.DOM.appendJustRegisteredComment(registeredComment);
 
             alert(data.message);
         } catch (error) {
@@ -130,26 +146,67 @@ export class Comment {
     }
 
     static DOM = class {
+        static modifyTargetCommentId = -1;
+
+        static addModifyButtonInModalEvent() {
+            const modifyButton = document.querySelector("#comment-modify-request-button");
+            modifyButton.addEventListener("click", async () => {
+                const commentUnit = document.querySelector(`#comment${this.modifyTargetCommentId}`);
+                const modalCloseButton = document.querySelector("#comment-modify-cancel-button");
+                const data = await Comment.modify(this.modifyTargetCommentId);
+
+                if (data.status === 200) {
+                    alert(data.message);
+                    this.placeDataWhenModified(commentUnit, data);
+                    modalCloseButton.dispatchEvent(new Event("click"));
+
+                    return;
+                }
+
+                throw Error("Unexpected Exception by developer: after comment modified, response data status is not 200.");
+            });
+        }
+
+        static async modifyButtonClickHandler(event) {
+            const targetComment = event.target;
+            const commentId = getCommentIdFromModifyButton(targetComment);
+            const commentModifyTextarea = document.querySelector("#comment-modify-textarea");
+            const storedComment = await Comment.getComment(commentId);
+
+            commentModifyTextarea.value = storedComment.content;
+            this.modifyTargetCommentId = commentId;
+
+            function getCommentIdFromModifyButton(target) {
+                const elementId = target.id;
+                const commentId = elementId.split("-")[1];
+                return commentId;
+            }
+        }
+
         static addCommentManageButton(commentUnit, data) {
+            const commentId = data.id
             const buttonArea = commentUnit.querySelector(".comment-unit-row-1-right-side");
             const dropdown = document.querySelector("#comment-dropdown-unit");
             const clonedDropdown = dropdown.cloneNode(true);
-
             const modifyButton = clonedDropdown.querySelector("#comment-modify-button");
             const removeButton = clonedDropdown.querySelector("#comment-remove-button");
 
-            clonedDropdown.id = `comment-${data.id}-dropdown`;
             clonedDropdown.hidden = false;
-            modifyButton.id = `comment-${data.id}-modify-button`;
-            removeButton.id = `comment-${data.id}-remove-button`;
+            clonedDropdown.id = `comment-${commentId}-dropdown`;
+            modifyButton.id = `comment-${commentId}-modify-button`;
+            removeButton.id = `comment-${commentId}-remove-button`;
 
-            modifyButton.addEventListener("click", () => {
-                Comment.DOM.modifyModal(data); // TODO data 기반 모달 구현.
+            modifyButton.addEventListener("click", (event) => {
+                this.modifyButtonClickHandler(event);
             });
+
             removeButton.addEventListener("click", () => {
-                Comment.remove(data.id);
-            });
+                const confirmation = confirm("댓글을 삭제하시겠습니까?\n삭제한 댓글은 복구할 수 없습니다.");
 
+                if (confirmation) {
+                    Comment.remove(data.id);
+                }
+            });
             buttonArea.appendChild(clonedDropdown);
         }
 
@@ -182,51 +239,49 @@ export class Comment {
             return commentUnit.cloneNode(true);
         }
 
-        static appendComment(data) {
+        static appendJustRegisteredComment(data) {
             const commentContainer = document.querySelector("#comments-container");
             const firstComment = commentContainer.querySelector(".comments-selector");
             const clonedUnit = Comment.DOM.cloneCommentUnit();
+
+            Comment.DOM.placeData(clonedUnit, data);
+
+            if (AuthChecker.hasAuth && Comment.Utility.isWriterOf(data)) {
+                Comment.DOM.addCommentManageButton(clonedUnit, data);
+            }
 
             if (firstComment !== undefined) {
                 commentContainer.insertBefore(clonedUnit, firstComment);
                 return;
             }
 
+            commentContainer.appendChild(clonedUnit);
+        }
+
+        static appendComment(data) {
+            const commentContainer = document.querySelector("#comments-container");
+            const clonedUnit = Comment.DOM.cloneCommentUnit();
+
             Comment.DOM.placeData(clonedUnit, data);
             commentContainer.appendChild(clonedUnit);
 
-            if (!AuthChecker.hasAuth) {
-                return;
-            }
-
-            if (Comment.Utility.isWriterOf(data)) {
+            if (AuthChecker.hasAuth && Comment.Utility.isWriterOf(data)) {
                 Comment.DOM.addCommentManageButton(clonedUnit, data);
             }
         }
 
         static appendComments(data) {
-            const commentContainer = document.querySelector("#comments-container");
             const presentCommentIds = Comment.DOM.getPresentCommentIds();
 
             data.commentPage.content.forEach(datum => {
                 const fetchedCommentId = datum.id;
-                const clonedUnit = Comment.DOM.cloneCommentUnit();
 
                 if (presentCommentIds.some(presentCommentId => parseInt(presentCommentId) === fetchedCommentId)) {
                     // continue; // -> SyntaxError: Illegal continue statement: no surrounding iteration statement / Jump target cannot cross function boundary.ts(1107)
                     return; // forEach() 내부에서 return 은 for 문 continue 역할을 함. continue 사용 불가. 
                 }
 
-                Comment.DOM.placeData(clonedUnit, datum);
-                commentContainer.appendChild(clonedUnit);
-
-                if (!AuthChecker.hasAuth()) {
-                    return;
-                }
-
-                if (Comment.Utility.isWriterOf(datum)) {
-                    Comment.DOM.addCommentManageButton(clonedUnit, datum);
-                }
+                this.appendComment(datum);
             });
         }
 
@@ -245,14 +300,19 @@ export class Comment {
             });
         }
 
-        static placeData(clonedUnit, data) {
-            clonedUnit.hidden = false;
-            clonedUnit.id = `comment${data.id}`;
-            clonedUnit.className = "comments-selector";
+        static placeData(commentUnit, data) {
+            commentUnit.hidden = false;
+            commentUnit.id = `comment${data.id}`;
+            commentUnit.className = "comments-selector";
 
-            clonedUnit.querySelector("#comment-writer").textContent = data.writerNickname;
-            clonedUnit.querySelector("#comment-date").textContent = Board.Utility.getRecentBoardDate(data);
-            clonedUnit.querySelector("#comment-content").textContent = data.content;
+            commentUnit.querySelector("#comment-writer").textContent = data.writerNickname;
+            commentUnit.querySelector("#comment-date").textContent = Board.Utility.getRecentBoardDate(data);
+            commentUnit.querySelector("#comment-content").textContent = data.content;
+        }
+
+        static placeDataWhenModified(commentUnit, data) {
+            commentUnit.querySelector("#comment-date").textContent = Board.Utility.getRecentBoardDate(data.updatedComment);
+            commentUnit.querySelector("#comment-content").textContent = data.updatedComment.content;
         }
     }
 }

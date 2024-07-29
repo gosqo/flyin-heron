@@ -75,7 +75,7 @@ public class CommentService {
         return CommentUpdateResponse.builder()
                 .status(200)
                 .message("댓글을 수정했습니다.")
-                .updatedContent(updatedComment.getContent())
+                .updatedComment(CommentGetResponse.of(updatedComment))
                 .build();
     }
 

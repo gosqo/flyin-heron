@@ -53,15 +53,35 @@
   </div>
 
   <div id="comment-dropdown-unit" class="dropdown" hidden>
-    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
-      aria-expanded="false">
-      ...
+    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
     </button>
     <ul class="dropdown-menu">
-      <li><a id="comment-modify-button" class="dropdown-item">수정</a></li>
+      <li><a id="comment-modify-button" class="dropdown-item" data-bs-toggle="modal"
+          data-bs-target="#comment-modify-modal">수정</a></li>
       <li><a id="comment-remove-button" class="dropdown-item">삭제</a></li>
     </ul>
   </div>
+
+  <div class="modal fade" id="comment-modify-modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">댓글 수정</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <textarea type="text" name="content" class="form-control" id="comment-modify-textarea" rows="3"
+            cols="100"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="comment-modify-cancel-button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" id="comment-modify-request-button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   </div>
 
