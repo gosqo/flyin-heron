@@ -60,9 +60,9 @@ public class BoardServiceImpl implements BoardService {
                 () -> new NoSuchElementException("No Member present with the email.")
         );
         final Board entity = requestBody.toEntity(member);
-
+        final Board persistedBoard = boardRepository.save(entity);
         return BoardRegisterResponse.builder()
-                .id(boardRepository.save(entity).getId())
+                .id(persistedBoard.getId())
                 .message("게시물이 성공적으로 등록됐습니다.")
                 .build();
     }

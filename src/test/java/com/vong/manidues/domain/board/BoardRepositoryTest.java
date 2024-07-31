@@ -4,6 +4,7 @@ import com.vong.manidues.DataJpaTestJpaRepositoryBase;
 import com.vong.manidues.domain.comment.CommentRepository;
 import com.vong.manidues.domain.member.MemberRepository;
 import com.vong.manidues.domain.token.ClaimExtractor;
+import com.vong.manidues.domain.token.TokenRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -12,10 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.boot.test.mock.mockito.SpyBeans;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -27,16 +24,9 @@ class BoardRepositoryTest extends DataJpaTestJpaRepositoryBase {
             MemberRepository memberRepository
             , BoardRepository boardRepository
             , CommentRepository commentRepository
+            , TokenRepository tokenRepository
     ) {
-        super(memberRepository, boardRepository, commentRepository);
-    }
-
-    @Test
-    void getPageNormally() {
-        Pageable pageable = PageRequest.of(0, BoardServiceImpl.PAGE_SIZE, Sort.Direction.DESC, "id");
-        Page<Board> found = boardRepository.findAll(pageable);
-
-        found.getContent().forEach(item -> log.info("{}", item));
+        super(memberRepository, boardRepository, commentRepository, tokenRepository);
     }
 
     @Nested
@@ -52,8 +42,9 @@ class BoardRepositoryTest extends DataJpaTestJpaRepositoryBase {
                 , BoardRepository boardRepository
                 , CommentRepository commentRepository
                 , BoardServiceImpl boardService
+                , TokenRepository tokenRepository
         ) {
-            super(memberRepository, boardRepository, commentRepository);
+            super(memberRepository, boardRepository, commentRepository, tokenRepository);
             this.boardService = boardService;
         }
 
@@ -67,5 +58,3 @@ class BoardRepositoryTest extends DataJpaTestJpaRepositoryBase {
         }
     }
 }
-
-

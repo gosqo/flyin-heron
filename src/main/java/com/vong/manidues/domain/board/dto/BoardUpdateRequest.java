@@ -1,11 +1,21 @@
 package com.vong.manidues.domain.board.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Getter
-@SuperBuilder
 @NoArgsConstructor
-public class BoardUpdateRequest extends BoardRequestBody {
+public class BoardUpdateRequest {
+    @NotBlank(message = "제목을 입력해주세요.")
+    private String title;
+    @NotBlank(message = "내용을 입력해주세요.")
+    private String content;
+
+    @Builder
+    public BoardUpdateRequest(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }

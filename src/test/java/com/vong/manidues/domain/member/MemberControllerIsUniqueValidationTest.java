@@ -2,13 +2,17 @@ package com.vong.manidues.domain.member;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vong.manidues.domain.board.BoardRepository;
+import com.vong.manidues.domain.comment.CommentRepository;
+import com.vong.manidues.domain.integrated.SpringBootTestBase;
 import com.vong.manidues.domain.member.dto.IsUniqueEmailRequest;
 import com.vong.manidues.domain.member.dto.IsUniqueNicknameRequest;
+import com.vong.manidues.domain.token.TokenRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -16,15 +20,21 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import static com.vong.manidues.web.HttpUtility.DEFAULT_POST_HEADERS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-@SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
-public class MemberControllerIsUniqueValidationTest {
+public class MemberControllerIsUniqueValidationTest extends SpringBootTestBase {
 
     private final MockMvc mockMvc;
 
     @Autowired
-    public MemberControllerIsUniqueValidationTest(MockMvc mockMvc) {
+    public MemberControllerIsUniqueValidationTest(
+            MemberRepository memberRepository,
+            TokenRepository tokenRepository,
+            BoardRepository boardRepository,
+            CommentRepository commentRepository,
+            TestRestTemplate template,
+            MockMvc mockMvc
+    ) {
+        super(memberRepository, tokenRepository, boardRepository, commentRepository, template);
         this.mockMvc = mockMvc;
     }
 
@@ -38,15 +48,21 @@ public class MemberControllerIsUniqueValidationTest {
         return new ObjectMapper().writeValueAsString(new IsUniqueEmailRequest(email));
     }
 
+    @BeforeEach
+    void setUp() {
+        initMember();
+    }
+
     // === tests for nickname validation ===
     @Test
     public void nullNickname() throws Exception {
         String requestBody = getNicknameRequestBodyAsString(null);
+//        var requestBody = new IsUniqueEmailRequest(null);
 
         mockMvc.perform(
                         post("/api/v1/member/isUniqueNickname")
                                 .headers(DEFAULT_POST_HEADERS)
-                                .content(requestBody)
+                                .content(String.valueOf(requestBody))
                 )
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andDo(MockMvcResultHandlers.print());
@@ -64,6 +80,7 @@ public class MemberControllerIsUniqueValidationTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andDo(MockMvcResultHandlers.print());
     }
+
     @Test
     public void isUniqueNicknameWithAppropriateNicknames() throws Exception {
         String[] appropriateNicknames = {
@@ -108,6 +125,19 @@ public class MemberControllerIsUniqueValidationTest {
                     .andExpect(MockMvcResultMatchers.status().isBadRequest())
                     .andDo(MockMvcResultHandlers.print());
         }
+    }
+
+    @Test
+    public void isUniqueNicknameWithExistingNickname() throws Exception {
+        String requestBody = getNicknameRequestBodyAsString(MemberFixture.NICKNAME);
+
+        mockMvc.perform(
+                        post("/api/v1/member/isUniqueNickname")
+                                .headers(DEFAULT_POST_HEADERS)
+                                .content(requestBody)
+                )
+                .andExpect(MockMvcResultMatchers.status().isConflict())
+                .andDo(MockMvcResultHandlers.print());
     }
 
     // === tests for email validation ===
@@ -156,10 +186,9 @@ public class MemberControllerIsUniqueValidationTest {
                             post("/api/v1/member/isUniqueEmail")
                                     .headers(DEFAULT_POST_HEADERS)
                                     .content(requestBody)
-            )
+                    )
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andDo(MockMvcResultHandlers.print());
-
         }
     }
 
@@ -178,12 +207,25 @@ public class MemberControllerIsUniqueValidationTest {
             String requestBody = getEmailRequestBodyAsString(email);
 
             mockMvc.perform(
-                    post("/api/v1/member/isUniqueEmail")
-                            .headers(DEFAULT_POST_HEADERS)
-                            .content(requestBody)
-            )
+                            post("/api/v1/member/isUniqueEmail")
+                                    .headers(DEFAULT_POST_HEADERS)
+                                    .content(requestBody)
+                    )
                     .andExpect(MockMvcResultMatchers.status().isBadRequest())
                     .andDo(MockMvcResultHandlers.print());
         }
+    }
+
+    @Test
+    public void isUniqueEmailWithExistingEmail() throws Exception {
+        String requestBody = getEmailRequestBodyAsString(MemberFixture.EMAIL);
+
+        mockMvc.perform(
+                        post("/api/v1/member/isUniqueEmail")
+                                .headers(DEFAULT_POST_HEADERS)
+                                .content(requestBody)
+                )
+                .andExpect(MockMvcResultMatchers.status().isConflict())
+                .andDo(MockMvcResultHandlers.print());
     }
 }

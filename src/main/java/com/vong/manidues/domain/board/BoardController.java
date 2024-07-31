@@ -3,11 +3,11 @@ package com.vong.manidues.domain.board;
 import com.vong.manidues.domain.board.dto.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -44,7 +44,7 @@ public class BoardController {
     public ResponseEntity<BoardUpdateResponse> updateBoard(
             HttpServletRequest request,
             @PathVariable("id") Long id,
-            @Valid @RequestBody BoardUpdateRequest body
+            @Validated @RequestBody BoardUpdateRequest body
     ) {
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -55,7 +55,7 @@ public class BoardController {
     @PostMapping("")
     public ResponseEntity<BoardRegisterResponse> registerBoard(
             HttpServletRequest request,
-            @Valid @RequestBody BoardRegisterRequest requestBody
+            @Validated @RequestBody BoardRegisterRequest requestBody
     ) {
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -52,7 +52,7 @@ public class CommentService {
 
         return CommentDeleteResponse.builder()
                 .status(200)
-                .message("게시물 삭제가 정상적으로 처리됐습니다.")
+                .message("댓글 삭제가 정상적으로 처리됐습니다.")
                 .build();
     }
 
@@ -75,7 +75,7 @@ public class CommentService {
         return CommentUpdateResponse.builder()
                 .status(200)
                 .message("댓글을 수정했습니다.")
-                .updatedContent(updatedComment.getContent())
+                .updatedComment(CommentGetResponse.of(updatedComment))
                 .build();
     }
 

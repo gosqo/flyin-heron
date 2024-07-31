@@ -8,6 +8,7 @@ import com.vong.manidues.domain.comment.CommentRepository;
 import com.vong.manidues.domain.member.Member;
 import com.vong.manidues.domain.member.MemberRepository;
 import com.vong.manidues.domain.member.Role;
+import com.vong.manidues.domain.token.TokenRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,11 +24,12 @@ public class DataJpaTestJpaRepositoryBase {
     protected static final int BOARD_COUNT = 3;
     protected static final int COMMENT_COUNT = 20;
     protected final MemberRepository memberRepository;
+    protected final TokenRepository tokenRepository;
     protected final BoardRepository boardRepository;
     protected final CommentRepository commentRepository;
-    protected final Member member = buildMember();
-    protected final List<Board> boards = buildBoards();
-    protected final List<Comment> comments = buildComments();
+    protected Member member;
+    protected List<Board> boards;
+    protected List<Comment> comments;
     protected Long mainMemberId;
     protected Long mainBoardId;
     protected Long mainCommentId;
@@ -35,10 +37,16 @@ public class DataJpaTestJpaRepositoryBase {
     protected long[] commentIds;
 
     @Autowired
-    public DataJpaTestJpaRepositoryBase(MemberRepository memberRepository, BoardRepository boardRepository, CommentRepository commentRepository) {
+    public DataJpaTestJpaRepositoryBase(
+            MemberRepository memberRepository
+            , BoardRepository boardRepository
+            , CommentRepository commentRepository
+            , TokenRepository tokenRepository
+    ) {
         this.memberRepository = memberRepository;
         this.boardRepository = boardRepository;
         this.commentRepository = commentRepository;
+        this.tokenRepository = tokenRepository;
     }
 
     private static Member buildMember() {
@@ -89,17 +97,21 @@ public class DataJpaTestJpaRepositoryBase {
         log.info("==== Deleting test data. ====");
         commentRepository.deleteAll();
         boardRepository.deleteAll();
+        tokenRepository.deleteAll();
         memberRepository.deleteAll();
     }
 
     private void initializeData() {
+        member = buildMember();
         Member storedMember = memberRepository.save(member);
         mainMemberId = storedMember.getId();
 
+        boards = buildBoards();
         List<Board> boardList = boardRepository.saveAll(boards);
         boardIds = boardList.stream().mapToLong(Board::getId).toArray();
         mainBoardId = boardIds[0];
 
+        comments = buildComments();
         List<Comment> commentList = commentRepository.saveAll(comments);
         commentIds = commentList.stream().mapToLong(Comment::getId).toArray();
         mainCommentId = commentIds[0];

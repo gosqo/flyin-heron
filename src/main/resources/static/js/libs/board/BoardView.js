@@ -59,7 +59,7 @@ export class BoardView {
                     async function deleteBoard(boardId) {
                         const url = `/api/v1/board/${boardId}`;
                         let options = {
-                            method: `DELETE`
+                            method: "DELETE"
                             , headers: {
                                 "Authorization": localStorage.getItem("access_token")
                             }

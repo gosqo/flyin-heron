@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestController
-@RequestMapping("api/v1/boards")
+@RequestMapping("/api/v1/boards")
 @RequiredArgsConstructor
 public class BoardPageController {
 

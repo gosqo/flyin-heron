@@ -2,6 +2,6 @@ textarea {
     white-space: pre-line;
 }
 
-#board-content {
+#board-content, #comment-content {
     white-space: pre-line;
 }

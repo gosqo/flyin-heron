@@ -26,6 +26,63 @@
 
     <div class="mb-4" id="board-content"></div>
     <div class="mb-3" id="buttons-area"></div>
+
+    <div class="mb-5 d-flex justify-content-between">
+      <textarea type="text" name="content" class="form-control" id="comment-post-content" rows="3"
+        cols="100"></textarea>
+      <button class="my-auto btn btn-primary" id="comment-register-button">Register Comment</button>
+    </div>
+    <div id="comments-container">
+      <div id="comment-unit" hidden>
+        <div class="d-flex justify-content-between comment-unit-row-1">
+          <div id="comment-writer" class="my-auto"></div>
+          <div class="d-flex comment-unit-row-1-right-side">
+            <div id="comment-date" class="my-auto me-2"></div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <div id="comment-content" class="ms-3"></div>
+          <hr />
+        </div>
+      </div>
+      <div id="load-more-comments-button-area" class="d-flex mb-10" style="display:none !important;">
+        <button id="load-more-comments-button" class="btn btn-secondary mx-auto">load more comments</button>
+      </div>
+    </div>
+    <div class="mb-5"></div>
+  </div>
+
+  <div id="comment-dropdown-unit" class="dropdown" hidden>
+    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    </button>
+    <ul class="dropdown-menu">
+      <li><a id="comment-modify-button" class="dropdown-item" data-bs-toggle="modal"
+          data-bs-target="#comment-modify-modal">수정</a></li>
+      <li><a id="comment-remove-button" class="dropdown-item">삭제</a></li>
+    </ul>
+  </div>
+
+  <div class="modal fade" id="comment-modify-modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">댓글 수정</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <textarea type="text" name="content" class="form-control" id="comment-modify-textarea" rows="3"
+            cols="100"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="comment-modify-cancel-button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" id="comment-modify-request-button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   </div>
 
   <thymeleaf th:replace="~{fragment/footer}"></thymeleaf>

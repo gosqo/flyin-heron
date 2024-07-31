@@ -1,9 +1,9 @@
-package com.vong.manidues.domain.comment;
+package com.vong.manidues.domain.board;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vong.manidues.WebMvcTestBase;
-import com.vong.manidues.domain.comment.dto.CommentRegisterRequest;
-import com.vong.manidues.domain.comment.dto.CommentUpdateRequest;
+import com.vong.manidues.domain.board.dto.BoardRegisterRequest;
+import com.vong.manidues.domain.board.dto.BoardUpdateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,12 +18,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(CommentController.class)
-@MockBean(CommentService.class)
-class CommentControllerTest extends WebMvcTestBase {
+@WebMvcTest(
+        controllers = {
+                BoardController.class
+                , BoardPageController.class
+        }
+)
+@MockBean(BoardServiceImpl.class)
+class BoardControllerTest extends WebMvcTestBase {
 
     @Autowired
-    public CommentControllerTest(MockMvc mockMvc) {
+    BoardControllerTest(MockMvc mockMvc) {
         super(mockMvc);
     }
 
@@ -32,17 +37,17 @@ class CommentControllerTest extends WebMvcTestBase {
     class AnyUserCanRequestTo {
 
         @Test
-        @DisplayName("get a single comment.")
-        void getComment() throws Exception {
-            mockMvc.perform(get("/api/v1/comment/1"))
+        @DisplayName("get a single board.")
+        void getBoard() throws Exception {
+            mockMvc.perform(get("/api/v1/board/1"))
                     .andDo(print())
                     .andExpect(status().isOk());
         }
 
         @Test
-        @DisplayName("get a page of comments.")
-        void getPageOfComment() throws Exception {
-            mockMvc.perform(get("/api/v1/board/1/comments?page-number=1"))
+        @DisplayName("get a page of boards.")
+        void getPageOfBoard() throws Exception {
+            mockMvc.perform(get("/api/v1/boards/1"))
                     .andDo(print())
                     .andExpect(status().isOk());
         }
@@ -54,34 +59,37 @@ class CommentControllerTest extends WebMvcTestBase {
     class ProperAuthorizedUserCanRequest {
 
         @Test
-        @DisplayName("register comment.")
+        @DisplayName("register board.")
         void register() throws Exception {
-            CommentRegisterRequest requestBody = CommentRegisterRequest.builder()
-                    .boardId(1L)
-                    .content("some contents")
+            BoardRegisterRequest requestBody = BoardRegisterRequest.builder()
+                    .title("some title.")
+                    .content("content")
                     .build();
-            mockMvc.perform(post("/api/v1/comment")
+            mockMvc.perform(post("/api/v1/board")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(new ObjectMapper().writeValueAsString(requestBody)))                    .andDo(print())
-                    .andExpect(status().isCreated());
-        }
-
-        @Test
-        @DisplayName("modify comment.")
-        void modify() throws Exception {
-            CommentUpdateRequest requestBody = CommentUpdateRequest.builder()
-                    .content("modified content")
-                    .build();
-            mockMvc.perform(put("/api/v1/comment/1")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(new ObjectMapper().writeValueAsString(requestBody)))                    .andDo(print())
+                            .content(new ObjectMapper().writeValueAsString(requestBody)))
+                    .andDo(print())
                     .andExpect(status().isOk());
         }
 
         @Test
-        @DisplayName("remove comment.")
+        @DisplayName("modify board.")
+        void modify() throws Exception {
+            BoardUpdateRequest requestBody = BoardUpdateRequest.builder()
+                    .title("modified title")
+                    .content("modified content")
+                    .build();
+            mockMvc.perform(put("/api/v1/board/1")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(new ObjectMapper().writeValueAsString(requestBody)))
+                    .andDo(print())
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        @DisplayName("remove board.")
         void remove() throws Exception {
-            mockMvc.perform(delete("/api/v1/comment/1"))
+            mockMvc.perform(delete("/api/v1/board/1"))
                     .andDo(print())
                     .andExpect(status().isOk());
         }
@@ -92,13 +100,13 @@ class CommentControllerTest extends WebMvcTestBase {
     class NoAuthorizedUserCannot {
 
         @Test
-        @DisplayName("register comment.")
+        @DisplayName("register board.")
         void register() throws Exception {
-            CommentRegisterRequest requestBody = CommentRegisterRequest.builder()
-                    .boardId(1L)
-                    .content("some contents")
+            BoardRegisterRequest requestBody = BoardRegisterRequest.builder()
+                    .title("some title.")
+                    .content("content")
                     .build();
-            mockMvc.perform(post("/api/v1/comment")
+            mockMvc.perform(post("/api/v1/board")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(new ObjectMapper().writeValueAsString(requestBody)))
                     .andDo(print())
@@ -106,12 +114,13 @@ class CommentControllerTest extends WebMvcTestBase {
         }
 
         @Test
-        @DisplayName("modify comment.")
+        @DisplayName("modify board.")
         void modify() throws Exception {
-            CommentUpdateRequest requestBody = CommentUpdateRequest.builder()
+            BoardUpdateRequest requestBody = BoardUpdateRequest.builder()
+                    .title("modified title")
                     .content("modified content")
                     .build();
-            mockMvc.perform(put("/api/v1/comment/1")
+            mockMvc.perform(put("/api/v1/board/1")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(new ObjectMapper().writeValueAsString(requestBody)))
                     .andDo(print())
@@ -119,9 +128,9 @@ class CommentControllerTest extends WebMvcTestBase {
         }
 
         @Test
-        @DisplayName("remove comment.")
+        @DisplayName("remove board.")
         void remove() throws Exception {
-            mockMvc.perform(delete("/api/v1/comment/1"))
+            mockMvc.perform(delete("/api/v1/board/1"))
                     .andDo(print())
                     .andExpect(status().isForbidden());
         }

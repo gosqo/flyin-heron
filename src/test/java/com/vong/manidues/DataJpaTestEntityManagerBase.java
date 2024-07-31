@@ -42,7 +42,6 @@ public class DataJpaTestEntityManagerBase {
     @BeforeEach
     void setUp() {
 
-
         initializeData();
     }
 
@@ -68,9 +67,7 @@ public class DataJpaTestEntityManagerBase {
         assertThat(memberList).isEmpty();
 
         transaction.commit();
-
     }
-
 
     private Board[] buildBoards() {
         Board[] boards = new Board[BOARD_COUNT];

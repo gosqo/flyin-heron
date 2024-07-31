@@ -1,22 +1,20 @@
 package com.vong.manidues.domain.board;
 
-import com.vong.manidues.domain.comment.Comment;
 import com.vong.manidues.domain.member.Member;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Getter
 @Builder
-@ToString(exclude = {
-        "comments"
-})
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicInsert
@@ -29,12 +27,10 @@ public class Board {
     @ManyToOne
     @JoinColumn(
             name = "member_id"
+            , nullable = false
             , referencedColumnName = "id"
     )
     private Member member;
-
-    @OneToMany(mappedBy = "board")
-    private List<Comment> comments;
 
     @Column(
             nullable = false

@@ -4,6 +4,7 @@ import com.vong.manidues.DataJpaTestJpaRepositoryBase;
 import com.vong.manidues.domain.board.BoardRepository;
 import com.vong.manidues.domain.member.MemberRepository;
 import com.vong.manidues.domain.token.ClaimExtractor;
+import com.vong.manidues.domain.token.TokenRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -22,14 +23,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Slf4j
 class CommentRepositoryTest extends DataJpaTestJpaRepositoryBase {
 
-
     @Autowired
     public CommentRepositoryTest(
             MemberRepository memberRepository
             , BoardRepository boardRepository
             , CommentRepository commentRepository
+            , TokenRepository tokenRepository
     ) {
-        super(memberRepository, boardRepository, commentRepository);
+        super(memberRepository, boardRepository, commentRepository, tokenRepository);
     }
 
     @Test
@@ -45,7 +46,7 @@ class CommentRepositoryTest extends DataJpaTestJpaRepositoryBase {
     @DisplayName("With Imported Service object")
     @Import({CommentService.class})
     @SpyBeans(@SpyBean(ClaimExtractor.class))
-    class WithService extends DataJpaTestJpaRepositoryBase{
+    class WithService extends DataJpaTestJpaRepositoryBase {
         private final CommentService commentService;
 
         @Autowired
@@ -54,8 +55,9 @@ class CommentRepositoryTest extends DataJpaTestJpaRepositoryBase {
                 , BoardRepository boardRepository
                 , CommentRepository commentRepository
                 , CommentService commentService
+                , TokenRepository tokenRepository
         ) {
-            super(memberRepository, boardRepository, commentRepository);
+            super(memberRepository, boardRepository, commentRepository, tokenRepository);
             this.commentService = commentService;
         }
 

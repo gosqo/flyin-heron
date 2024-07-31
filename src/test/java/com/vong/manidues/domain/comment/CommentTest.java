@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Slf4j
 @ActiveProfiles("test")
 public class CommentTest extends DataJpaTestEntityManagerBase {
-    
+
     @Autowired
     public CommentTest(EntityManagerFactory emf) {
         super(emf);
