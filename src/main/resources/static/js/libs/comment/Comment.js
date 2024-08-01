@@ -246,9 +246,13 @@ export class Comment {
 
             Comment.DOM.placeData(clonedUnit, data);
 
-            if (AuthChecker.hasAuth && Comment.Utility.isWriterOf(data)) {
-                Comment.DOM.addCommentManageButton(clonedUnit, data);
+            if (AuthChecker.hasAuth) {
+                return;
             }
+
+            if (Comment.Utility.isWriterOf(data)) {
+                Comment.DOM.addCommentManageButton(clonedUnit, data);
+            }   
 
             if (firstComment !== undefined) {
                 commentContainer.insertBefore(clonedUnit, firstComment);
@@ -265,7 +269,11 @@ export class Comment {
             Comment.DOM.placeData(clonedUnit, data);
             commentContainer.appendChild(clonedUnit);
 
-            if (AuthChecker.hasAuth && Comment.Utility.isWriterOf(data)) {
+            if (AuthChecker.hasAuth) {
+                return;
+            } 
+            
+            if (Comment.Utility.isWriterOf(data)) {
                 Comment.DOM.addCommentManageButton(clonedUnit, data);
             }
         }
