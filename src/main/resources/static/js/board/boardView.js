@@ -1,7 +1,7 @@
 import { BoardView } from "../libs/board/BoardView.js";
 import { State } from "../libs/state/StateManage.js";
 import Board from "../libs/board/Board.js";
-import { Comment } from "../libs/comment/Comment.js";
+import { Comment } from "../libs/comment/Comment.temp.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     const boardId = Board.Utility.getBoardId();
