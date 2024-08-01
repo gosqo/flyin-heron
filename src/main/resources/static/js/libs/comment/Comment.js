@@ -246,7 +246,7 @@ export class Comment {
 
             Comment.DOM.placeData(clonedUnit, data);
 
-            if (AuthChecker.hasAuth && Comment.Utility.isWriterOf(data)) {
+            if (AuthChecker.hasAuth() && Comment.Utility.isWriterOf(data)) {
                 Comment.DOM.addCommentManageButton(clonedUnit, data);
             }
 
@@ -265,7 +265,7 @@ export class Comment {
             Comment.DOM.placeData(clonedUnit, data);
             commentContainer.appendChild(clonedUnit);
 
-            if (AuthChecker.hasAuth && Comment.Utility.isWriterOf(data)) {
+            if (AuthChecker.hasAuth() && Comment.Utility.isWriterOf(data)) {
                 Comment.DOM.addCommentManageButton(clonedUnit, data);
             }
         }
