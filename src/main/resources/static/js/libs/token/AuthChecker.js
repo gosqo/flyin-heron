@@ -6,12 +6,4 @@ export default class AuthChecker {
 
         return accessToken !== null && accessToken.startsWith("Bearer ");
     }
-    
-    static redirectToHome() {
-        
-            alert("접근 권한이 없습니다.");
-            location.replace("/");
-            return;
-        
-    }
 }
