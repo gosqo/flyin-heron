@@ -5,13 +5,11 @@ import jakarta.persistence.EntityManagerFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Slf4j
-@ActiveProfiles("test")
 public class CommentTest extends DataJpaTestEntityManagerBase {
 
     @Autowired
@@ -69,5 +67,7 @@ public class CommentTest extends DataJpaTestEntityManagerBase {
         assertThat(stored.getBoard().getId()).isEqualTo(storing.getBoard().getId());
         assertThat(stored.getMember()).isEqualTo(storing.getMember());
         assertThat(stored.getBoard()).isEqualTo(storing.getBoard());
+
+        // assertThat(stored.getRegisterDate()).isEqualTo(stored.getUpdateDate()); // 각각의 필드가 초기화되는 시점의 타임스탬프가 할당되어 서로 다름.
     }
 }
