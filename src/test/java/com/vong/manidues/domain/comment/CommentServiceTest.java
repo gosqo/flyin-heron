@@ -215,7 +215,7 @@ class CommentServiceTest {
 
             // then
             assertThat(result.getStatus()).isEqualTo(200);
-            assertThat(result.getUpdatedContent()).isEqualTo(MODIFIED_CONTENT);
+            assertThat(result.getUpdatedComment().getContent()).isEqualTo(MODIFIED_CONTENT);
         }
     }
 
