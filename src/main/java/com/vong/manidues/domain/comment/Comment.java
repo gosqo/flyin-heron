@@ -64,7 +64,6 @@ public class Comment {
     @CreationTimestamp
     private LocalDateTime updateDate;
 
-
     public void updateContent(String content) {
         this.content = content;
     }

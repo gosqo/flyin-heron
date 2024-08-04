@@ -12,6 +12,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,18 +21,14 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@ActiveProfiles("test")
 @Slf4j
 public class DataJpaTestEntityManagerBase {
+    private static final int BOARD_COUNT = 3;
     private final EntityManagerFactory emf;
     protected EntityManager em;
     protected EntityTransaction transaction;
-    protected Member member = Member.builder()
-            .email("check@auth.io")
-            .nickname("testOnly")
-            .password("$2a$10$.YTh5A02ylk3nhxMltZ0F.fdPp0InH6Sin.w91kve8SEGUYR4KAZ.")
-            .role(Role.USER)
-            .build();
-    private static final int BOARD_COUNT = 3;
+    protected Member member = buildMember();
     protected Board[] boards = buildBoards();
 
     @Autowired
@@ -67,6 +64,15 @@ public class DataJpaTestEntityManagerBase {
         assertThat(memberList).isEmpty();
 
         transaction.commit();
+    }
+
+    private Member buildMember() {
+        return Member.builder()
+                .email("check@auth.io")
+                .nickname("testOnly")
+                .password("$2a$10$.YTh5A02ylk3nhxMltZ0F.fdPp0InH6Sin.w91kve8SEGUYR4KAZ.")
+                .role(Role.USER)
+                .build();
     }
 
     private Board[] buildBoards() {
