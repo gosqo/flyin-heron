@@ -2,6 +2,7 @@ package com.vong.manidues;
 
 import com.vong.manidues.domain.board.Board;
 import com.vong.manidues.domain.board.BoardFixture;
+import com.vong.manidues.domain.comment.Comment;
 import com.vong.manidues.domain.member.Member;
 import com.vong.manidues.domain.member.Role;
 import jakarta.persistence.EntityManager;
@@ -17,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,11 +27,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 public class DataJpaTestEntityManagerBase {
     private static final int BOARD_COUNT = 3;
+    private static final int COMMENT_COUNT = 3;
     private final EntityManagerFactory emf;
     protected EntityManager em;
     protected EntityTransaction transaction;
     protected Member member = buildMember();
     protected Board[] boards = buildBoards();
+    protected Comment[] comments = buildComments();
 
     @Autowired
     public DataJpaTestEntityManagerBase(EntityManagerFactory emf) {
@@ -51,6 +55,8 @@ public class DataJpaTestEntityManagerBase {
 
         log.info("==== Deleting test data. ====");
 
+
+        em.createQuery("DELETE FROM CommentLike cl").executeUpdate();
         em.createQuery("DELETE FROM Comment c").executeUpdate();
         em.createQuery("DELETE FROM Board b").executeUpdate();
         em.createQuery("DELETE FROM Member m").executeUpdate();
@@ -87,10 +93,24 @@ public class DataJpaTestEntityManagerBase {
         return boards;
     }
 
+    private Comment[] buildComments() {
+        Comment[] comments = new Comment[COMMENT_COUNT];
+        IntStream.range(0, COMMENT_COUNT).forEach(i -> {
+            comments[i] = Comment.builder()
+                    .member(member)
+                    .board(boards[0])
+                    .content("comment goes " + i)
+                    .build();
+        });
+
+        return comments;
+    }
+
     private void initializeData() {
         List<Object> entityList = new ArrayList<>();
         entityList.add(member);
         entityList.addAll(Arrays.asList(boards));
+        entityList.addAll(Arrays.asList(comments));
 
         saveAll(entityList);
     }
