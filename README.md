@@ -1,54 +1,139 @@
-짧은 소개
+> 문서 업데이트: 2024-08-06 
+
+소개 <small>(Intro)</small>
 ---
-견고하게 쌓아 올린 게시판.
+회원, 인증, 게시물, 댓글 기반 게시판 서비스로, 개인 프로젝트입니다.   
+REST 구조에 따라 API 를 설계, 구현했습니다.   
+<sup>2024.02 - 현재 진행 중.</sup>   
+[서비스 이용해 보기](https://flyin-heron.duckdns.org)
 
+사용 기술 <small>(Skills)</small>
+---
+* Language: Java, JavaScript
+* Framework: Spring Boot, Spring Data JPA, 
+* Database: MySQL
+* Web Server: Nginx
+* View: HTML, CSS, BootStrap
 
-<sup>2024.02 - 현재 진행 중.</sup>
+구조 <small>(Architecture)</small>
+---
+![img.png](./assets/img/20240806_architecture.png)
 
-특징
+***
+개체간 관계도 <small>(ERD)</small>
+---
+![img.png](./assets/img/20240806_erd.png)
+
+***
+기능 <small>(Features)</small>
 ---
 
-App
-* IP 주소 기반, 단위 시간당 허용 요청 수를 넘을 시, 블랙리스트 등록.
-  - 낭비될 가능성이 있는 자원 절약.
-* 쿠키를 활용한 게시물 조회수 관리.
-  - 다양한 쿠키를 처리할 수 있도록, 쿠키 관련 Utility 클래스 작성.
-* Spring Security, JWT를 활용한 인증, 인가
-  - 사용자 권한 기반 인가 관리의 용이. (@PreAuthorize)
-  - JWT를 통한 클라이언트 차원의 인증 상태 관리 용이.
-* Filter 계층에서 발생하는 JWT 만료, 조작 등의 예외 처리
-   - 앞선 Filter 계층에서 해당 예외 처리 역할의 클래스 작성을 통해 해결.
-* @Scheduled 통해 데이터베이스에 존재하는 만료 토큰 삭제.
-* @ControllerAdvice 통한 앱 수준의 전역적 예외 처리.
-  - HTTP method에 따라 에러 페이지 혹은 status, message 필드를 가진 JSON 객체로 응답.
-  - 발생 예외의 종류에 따라 INFO, WARN, ERROR 레벨 로깅.
-* View, 정적 자원 제외한 요청은 REST API를 통해 상태 코드와 메시지 반환, 필요시 JSON 형태의 로우 데이터 반환.
 
-Test
-* 테스트 베이스 클래스 작성 및 상속을 통한 기반 데이터 공유 및 코드 중복 제거.
-* Entity 생성 및 영속화를 테스트하기 위한 EntityManager 사용. 
-  - EntityManager의 동작과 구조에 대해 알게 됐고, 이해를 기반으로 테스트를 진행.
-* 서비스 클래스 중, Page, Slice의 content가 비어있다면 예외를 던지는 메서드 테스트 시, JpaRepository를 상속한 인터페이스가 반환하는 Page, Slice를 직접 구현해야 하는 조금 번거로운 문제가 발생.
-  - 이를 해결하기 위해 @DataJpatTest, @Import(TargetService.class)를 적용, JPA가 반환하는 Page, Slice를 사용해 간결한 테스트 작성.
-* Spring Security 인증이 필요한 ControllerTest, 간결한 테스트를 위해 @WithMockUser(roles = "역할") 사용.
+### Application
 
-Web Server
-* Nginx를 통한 무차별 대입, 비정상 요청 필터링 및 정적 자원 반환 .
-  - Spring web filter 계층에서 처리하던 로직을 위임.
-    - 웹 서버 차원에서 비정상 요청을 거르므로, 로그 관리 용이성 증대.
-    - Spring web filter 계층의 간소화 및 유지보수 용이성 증대.
+##### Entity
 
-Deploy
-* 생각보다 잦은 프로젝트 업데이트에 단순 반복적 배포 작업을 자동화.
-  - 배포 서버의 Shell Script를 통한 패치, 빌드, 배포. (git, gradle, jar)
+* 회원 <small>member</small>
+  - 가입, 로그인
+    - 가입 시, 각 `<input>` 유효성 검사. 모든 조건을 만족하는지 사용자 입력마다 반응해 `<submit>` 활성화. (서버에서 2차 검증)
+  - 게시물, 댓글 '조회' 외의 기능에 대한 인가. `@PreAuthorize`
+  
+* 토큰 <small>token</small>
+  - 매일 특정 시간에 Database 조회, 만료된 Refresh token 삭제 및 로그아웃 처리.
+  - 인가가 필요한 end-point 요청 시, 헤더에 Access token 을 담아 요청.
+    - 만료되지 않은 경우, 인가 및 요청 처리.
+    - 만료된 경우 ,리프레시 토큰으로 재요청, Database 조회,
+      - 유효한 Refresh token 이고,
+        - 이 토큰의 만료시점 까지 7일 넘게 남았다면 Access token 재발급.
+        - 7일 이내이면 Access / Refresh token 재발급.  
+  
+* 게시물 <small>board</small>
+  - 목록 페이지네이션 (`Page`).
+  - 등록, 조회, 수정, 삭제.
+  - 쿠키 기반 조회수 관리.
+  
+* 댓글 <small>comment</small>
+  - 목록 더 불러오기 (`Slice`).
+  - 등록, 조회, 수정, 삭제.
 
-Front-End
-* history state 을 활용해 fetch로 얻어온 인가가 필요한 페이지의 교체.
-* JavaScript 코드 관리의 어려움을 해결하기 위해
-  - class를 도입해 기능, 모듈별로 관리.
-* 회원 가입 시, 사용자 입력값 검증 및 submit 버튼 활성화를 위해
-  - 입력값의 검증 정보를 담는 객체를 활용, 각 input 값의 변화에 따른 검증 결과를 submit 버튼 활성화 여부에 반영.
-* Fetch API를 통해 얻은 데이터, DOM 조작하여 페이지에 반영.
+##### Global
+
+* 예외 처리
+  - 서비스 중 일어날 수 있는 예외를 대비해, 상황에 알맞는 HTTP 상태 코드와 메시지를 본문에 담아 응답.    
+  ---> 정상 응답 `DTO` 에도 포함 된 필드로, 프론트 측 서버 API 호출 메서드 재사용에 효과적.
+
+* 필터 계층
+  - WAS 로 향하는 HTTP 요청 로깅.
+  - JWT 인증 시 일어날 수 있는 `JwtException` 처리하는 객체 등록.
+
+***
+
+### Web Server
+
+##### Nginx
+* 요청 헤더 `User-Agent`, `Connection` 기반 최소한의 무차별 / 비정상 요청에 `444` 상태 코드 응답.
+* 정적 자원 `Cache-Control` 지시 및 반환.
+* 서버로 향하는 모든 접근 로깅.
+
+***
+
+테스트 <small>(Test)</small>
+---
+Controller, Service, Repository 계층별 / 통합 테스트. 다음의 경우에 유용하게 사용 중입니다.
+
+* 기능 도입 시 확실하지 않은 부분의 확인.
+* 기능 구현, 리팩토링 후, 의도대로 작동하는 지 확인.
+
+공유 가능한 애너테이션, 인스턴스, 필드, 테스트 데이터를 효율적으로 관리하고자
+* 각 계층별 상위 클래스 선언, 상속을 통해 테스트 중입니다.
+
+`@SpringBootTest` 애너테이션의 경우, `SpringBootTest.WebEnvironment.RANDOM_PORT`로 지정한 여러 테스트를 묶어 실행할 때, 
+테스트 마다 Bean 으로 등록된 인스턴스를 `final`로 선언하더라도 컨텍스트 로딩 시 등록한 인스턴스를 공유하는 것을 알 수 있었습니다.   
+이에 스프링의 구조에 대해 관심 갖고 학습 중입니다.
+
+***
+
+개선의 경험 <small>(Experience of Improvement)</small>
+---
+
+### 테스트 환경 개선
+
+기능 개발과 코드 리팩토링에 테스트가 주는 안정감을 느끼고 적극 이용 중입니다.
+
+![img.png](./assets/img/20240806_test_improvement.png)
+
+
+* 테스트 수가 많아지며 겪은 문제는 다음과 같았습니다.
+  - 여러 테스트를 묶어 실행 시, `id` 생성 전략에 따른 `id` 값의 증가로 리터럴 `id` 를 통한 엔티티 참조 시, `NoSuchElementException` 발생하는 문제.
+  - 이전 문제를 해결하고자 `@DirtiesContext` 애너테이션 도입 후, 테스트 소요 시간 증가.
+
+* 문제를 해결하기 위해 다음의 내용을 적용했습니다.
+  - 상속을 통해 상위 클래스 필드로 선언 및 초기화한 엔티티를 통해 id 접근.
+  - 상위 클래스에서의 테스트 데이터 초기화 관장. 및 `@DirtiesContext` 제거
+
+* 위의 내용을 적용한 후의 결과로,
+  - 상속을 통해 데이터 초기화, 인스턴스 생성 등 공통적 요소를 효과적으로 관리할 수 있게 됐습니다.
+  - 테스트 실행 순서에 상관없이 초기화된 데이터를 참조할 수 있게 됐습니다.
+  - 컨텍스트 로드 횟수를 1회로 줄여, **테스트 수행 시간을 63% 정도 단축**할 수 있었습니다.
+
+### @DataJpaTest 에 Service 가져오기
+서비스 클래스 중, `Page`, `Slice` 의 `content` 가 비어있다면 예외를 던지는 메서드 테스트할 때,   
+`JpaRepository` 를 상속한 인터페이스가 반환하는 `Page`, `Slice` 를 직접 구현해야 하는 조금 번거로운 문제가 발생.   
+---> 이를 해결하기 위해 `@DataJpaTest`, `@Import(TargetService.class)` 를 적용, JPA 가 반환하는 `Page`, `Slice` 를 사용해 간결한 테스트 작성.
+  
+### 상속 활용하기
+테스트 코드에 친숙해지며, 상속의 이점을 체감 후, 신규 기능 도입에도 적용,   
+`BaseEntity`를 추상 클래스로 등록, 엔티티가 기본적으로 가지는 필드를 관리.   
+엔티티 상태 초기화는 엔티티 성격에 따라 달라지므로 추상 메서드로 선언하고, 하위 클래스에서 구현.
+
+### Shell Script 작성을 통한 1줄 배포
+생각보다 잦은 프로젝트 업데이트에 단순 반복적 배포 작업을 자동화.   
+---> 배포 서버의 Shell Script 를 통한 패치, 빌드, 배포.
+
+### ~~Browser history 조작하기~~
+* ~~history state 을 활용해 fetch로 얻어온 인가가 필요한 페이지의 교체.~~
+  
+***
 
 해프닝
 ---
@@ -57,7 +142,4 @@ Front-End
   - 삭제 원인은 충분치 않은 테스트 케이스.
   - 이 경험을 통해 테스트 작성 시, 한 케이스의 반대 케이스의 중요성을 인식.
 
-사용 기술
----
-Spring Boot, Spring Data JPA, MySQL, JavaScript
 
