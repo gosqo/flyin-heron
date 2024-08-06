@@ -14,11 +14,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@DataJpaTest
+@DataJpaTest(showSql = false)
+@ActiveProfiles("test")
 @Slf4j
 public class DataJpaTestJpaRepositoryBase {
     protected static final int BOARD_COUNT = 3;
