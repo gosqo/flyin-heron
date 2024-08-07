@@ -28,9 +28,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DataJpaTestEntityManagerBase {
     private static final int BOARD_COUNT = 3;
     private static final int COMMENT_COUNT = 3;
+
     private final EntityManagerFactory emf;
     protected EntityManager em;
     protected EntityTransaction transaction;
+
     protected Member member = buildMember();
     protected Board[] boards = buildBoards();
     protected Comment[] comments = buildComments();
@@ -54,7 +56,6 @@ public class DataJpaTestEntityManagerBase {
         }
 
         log.info("==== Deleting test data. ====");
-
 
         em.createQuery("DELETE FROM CommentLike cl").executeUpdate();
         em.createQuery("DELETE FROM Comment c").executeUpdate();
