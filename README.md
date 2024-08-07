@@ -19,12 +19,10 @@ REST 구조에 따라 API 를 설계, 구현했습니다.
 ---
 ![img.png](./assets/img/20240806_architecture.png)
 
-***
 개체간 관계도 <small>(ERD)</small>
 ---
 ![img.png](./assets/img/20240806_erd.png)
 
-***
 기능 <small>(Features)</small>
 ---
 
@@ -35,7 +33,8 @@ REST 구조에 따라 API 를 설계, 구현했습니다.
 
 * 회원 <small>member</small>
   - 가입, 로그인
-    - 가입 시, 각 `<input>` 유효성 검사. 모든 조건을 만족하는지 사용자 입력마다 반응해 `<submit>` 활성화. (서버에서 2차 검증)
+    - 가입 시, 각 `<input>` 유효성 검사.   
+    - 모든 조건을 만족하는지 사용자 입력마다 반응해 `<submit>` 활성화. (서버에서 2차 검증)
   - 게시물, 댓글 '조회' 외의 기능에 대한 인가. `@PreAuthorize`
   
 * 토큰 <small>token</small>
@@ -55,6 +54,7 @@ REST 구조에 따라 API 를 설계, 구현했습니다.
 * 댓글 <small>comment</small>
   - 목록 더 불러오기 (`Slice`).
   - 등록, 조회, 수정, 삭제.
+  - ~~좋아요 기능~~(추가 예정)
 
 ##### Global
 
@@ -66,16 +66,12 @@ REST 구조에 따라 API 를 설계, 구현했습니다.
   - WAS 로 향하는 HTTP 요청 로깅.
   - JWT 인증 시 일어날 수 있는 `JwtException` 처리하는 객체 등록.
 
-***
-
 ### Web Server
 
 ##### Nginx
 * 요청 헤더 `User-Agent`, `Connection` 기반 최소한의 무차별 / 비정상 요청에 `444` 상태 코드 응답.
 * 정적 자원 `Cache-Control` 지시 및 반환.
 * 서버로 향하는 모든 접근 로깅.
-
-***
 
 테스트 <small>(Test)</small>
 ---
@@ -90,8 +86,6 @@ Controller, Service, Repository 계층별 / 통합 테스트. 다음의 경우�
 `@SpringBootTest` 애너테이션의 경우, `SpringBootTest.WebEnvironment.RANDOM_PORT`로 지정한 여러 테스트를 묶어 실행할 때, 
 테스트 마다 Bean 으로 등록된 인스턴스를 `final`로 선언하더라도 컨텍스트 로딩 시 등록한 인스턴스를 공유하는 것을 알 수 있었습니다.   
 이에 스프링의 구조에 대해 관심 갖고 학습 중입니다.
-
-***
 
 개선의 경험 <small>(Experience of Improvement)</small>
 ---
@@ -130,16 +124,9 @@ Controller, Service, Repository 계층별 / 통합 테스트. 다음의 경우�
 생각보다 잦은 프로젝트 업데이트에 단순 반복적 배포 작업을 자동화.   
 ---> 배포 서버의 Shell Script 를 통한 패치, 빌드, 배포.
 
-### ~~Browser history 조작하기~~
-* ~~history state 을 활용해 fetch로 얻어온 인가가 필요한 페이지의 교체.~~
-  
-***
-
 해프닝
 ---
 
 * 의도와 다르게 삭제된 배포 서버 데이터, MySQL binlog 기반 복구 경험.
   - 삭제 원인은 충분치 않은 테스트 케이스.
-  - 이 경험을 통해 테스트 작성 시, 한 케이스의 반대 케이스의 중요성을 인식.
-
-
+  - 이 경험을 통해 테스트 작성 시, 하나의 성공에 대해 반대 케이스의 중요성을 인식.
