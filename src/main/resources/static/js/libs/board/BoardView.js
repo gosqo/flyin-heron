@@ -4,6 +4,7 @@ import { DomCreate } from "../dom/DomCreate.js";
 import { State } from "../state/StateManage.js";
 import AuthChecker from "../token/AuthChecker.js";
 import Board from "./Board.js";
+import { DomHtml } from "../dom/DomHtml.js";
 
 export class BoardView {
     static DOM = class {
@@ -27,7 +28,9 @@ export class BoardView {
                 document.querySelector("#board-writer").textContent = boardData.writer;
                 document.querySelector("#board-hits").textContent = `조회 ${boardData.viewCount}`;
                 document.querySelector("#board-date").textContent = Board.Utility.getRecentBoardDate(boardData);
-                document.querySelector("#board-content").textContent = boardData.content;
+                const boardContent = document.querySelector("#board-content")
+                boardContent.textContent = boardData.content;
+                DomHtml.addHyperLink(boardContent);
             }
 
             function addButtons(boardId) {

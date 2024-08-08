@@ -2,6 +2,7 @@ import { Fetcher } from "../common/Fetcher.js";
 import Board from "../board/Board.js";
 import TokenUtility from "../token/TokenUtility.js";
 import AuthChecker from "../token/AuthChecker.js";
+import { DomHtml } from "../dom/DomHtml.js";
 
 export class Comment {
     static pageNumber = 1;
@@ -307,7 +308,9 @@ export class Comment {
 
             commentUnit.querySelector("#comment-writer").textContent = data.writerNickname;
             commentUnit.querySelector("#comment-date").textContent = Board.Utility.getRecentBoardDate(data);
-            commentUnit.querySelector("#comment-content").textContent = data.content;
+            const commentContent = commentUnit.querySelector("#comment-content");
+            commentContent.textContent = data.content;
+            DomHtml.addHyperLink(commentContent);
         }
 
         static placeDataWhenModified(commentUnit, data) {
