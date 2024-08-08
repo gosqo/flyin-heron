@@ -315,7 +315,9 @@ export class Comment {
 
         static placeDataWhenModified(commentUnit, data) {
             commentUnit.querySelector("#comment-date").textContent = Board.Utility.getRecentBoardDate(data.updatedComment);
-            commentUnit.querySelector("#comment-content").textContent = data.updatedComment.content;
+            const commentContent = commentUnit.querySelector("#comment-content");
+            commentContent.textContent = data.updatedComment.content;
+            DomHtml.addHyperLink(commentContent);
         }
     }
 }
