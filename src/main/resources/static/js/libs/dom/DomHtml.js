@@ -7,7 +7,7 @@ export class DomHtml {
         if (node && node.textContent) {
             const urlPattern = /(https?:\/\/[^\s]+)/g;
             const content = node.textContent;
-            const modifiedInHtml = content.replace(urlPattern, '<a href="$1" target="_blank">$1</a>');
+            const modifiedInHtml = content.replace(urlPattern, '<a class="text-break" target="_blank" href="$1">$1</a>');
         
             node.innerHTML = modifiedInHtml;
         }
