@@ -55,7 +55,7 @@ public class ExtendsMappedSuperClassTest extends DataJpaTestEntityManagerBase {
         TestEntity testEntity = new TestEntity("hello", 1L, true);
 
         em.persist(testEntity);
-        log.info("{}", testEntity.toString());
+        log.info("{}", testEntity);
 
 
         assertThat(testEntity.getId()).isEqualTo(1L);

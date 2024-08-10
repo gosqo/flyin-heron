@@ -3,7 +3,10 @@ package com.vong.manidues.domain.comment;
 import com.vong.manidues.domain.board.Board;
 import com.vong.manidues.domain.member.Member;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
@@ -13,7 +16,6 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Builder
-@ToString(exclude = {"member", "board"})
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicInsert
@@ -63,6 +65,19 @@ public class Comment {
 
     @CreationTimestamp
     private LocalDateTime updateDate;
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "id=" + id +
+                ", member=" + member +
+                ", board=" + board +
+                ", content='" + content + '\'' +
+                ", likeCount=" + likeCount +
+                ", registerDate=" + registerDate +
+                ", updateDate=" + updateDate +
+                '}';
+    }
 
     public void updateContent(String content) {
         this.content = content;

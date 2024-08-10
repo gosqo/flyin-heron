@@ -29,12 +29,14 @@ public class DataJpaTestJpaRepositoryBase {
     protected final TokenRepository tokenRepository;
     protected final BoardRepository boardRepository;
     protected final CommentRepository commentRepository;
+
     protected Member member;
     protected List<Board> boards;
     protected List<Comment> comments;
     protected Long mainMemberId;
     protected Long mainBoardId;
     protected Long mainCommentId;
+
     protected long[] boardIds;
     protected long[] commentIds;
 

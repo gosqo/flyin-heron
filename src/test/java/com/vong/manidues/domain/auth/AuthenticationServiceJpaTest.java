@@ -28,18 +28,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @Slf4j
-class AuthenticationServiceJpaTest/* extends DataJpaTestJpaRepositoryBase*/ {
+class AuthenticationServiceJpaTest {
 
-    /* @Autowired
-     public AuthenticationServiceJpaTest(
-             MemberRepository memberRepository
-             , BoardRepository boardRepository
-             , CommentRepository commentRepository
-             , TokenRepository tokenRepository
-     ) {
-         super(memberRepository, boardRepository, commentRepository, tokenRepository);
-     }
- */
     @Nested
     @DisplayName("with imported AuthenticationService")
     @Import(AuthenticationService.class)

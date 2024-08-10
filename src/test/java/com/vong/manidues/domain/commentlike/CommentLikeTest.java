@@ -4,6 +4,7 @@ import com.vong.manidues.DataJpaTestEntityManagerBase;
 import com.vong.manidues.domain.EntityStatus;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,6 +20,7 @@ public class CommentLikeTest extends DataJpaTestEntityManagerBase {
     }
 
     @Test
+    @DisplayName("Cannot create without member")
     void canNotCreateCommentLikeWithoutMember() {
         var commentLike = CommentLike.builder()
                 .comment(comments[0])
@@ -30,6 +32,7 @@ public class CommentLikeTest extends DataJpaTestEntityManagerBase {
     }
 
     @Test
+    @DisplayName("Cannot create without comment")
     void canNotCreateCommentLikeWithoutComment() {
         var commentLike = CommentLike.builder()
                 .member(member)
@@ -41,6 +44,7 @@ public class CommentLikeTest extends DataJpaTestEntityManagerBase {
     }
 
     @Test
+    @DisplayName("When create normally")
     void createCommentLikeNormally() {
         var targetComment = comments[0];
         var commentLike = CommentLike.builder()

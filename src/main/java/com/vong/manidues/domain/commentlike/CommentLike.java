@@ -17,6 +17,7 @@ import lombok.Getter;
 public class CommentLike extends IdentityBaseEntity {
     @ManyToOne(
             targetEntity = Comment.class
+            , optional = false
     )
     @JoinColumn(
             name = "comment_id"
@@ -28,6 +29,7 @@ public class CommentLike extends IdentityBaseEntity {
 
     @ManyToOne(
             targetEntity = Member.class
+            , optional = false
     )
     @JoinColumn(
             name = "member_id"
@@ -39,5 +41,19 @@ public class CommentLike extends IdentityBaseEntity {
 
     protected void prePersist() {
         super.status = EntityStatus.ACTIVE;
+    }
+
+    @Override
+    public String toString() {
+        return "CommentLike{" +
+                "\nid=" + id +
+                "\n, member=" + member +
+                "\n, comment=" + comment +
+                "\n, status=" + status +
+                "\n, registeredAt=" + registeredAt +
+                "\n, updatedAt=" + updatedAt +
+                "\n, contentModifiedAt=" + contentModifiedAt +
+                "\n, deletedAt=" + deletedAt +
+                '}';
     }
 }
