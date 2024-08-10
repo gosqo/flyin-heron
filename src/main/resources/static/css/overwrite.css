@@ -1,7 +1,7 @@
 textarea {
-    white-space: pre-line;
+    white-space: pre-wrap;
 }
 
 #board-content, #comment-content {
-    white-space: pre-line;
+    white-space: pre-wrap;
 }
