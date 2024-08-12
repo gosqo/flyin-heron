@@ -22,7 +22,12 @@ public class HttpAccessLogFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+        if (!request.getHeader("host").equals(RequestLogUtility.HOST_DOMAIN)) {
+            RequestLogUtility.logWholeRequestHeaders(request);
+        }
+
         RequestLogUtility.logRequestInfo(request);
+
         filterChain.doFilter(request, response);
     }
 }
