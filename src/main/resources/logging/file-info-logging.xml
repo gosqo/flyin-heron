@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <included>
-    <property name="INFO_FILE_PATH" value="./log/info"/>
-
     <appender name="FILE-INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${INFO_FILE_PATH}/info-${BY_DATE}.log</file>
         <encoder>

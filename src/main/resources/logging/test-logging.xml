@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <included>
-    <include resource="logging/console-logging.xml"/>
-    <include resource="logging/exclude-while-debug.xml"/>
-
-    <root level="DEBUG">
-        <appender-ref ref="CONSOLE"/>
-    </root>
+    <SpringProfile name="test">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </SpringProfile>
 </included>

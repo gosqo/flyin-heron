@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <included>
-    <property name="TRACE_HTTP_1.1_FILE_PATH" value="./log/trace_http_1.1"/>
-
     <appender name="TRACE-HTTP-1.1" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${TRACE_HTTP_1.1_FILE_PATH}/trace-http-1.1-${BY_DATE}.log</file>
         <encoder>

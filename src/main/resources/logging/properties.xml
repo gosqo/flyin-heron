@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<included>
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-21thread] %highlight(%-5level) %cyan(%logger{36}:%5line) - %m%n"/>
+    <property name="FILE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-21thread] %-5level %logger:%5line - %m%n"/>
+
+    <property name="LOG_CHARSET" value="UTF-8"/>
+
+    <property name="TRACE_HTTP_1.1_FILE_PATH" value="./log/trace_http_1.1"/>
+    <property name="FROM_INFO_FILE_PATH" value="./log/from-info"/>
+    <property name="INFO_FILE_PATH" value="./log/info"/>
+    <property name="WARN_FILE_PATH" value="./log/warn"/>
+    <property name="ERROR_FILE_PATH" value="./log/error"/>
+
+    <timestamp key="BY_DATE" datePattern="yyyy-MM-dd"/>
+</included>

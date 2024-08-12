@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <included>
-    <property name="ERROR_FILE_PATH" value="./log/error"/>
-
     <appender name="FILE-ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${ERROR_FILE_PATH}/error-${BY_DATE}.log</file>
         <encoder>
