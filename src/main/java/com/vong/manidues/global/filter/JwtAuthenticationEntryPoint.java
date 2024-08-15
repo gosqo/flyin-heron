@@ -1,6 +1,6 @@
 package com.vong.manidues.global.filter;
 
-import com.vong.manidues.global.utility.ResponseBodyWriter;
+import com.vong.manidues.dto.ResponseBodyWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

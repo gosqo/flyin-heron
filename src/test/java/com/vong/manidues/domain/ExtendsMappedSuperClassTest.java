@@ -1,6 +1,5 @@
 package com.vong.manidues.domain;
 
-import com.vong.manidues.DataJpaTestEntityManagerBase;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManagerFactory;
@@ -44,17 +43,19 @@ class TestEntity extends IdentityBaseEntity {
 }
 
 @Slf4j
-public class ExtendsMappedSuperClassTest extends DataJpaTestEntityManagerBase {
+class ExtendsMappedSuperClassTest extends DataJpaTestEntityManagerBase {
     @Autowired
     public ExtendsMappedSuperClassTest(EntityManagerFactory emf) {
         super(emf);
     }
 
     @Test
-    void createExtendedTestEntity() {
+    void sub_class_can_have_super_class_fields() {
         TestEntity testEntity = new TestEntity("hello", 1L, true);
 
         em.persist(testEntity);
+//        transaction.commit();
+//        transaction.begin();
         log.info("{}", testEntity);
 
 

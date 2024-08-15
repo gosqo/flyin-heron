@@ -1,6 +1,6 @@
 package com.vong.manidues.global.config;
 
-import com.vong.manidues.domain.member.MemberRepository;
+import com.vong.manidues.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

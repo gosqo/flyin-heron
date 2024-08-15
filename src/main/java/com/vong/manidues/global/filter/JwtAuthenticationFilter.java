@@ -1,6 +1,6 @@
 package com.vong.manidues.global.filter;
 
-import com.vong.manidues.domain.token.ClaimExtractor;
+import com.vong.manidues.service.ClaimExtractor;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
