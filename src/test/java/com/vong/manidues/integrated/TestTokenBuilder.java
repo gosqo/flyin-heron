@@ -23,10 +23,7 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-class TokenUtility {
-    static final long EXPIRATION_7_DAYS = 604800000L;
-    static final long EXPIRATION_8_DAYS = 691200000L;
-
+class TestTokenBuilder {
     private final MemberRepository memberRepository;
     private final EntityManager entityManager;
     @Value("${application.security.jwt.secret-key}")

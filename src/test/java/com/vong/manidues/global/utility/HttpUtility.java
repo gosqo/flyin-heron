@@ -1,4 +1,4 @@
-package com.vong.manidues.web;
+package com.vong.manidues.global.utility;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

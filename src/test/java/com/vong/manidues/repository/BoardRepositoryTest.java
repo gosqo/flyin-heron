@@ -1,8 +1,9 @@
 package com.vong.manidues.repository;
 
-import com.vong.manidues.service.ClaimExtractor;
 import com.vong.manidues.service.BoardServiceImpl;
+import com.vong.manidues.service.ClaimExtractor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ import org.springframework.context.annotation.Import;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Slf4j
-class BoardRepositoryTest extends DataJpaTestJpaRepositoryBase {
+class BoardRepositoryTest extends DataJpaTestRepositoryDataInitializer {
 
     @Autowired
     public BoardRepositoryTest(
@@ -26,11 +27,17 @@ class BoardRepositoryTest extends DataJpaTestJpaRepositoryBase {
         super(memberRepository, boardRepository, commentRepository, tokenRepository);
     }
 
+    @BeforeEach
+    void setUp() {
+        initBoards();
+        log.info("==== Test data initialized. ====");
+    }
+
     @Nested
     @DisplayName("With Imported Service object")
     @Import({BoardServiceImpl.class})
     @SpyBeans(@SpyBean(ClaimExtractor.class))
-    class WithService extends DataJpaTestJpaRepositoryBase {
+    class WithService extends DataJpaTestRepositoryDataInitializer {
         private final BoardServiceImpl boardService;
 
         @Autowired

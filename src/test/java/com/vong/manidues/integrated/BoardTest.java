@@ -5,11 +5,11 @@ import com.vong.manidues.domain.Board;
 import com.vong.manidues.dto.board.BoardGetResponse;
 import com.vong.manidues.dto.board.BoardRegisterRequest;
 import com.vong.manidues.dto.board.BoardRegisterResponse;
+import com.vong.manidues.global.utility.HttpUtility;
 import com.vong.manidues.repository.BoardRepository;
 import com.vong.manidues.repository.CommentRepository;
 import com.vong.manidues.repository.MemberRepository;
 import com.vong.manidues.repository.TokenRepository;
-import com.vong.manidues.web.HttpUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -24,11 +24,11 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.vong.manidues.web.HttpUtility.buildGetRequestEntity;
+import static com.vong.manidues.global.utility.HttpUtility.buildGetRequestEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class BoardTest extends SpringBootTestBase {
-    private final TokenUtility tokenUtility;
+    private final TestTokenBuilder tokenBuilder;
 
     @Autowired
     public BoardTest(
@@ -37,10 +37,10 @@ class BoardTest extends SpringBootTestBase {
             BoardRepository boardRepository,
             CommentRepository commentRepository,
             TestRestTemplate template,
-            TokenUtility tokenUtility
+            TestTokenBuilder tokenBuilder
     ) {
-        super(memberRepository, tokenRepository, boardRepository, commentRepository, template);
-        this.tokenUtility = tokenUtility;
+        super(memberRepository, boardRepository, commentRepository, tokenRepository, template);
+        this.tokenBuilder = tokenBuilder;
     }
 
     private static ArrayList<String> getCookieListFromResponse(List<String> cookiesFromResponse) {
@@ -101,7 +101,7 @@ class BoardTest extends SpringBootTestBase {
         public void boardPostNormally_ItShouldBeLike() throws JsonProcessingException {
             // given
             // to build HTTP headers with Authorization
-            final var accessToken = tokenUtility.buildToken(member);
+            final var accessToken = tokenBuilder.buildToken(member);
             final var bearerAccessToken = "Bearer " + accessToken;
             // build body, JSON 형태의 스트링으로 보내지 않고 객체로 전달해도 테스트 가능.
             final var body = BoardRegisterRequest.builder()

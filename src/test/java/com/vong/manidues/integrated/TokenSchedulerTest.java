@@ -27,7 +27,7 @@ import static org.awaitility.Awaitility.await;
 )
 @Slf4j
 class TokenSchedulerTest extends SpringBootTestBase {
-    private final TokenUtility tokenUtility;
+    private final TestTokenBuilder tokenBuilder;
 
     @Autowired
     public TokenSchedulerTest(
@@ -36,10 +36,10 @@ class TokenSchedulerTest extends SpringBootTestBase {
             BoardRepository boardRepository,
             CommentRepository commentRepository,
             TestRestTemplate template,
-            TokenUtility tokenUtility
+            TestTokenBuilder tokenBuilder
     ) {
-        super(memberRepository, tokenRepository, boardRepository, commentRepository, template);
-        this.tokenUtility = tokenUtility;
+        super(memberRepository, boardRepository, commentRepository, tokenRepository, template);
+        this.tokenBuilder = tokenBuilder;
     }
 
     @BeforeEach
@@ -53,7 +53,7 @@ class TokenSchedulerTest extends SpringBootTestBase {
             long expiration = -i * 1_000_000L - 1_000_000L;
 
             if (i == 2) expiration = -expiration;
-            String token = tokenUtility.buildToken(new HashMap<>(), member, expiration);
+            String token = tokenBuilder.buildToken(new HashMap<>(), member, expiration);
             tokens.add(token);
         }
 
@@ -64,7 +64,7 @@ class TokenSchedulerTest extends SpringBootTestBase {
     }
 
     private void logStoredTokens() {
-        tokenUtility.getStoredTokens().forEach(i -> log.info(i.toString()));
+        tokenBuilder.getStoredTokens().forEach(i -> log.info(i.toString()));
     }
 
     @Test
@@ -78,7 +78,5 @@ class TokenSchedulerTest extends SpringBootTestBase {
         });
 
         logStoredTokens();
-//        tokenRepository.deleteAll();
-//        memberRepository.deleteAll();
     }
 }

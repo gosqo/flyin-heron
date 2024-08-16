@@ -4,6 +4,7 @@ import com.vong.manidues.domain.Comment;
 import com.vong.manidues.service.ClaimExtractor;
 import com.vong.manidues.service.CommentService;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ import org.springframework.data.domain.Sort;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Slf4j
-class CommentRepositoryTest extends DataJpaTestJpaRepositoryBase {
+class CommentRepositoryTest extends DataJpaTestRepositoryDataInitializer {
 
     @Autowired
     public CommentRepositoryTest(
@@ -31,9 +32,15 @@ class CommentRepositoryTest extends DataJpaTestJpaRepositoryBase {
         super(memberRepository, boardRepository, commentRepository, tokenRepository);
     }
 
+    @BeforeEach
+    void setUp() {
+        initBoards();
+        log.info("==== Test data initialized. ====");
+    }
+
     @Test
     void findByBoardId() {
-        Long boardId = mainBoardId;
+        Long boardId = boards.get(0).getId();
         Pageable pageable = PageRequest.of(0, 4, Sort.Direction.ASC, "id");
         Slice<Comment> found = commentRepository.findByBoardId(boardId, pageable);
 
@@ -44,7 +51,7 @@ class CommentRepositoryTest extends DataJpaTestJpaRepositoryBase {
     @DisplayName("With Imported Service object")
     @Import({CommentService.class})
     @SpyBeans(@SpyBean(ClaimExtractor.class))
-    class WithService extends DataJpaTestJpaRepositoryBase {
+    class WithService extends DataJpaTestRepositoryDataInitializer {
         private final CommentService commentService;
 
         @Autowired
@@ -59,10 +66,16 @@ class CommentRepositoryTest extends DataJpaTestJpaRepositoryBase {
             this.commentService = commentService;
         }
 
+        @BeforeEach
+        void setUp() {
+            initBoards();
+            log.info("==== Test data initialized. ====");
+        }
+
         @Test
         @DisplayName("Request page is empty, then throws")
         void emptySliceThrows() {
-            Long boardId = mainBoardId;
+            Long boardId = boards.get(0).getId();
             int pageCount = COMMENT_COUNT / CommentService.PAGE_SIZE;
             // 1 for throwing exception, 1 for getPageRequest() which index begin from 0.
             int requestPage = (pageCount + 1 + 1);

@@ -1,11 +1,10 @@
-package com.vong.manidues.controller;
+package com.vong.manidues.integrated;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vong.manidues.domain.fixture.MemberFixture;
 import com.vong.manidues.dto.member.IsUniqueEmailRequest;
 import com.vong.manidues.dto.member.IsUniqueNicknameRequest;
-import com.vong.manidues.integrated.SpringBootTestBase;
 import com.vong.manidues.repository.BoardRepository;
 import com.vong.manidues.repository.CommentRepository;
 import com.vong.manidues.repository.MemberRepository;
@@ -25,12 +24,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @AutoConfigureMockMvc
-class MemberControllerIsUniqueValidationTest extends SpringBootTestBase {
+class MemberIsUniqueTest extends SpringBootTestBase {
 
     private final MockMvc mockMvc;
 
     @Autowired
-    public MemberControllerIsUniqueValidationTest(
+    public MemberIsUniqueTest(
             MemberRepository memberRepository,
             TokenRepository tokenRepository,
             BoardRepository boardRepository,
@@ -38,7 +37,7 @@ class MemberControllerIsUniqueValidationTest extends SpringBootTestBase {
             TestRestTemplate template,
             MockMvc mockMvc
     ) {
-        super(memberRepository, tokenRepository, boardRepository, commentRepository, template);
+        super(memberRepository, boardRepository, commentRepository, tokenRepository, template);
         this.mockMvc = mockMvc;
     }
 
@@ -152,9 +151,7 @@ class MemberControllerIsUniqueValidationTest extends SpringBootTestBase {
             }
         }
     }
-    // === tests for email validation ===
 
-    // === tests for nickname validation ===
     @Nested
     class If_nickname {
         @Test

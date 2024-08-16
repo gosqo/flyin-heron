@@ -2,6 +2,7 @@ package com.vong.manidues.domain;
 
 import jakarta.persistence.EntityManagerFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,16 +11,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Slf4j
-class CommentLikeTest extends DataJpaTestEntityManagerBase {
+class CommentLikeTest extends EntityManagerDataInitializer {
 
     @Autowired
     public CommentLikeTest(EntityManagerFactory emf) {
         super(emf);
     }
 
+    @BeforeEach
+    void setUp() {
+        initComments();
+        log.info("==== Test data initialized. ====");
+    }
+
     @Test
     void when_create_normally() {
-        var targetComment = comments[0];
+        var targetComment = comments.get(0);
         var commentLike = CommentLike.builder()
                 .member(member)
                 .comment(targetComment)
@@ -46,7 +53,7 @@ class CommentLikeTest extends DataJpaTestEntityManagerBase {
         void can_set_status_soft_deleted() {
             var commentLike = CommentLike.builder()
                     .member(member)
-                    .comment(comments[0])
+                    .comment(comments.get(0))
                     .build();
 
             em.persist(commentLike);
@@ -63,7 +70,7 @@ class CommentLikeTest extends DataJpaTestEntityManagerBase {
         @Test
         void without_member() {
             var commentLike = CommentLike.builder()
-                    .comment(comments[0])
+                    .comment(comments.get(0))
                     .build();
 
             assertThatThrownBy(() -> em.persist(commentLike));
@@ -86,18 +93,14 @@ class CommentLikeTest extends DataJpaTestEntityManagerBase {
         void existing_combination_of_member_id_and_comment_id() {
             var commentLike1 = CommentLike.builder()
                     .member(member)
-                    .comment(comments[0])
+                    .comment(comments.get(0))
                     .build();
             var commentLike2 = CommentLike.builder()
                     .member(member)
-                    .comment(comments[0])
+                    .comment(comments.get(0))
                     .build();
 
             em.persist(commentLike1);
-//        em.persist(commentLike2);
-
-            log.info("{}", commentLike1.getId());
-//        log.info("{}", commentLike2.getId());
 
             assertThatThrownBy(() -> em.persist(commentLike2));
             transaction.rollback();

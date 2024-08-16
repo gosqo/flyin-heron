@@ -2,13 +2,14 @@ package com.vong.manidues.repository;
 
 import com.vong.manidues.domain.CommentLike;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-class CommentLikeRepositoryTest extends DataJpaTestJpaRepositoryBase {
+class CommentLikeRepositoryTest extends DataJpaTestRepositoryDataInitializer {
     private final CommentLikeRepository commentLikeRepository;
 
     @Autowired
@@ -21,6 +22,12 @@ class CommentLikeRepositoryTest extends DataJpaTestJpaRepositoryBase {
     ) {
         super(memberRepository, boardRepository, commentRepository, tokenRepository);
         this.commentLikeRepository = commentLikeRepository;
+    }
+
+    @BeforeEach
+    void setUp() {
+        initComments();
+        log.info("==== Test data initialized. ====");
     }
 
     @Test

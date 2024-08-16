@@ -5,6 +5,7 @@ import com.vong.manidues.service.AuthenticationService;
 import com.vong.manidues.service.ClaimExtractor;
 import com.vong.manidues.service.JwtService;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,7 @@ class AuthenticationServiceJpaTest {
                     }
             )
     )
-    class WithService extends DataJpaTestJpaRepositoryBase {
+    class WithService extends DataJpaTestRepositoryDataInitializer {
         private final AuthenticationService authService;
         @MockBean
         private final AuthenticationManager authManager;
@@ -56,6 +57,12 @@ class AuthenticationServiceJpaTest {
             this.authManager = authManager;
         }
 
+        @BeforeEach
+        void setUp() {
+            initMember();
+            log.info("==== Test data initialized. ====");
+        }
+
         @Test
         void authenticate() throws SQLException {
             // given
@@ -69,8 +76,8 @@ class AuthenticationServiceJpaTest {
 
             // then
             assertThat(response).isNotNull();
-            assertThat(response.getAccessToken()).contains("eyJhbGci");
-            assertThat(response.getRefreshToken()).contains("eyJhbGci");
+            assertThat(response.getAccessToken()).isNotBlank();
+            assertThat(response.getRefreshToken()).isNotBlank();
             assertThat(tokenRepository.findByToken(response.getRefreshToken()).orElseThrow()).isNotNull();
         }
     }

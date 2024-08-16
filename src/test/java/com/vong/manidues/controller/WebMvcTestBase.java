@@ -36,7 +36,7 @@ import org.springframework.test.web.servlet.MockMvc;
         }
 )
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-public class WebMvcTestBase {
+public abstract class WebMvcTestBase {
     protected final MockMvc mockMvc;
 
     public WebMvcTestBase(MockMvc mockMvc) {

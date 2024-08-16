@@ -1,6 +1,6 @@
 package com.vong.manidues.global.nginx;
 
-import com.vong.manidues.web.HttpUtility;
+import com.vong.manidues.global.utility.HttpUtility;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;

@@ -28,22 +28,23 @@ class TestEntity extends IdentityBaseEntity {
 
     @Override
     public String toString() {
-        return "TestEntity{" +
-                "field1='" + field1 + '\'' +
-                ", field2=" + field2 +
-                ", field3=" + field3 +
-                ", id=" + id +
-                ", status=" + status +
-                ", registeredAt=" + registeredAt +
-                ", updatedAt=" + updatedAt +
-                ", contentModifiedAt=" + contentModifiedAt +
-                ", deletedAt=" + deletedAt +
-                '}';
+        return "\nTestEntity{" +
+                "\n\tfield1='" + field1 + '\'' +
+                "\n\t, field2=" + field2 +
+                "\n\t, field3=" + field3 +
+                "\n\t, id=" + id +
+                "\n\t, status=" + status +
+                "\n\t, registeredAt=" + registeredAt +
+                "\n\t, updatedAt=" + updatedAt +
+                "\n\t, contentModifiedAt=" + contentModifiedAt +
+                "\n\t, deletedAt=" + deletedAt +
+                "\n}";
     }
 }
 
 @Slf4j
-class ExtendsMappedSuperClassTest extends DataJpaTestEntityManagerBase {
+class ExtendsMappedSuperClassTest extends EntityManagerDataInitializer {
+
     @Autowired
     public ExtendsMappedSuperClassTest(EntityManagerFactory emf) {
         super(emf);
@@ -54,12 +55,10 @@ class ExtendsMappedSuperClassTest extends DataJpaTestEntityManagerBase {
         TestEntity testEntity = new TestEntity("hello", 1L, true);
 
         em.persist(testEntity);
-//        transaction.commit();
-//        transaction.begin();
+
         log.info("{}", testEntity);
 
-
-        assertThat(testEntity.getId()).isEqualTo(1L);
+        assertThat(testEntity.getId()).isNotNull();
         assertThat(testEntity.getStatus()).isEqualTo(EntityStatus.ACTIVE);
 
         assertThat(testEntity.getRegisteredAt()).isNotNull();

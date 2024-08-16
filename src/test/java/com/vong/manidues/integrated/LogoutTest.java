@@ -15,15 +15,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 
-import static com.vong.manidues.web.HttpUtility.buildPostHeadersWithToken;
-import static com.vong.manidues.web.HttpUtility.buildPostRequestEntity;
+import static com.vong.manidues.global.utility.HttpUtility.buildPostHeadersWithToken;
+import static com.vong.manidues.global.utility.HttpUtility.buildPostRequestEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LogoutTest extends SpringBootTestBase {
     private static final String LOGOUT_URI = "/api/v1/auth/logout";
     private static final String LOGIN_URI = "/api/v1/auth/authenticate";
 
-    private final TokenUtility tokenUtility;
+    private final TestTokenBuilder tokenBuilder;
 
     @Autowired
     public LogoutTest(
@@ -32,10 +32,10 @@ class LogoutTest extends SpringBootTestBase {
             BoardRepository boardRepository,
             CommentRepository commentRepository,
             TestRestTemplate template,
-            TokenUtility tokenUtility
+            TestTokenBuilder tokenBuilder
     ) {
-        super(memberRepository, tokenRepository, boardRepository, commentRepository, template);
-        this.tokenUtility = tokenUtility;
+        super(memberRepository, boardRepository, commentRepository, tokenRepository, template);
+        this.tokenBuilder = tokenBuilder;
     }
 
     @BeforeEach
@@ -53,7 +53,7 @@ class LogoutTest extends SpringBootTestBase {
 
     @Test
     public void logout_with_token_not_exist_on_database_response_Bad_Request() throws JsonProcessingException {
-        final var accessToken = tokenUtility.buildToken(member);
+        final var accessToken = tokenBuilder.buildToken(member);
         final var headers = buildPostHeadersWithToken(accessToken);
         final var request = buildPostRequestEntity(headers, null, LOGOUT_URI);
         final var response = template.exchange(request, JsonResponse.class);
