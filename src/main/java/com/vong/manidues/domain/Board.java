@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
 
@@ -16,8 +15,8 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@DynamicInsert
 public class Board {
+    private static final Long DEFAULT_VIEW_COUNT_VALUE = 0L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,6 +50,11 @@ public class Board {
 
     @CreationTimestamp
     private LocalDateTime updateDate;
+
+    @PrePersist
+    private void prePersist() {
+        this.viewCount = DEFAULT_VIEW_COUNT_VALUE;
+    }
 
     public void updateTitle(String title) {
         this.title = title;

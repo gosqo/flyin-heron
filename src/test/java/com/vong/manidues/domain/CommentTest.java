@@ -73,6 +73,7 @@ class CommentTest extends EntityManagerDataInitializer {
         assertThat(stored.getBoard().getId()).isEqualTo(storing.getBoard().getId());
         assertThat(stored.getMember()).isEqualTo(storing.getMember());
         assertThat(stored.getBoard()).isEqualTo(storing.getBoard());
+        assertThat(stored.getLikeCount()).isEqualTo(0L);
 
         // assertThat(stored.getRegisterDate()).isEqualTo(stored.getUpdateDate()); // 각각의 필드가 초기화되는 시점의 타임스탬프가 할당되어 서로 다름.
     }

@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
 
@@ -16,8 +15,8 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@DynamicInsert
 public class Comment {
+    private static final Long DEFAULT_LIKE_COUNT_VALUE = 0L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -53,16 +52,19 @@ public class Comment {
     private String content;
 
     @ColumnDefault(value = "0")
-//    @Generated
     @Column(nullable = false)
-//    @Column(columnDefinition = "bigint default 0 not null")
-    private Long likeCount;
+    private Long likeCount = 0L;
 
     @CreationTimestamp
     private LocalDateTime registerDate;
 
     @CreationTimestamp
     private LocalDateTime updateDate;
+
+    @PrePersist
+    private void prePersist() {
+        this.likeCount = DEFAULT_LIKE_COUNT_VALUE;
+    }
 
     @Override
     public String toString() {
