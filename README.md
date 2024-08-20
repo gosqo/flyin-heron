@@ -1,26 +1,31 @@
-> 문서 업데이트: 2024-08-06
+> 문서 업데이트: 2024-08-20
 
 소개 <small>(Intro)</small>
 ---
-회원, 인증, 게시물, 댓글 기반 게시판 서비스로, 개인 프로젝트입니다.   
+회원, 인증, 게시물, 댓글 기반 게시판 서비스로, 개인 풀스택 프로젝트입니다.   
 REST 구조에 따라 API 를 설계, 구현했습니다.   
 <sup>2024.02 - 현재 진행 중.</sup>   
+CommentLike 관련 기능 추가 중
+
 [서비스 이용해 보기](https://flyin-heron.duckdns.org)
 
 사용 기술 <small>(Skills)</small>
 ---
 
-* Back-End: Java, Spring Boot, Spring Data JPA, MySQL
+* Back-End: Java, Spring Boot, Spring Data JPA
+* Database: MySQL
 * DevOps: Nginx, Git
-* Front_End: HTML, CSS, BootStrap, JavaScript
+* Front-End: HTML, CSS, BootStrap, JavaScript
 
 구조 <small>(Architecture)</small>
 ---
-![img.png](./assets/img/20240806_architecture.png)
+![architecture](./assets/img/20240806_architecture.png)
 
 개체간 관계도 <small>(ERD)</small>
 ---
-![img.png](./assets/img/20240806_erd.png)
+![erd](./assets/img/20240820_erd.png)
+
+CommentLike 관련 기능 추가 중
 
 기능 <small>(Features)</small>
 ---
@@ -74,34 +79,75 @@ REST 구조에 따라 API 를 설계, 구현했습니다.
 
 테스트 <small>(Test)</small>
 ---
+
 Controller, Service, Repository 계층별 / 통합 테스트. 다음의 경우에 유용하게 사용 중입니다.
 
-* 기능 도입 시 확실하지 않은 부분의 확인.
+* 신규 기능 도입 시 기능의 작동 원리, 구조에 대한 지식이 확실하지 않은 부분의 확인.
 * 기능 구현, 리팩토링 후, 의도대로 작동하는 지 확인.
 
-### 상속을 통한 추상화와 구현
+개선의 경험 <small>(Experience of Improvement)</small>
+---
 
-#### 배경 및 문제 해결 방향
+### 테스트 환경 개선
 
-각 계층별 테스트에서 데이터 초기화 코드의 중복이 많았기 때문에, 해당 코드 관리가 효율적이지 못한 문제가 있었습니다.
+#### 속도 개선
+
+기능 개발과 코드 리팩토링에 테스트가 주는 안정감을 느끼고 적극 이용 중입니다.
+
+![test improvement](./assets/img/20240806_test_improvement.png)
+
+##### 배경
+  - 여러 테스트를 묶어 실행 시, `id` 생성 전략에 따른 `id` 값의 증가로 리터럴 `id` 를 통한 엔티티 참조 시, `NoSuchElementException` 발생하는 문제.
+  - 이전 문제를 해결하고자 `@DirtiesContext` 애너테이션 도입 후, 테스트 소요 시간 증가.
+
+##### 해결 방안
+  - 상속을 통해 상위 클래스 필드로 선언 및 초기화한 엔티티를 통해 `id` 접근.
+  - 상위 클래스에서의 테스트 데이터 초기화 관장. 및 `@DirtiesContext` 제거
+
+##### 결과
+  - 상속을 통해 데이터 초기화, 인스턴스 생성 등 공통적 요소를 효과적으로 관리할 수 있게 됐습니다.
+  - 테스트 실행 순서에 상관없이 초기화된 데이터를 참조할 수 있게 됐습니다.
+  - 컨텍스트 로드 횟수를 1회로 줄여, **테스트 수행 시간을 63% 정도 단축**할 수 있었습니다.
+
+#### 테스트 데이터 초기화 전략
+
+##### 배경
+
+각 계층별 테스트에서 데이터 생명 주기 관리 코드의 중복이 많았기 때문에, 코드 관리가 효율적이지 못한 문제가 있었습니다.
 이것을 해결하기 위해 다음과 같이 역할을 구분했습니다.
 
+##### 해결 방안
+
 * 테스트 데이터로 사용할 엔티티의 생성.
-* 데이터 초기화라는 행위의 추상화.
-* 영속화 방식에 따라 각 데이터 초기화 행위의 구현.
-* 상속한 필드, 데이터 초기화를 통한 테스트 실행.
+* 데이터 저장이라는 행위의 추상화.
+* 계층별 영속화 주체에 따라 각각 데이터 저장 행위의 구현.
+* 테스트 클래스가 사용하는 컨텍스트에 따라, 상속한 필드, 데이터 저장 행위를 통한 데이터 초기화.
 
-#### 문제 개선 이후, 테스트 클래스 상속 구조
+##### 문제 개선 이후, 테스트 클래스 상속 구조
 
-![img.png](./assets/img/20240816_test_data_initializer_dependencies.png)
+![test data initializer dependencies](./assets/img/20240820_test_data_initializer_dependencies.png)
 
-<small style="text-align: center; display: block;">설명은 위에서 아래로,</small>
+<small style="text-align: center; display: block;"></small>
 
-* 테스트 데이터로 사용할 엔티티 생성을 담당하는 `TestDataInitializer`
-* 생성한 엔티티를 영속화하는 방식에 따라 `RepositoryDataInitializer`, `EntityManagerDataInitializer`로 구분,
-  * 각 클래스에서 상위 클래스의 추상 메서드 initData()를 각각 구현.
-* Repository 기반 데이터 영속화하는 `SpringBootTestBase`, `DataJpaTestRepository`는 `@BootstrapWith`애너태이션 속성인
-  `[ SpringBootTest / DataJpaTest ]ContextBootstrapper.class` 의 충돌이 발생하기 때문에, 각각 다른 애너테이션을 가지는 상속 클래스를 마련해 분리.
+현재 프로젝트에는 총 87 개의 테스트가 존재합니다.
+이들 중, 데이터베이스에 의존하고, 데이터를 필요로 하는 테스트는 39 개입니다.
+이 테스트들이 사용하는 데이터의 생명주기 관리 코드를 효율적으로 관리하고자,
+역할에 따라 계층을 분리했습니다.
+
+1. `TestDataInitializer` (데이터 생성)
+   - 테스트에 필요한 데이터를 생성하는 역할을 수행합니다.
+   - 생성한 데이터를 데이터베이스에 저장하는 행위를 추상화한 명세를 제공합니다.
+2. `EntityManagerDataInitializer`, `RepositoryDataInitializer` (데이터 저장 주체 분리)
+   - `TestDataInitializer` 를 상속받는 두 객체는 상위 객체에서 생성한 데이터를 데이터베이스에 저장하는 행위를 각각 EntityManager, JpaRepository 를 통해 구현합니다.
+3. `DataJpaTestRepositoryDataInitializer`, `SpringBootTestBase` (컨텍스트 분리)
+   - `JpaRepository` 를 사용해 데이터를 저장하는 경우는 두 가지의 컨텍스트로 나누어집니다.
+     - 데이터베이스 관련으로 한정된 컨텍스트
+     - 앱 전체 컨텍스트
+   - 상위 객체가 제공하는 데이터 저장 행위를 각각 다른 컨텍스트에서 사용할 수 있습니다.
+
+위와 같이 역할에 따라 계층을 분리하고, 용도에 따라 구현을 분리,
+테스트 클래스가 요구하는 각 맥락에서 필요한 상위 클래스를 상속해, 데이터 저장 메서드를 호출하면,
+테스트 데이터 생명주기를 효율적으로 관리할 수 있습니다.
 
 #### 결과
 
@@ -109,46 +155,24 @@ Controller, Service, Repository 계층별 / 통합 테스트. 다음의 경우�
 
 * 각 계층별 상위 클래스에서 담당해 3 곳으로 흩어져있던 엔티티 생성 코드를 1개의 클래스에서 담당하게 됐습니다.
 * `JpaRepository`, `EntityManager`를 통한 영속화 메서드를 오버라이딩 해,
-  해당 클래스를 상속하면 Repository, entityManager 필드를 사용할 수 있습니다.
+  해당 클래스를 상속하면 `...Repository,` `entityManager` 필드를 사용할 수 있습니다.
 * 테스트 클래스에서는 데이터 초기화, 데이터 관련 필드의 코드 없이 테스트 코드에 집중할 수 있습니다.
 
-### 알게 된 점
+#### 알게 된 점
 
 * 엔티티 테스트 중, 엔티티의 상위 클래스 protected 메서드에 접근하기 위해 패키지 구조를 조정할 필요가 있었습니다.
   이로 인해 접근 제어자와 프로덕션-테스트 패키지 구조를 동일하게 가져가는 것의 이유를 체감하게 됐습니다.
-
 * `@SpringBootTest` 애너테이션의 경우, `SpringBootTest.WebEnvironment.RANDOM_PORT`로 지정한 여러 테스트를 묶어 실행할 때,
   테스트 마다 Bean 으로 등록된 인스턴스를 `final`로 선언하더라도 컨텍스트 로딩 시 등록한 인스턴스를 공유하는 것을 알 수 있었습니다.
 
 이에 스프링의 구조에 대해 관심 갖고 학습 중입니다.
 
-개선의 경험 <small>(Experience of Improvement)</small>
----
-
-### 테스트 환경 개선
-
-기능 개발과 코드 리팩토링에 테스트가 주는 안정감을 느끼고 적극 이용 중입니다.
-
-![img.png](./assets/img/20240806_test_improvement.png)
-
-* 테스트 수가 많아지며 겪은 문제는 다음과 같았습니다.
-  - 여러 테스트를 묶어 실행 시, `id` 생성 전략에 따른 `id` 값의 증가로 리터럴 `id` 를 통한 엔티티 참조 시, `NoSuchElementException` 발생하는 문제.
-  - 이전 문제를 해결하고자 `@DirtiesContext` 애너테이션 도입 후, 테스트 소요 시간 증가.
-
-* 문제를 해결하기 위해 다음의 내용을 적용했습니다.
-  - 상속을 통해 상위 클래스 필드로 선언 및 초기화한 엔티티를 통해 id 접근.
-  - 상위 클래스에서의 테스트 데이터 초기화 관장. 및 `@DirtiesContext` 제거
-
-* 위의 내용을 적용한 후의 결과로,
-  - 상속을 통해 데이터 초기화, 인스턴스 생성 등 공통적 요소를 효과적으로 관리할 수 있게 됐습니다.
-  - 테스트 실행 순서에 상관없이 초기화된 데이터를 참조할 수 있게 됐습니다.
-  - 컨텍스트 로드 횟수를 1회로 줄여, **테스트 수행 시간을 63% 정도 단축**할 수 있었습니다.
-
 ### @DataJpaTest 에 Service 가져오기
 
 서비스 클래스 중, `Page`, `Slice` 의 `content` 가 비어있다면 예외를 던지는 메서드 테스트할 때,   
-`JpaRepository` 를 상속한 인터페이스가 반환하는 `Page`, `Slice` 를 직접 구현해야 하는 조금 번거로운 문제가 발생.   
----> 이를 해결하기 위해 `@DataJpaTest`, `@Import(TargetService.class)` 를 적용, JPA 가 반환하는 `Page`, `Slice` 를 사용해 간결한 테스트 작성.
+`JpaRepository` 를 상속한 인터페이스가 반환하는 `Page`, `Slice` 를 직접 구현해야 하는 조금은 번거로운 문제가 있었습니다.   
+---> 이를 해결하기 위해 `@DataJpaTest`, `@Import(TargetService.class)` 를 적용, 
+JPA 가 반환하는 `Page`, `Slice` 를 사용해 간결한 테스트를 작성할 수 있었습니다.
 
 ### 상속 활용하기
 
@@ -164,6 +188,7 @@ Controller, Service, Repository 계층별 / 통합 테스트. 다음의 경우�
 해프닝
 ---
 
-* 의도와 다르게 삭제된 배포 서버 데이터, MySQL binlog 기반 복구 경험.
+* 의도와 다르게 삭제된 배포 서버 데이터를 MySQL binlog 기반 복구한 경험이 있습니다.
   - 삭제 원인은 충분치 않은 테스트 케이스.
   - 이 경험을 통해 테스트 작성 시, 하나의 성공에 대해 반대 케이스의 중요성을 인식.
+  - `.bat` 스크립트를 작성 해 데이터베이스 데이터, 로그의 백업.
