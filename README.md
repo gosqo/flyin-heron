@@ -37,7 +37,9 @@ CommentLike 관련 기능 추가 중
 ---
 ![architecture](./assets/img/20240806_architecture.png)
 
-<span style="font-size:.6rem; text-align: right; display: block;">[목차로 돌아가기](#목차)</span>
+<div dir="rtl">
+  <a href="#목차">목차로 돌아가기</a>
+</div>
 
 개체간 관계도 (ERD)
 ---
@@ -45,7 +47,9 @@ CommentLike 관련 기능 추가 중
 
 CommentLike 관련 기능 추가 중
 
-<span style="font-size:.6rem; text-align: right; display: block;">[목차로 돌아가기](#목차)</span>
+<div dir="rtl">
+  <a href="#목차">목차로 돌아가기</a>
+</div>
 
 기능 (Features)
 ---
@@ -89,7 +93,9 @@ CommentLike 관련 기능 추가 중
   - WAS 로 향하는 HTTP 요청 로깅.
   - JWT 인증 시 일어날 수 있는 `JwtException` 처리하는 객체 등록.
 
-<span style="font-size:.6rem; text-align: right; display: block;">[목차로 돌아가기](#목차)</span>
+<div dir="rtl">
+  <a href="#목차">목차로 돌아가기</a>
+</div>
 
 ### Web Server
 
@@ -99,7 +105,9 @@ CommentLike 관련 기능 추가 중
 * 정적 자원 반환 및 `Cache-Control` 지시.
 * 정적 자원을 제외한, 서버로 향하는 모든 접근 로깅.
 
-<span style="font-size:.6rem; text-align: right; display: block;">[목차로 돌아가기](#목차)</span>
+<div dir="rtl">
+  <a href="#목차">목차로 돌아가기</a>
+</div>
 
 테스트 (Test)
 ---
@@ -109,7 +117,9 @@ Controller, Service, Repository 계층별 / 통합 테스트. 다음의 경우�
 * 신규 기능 도입 시 기능의 작동 원리, 구조에 대한 지식이 확실하지 않은 부분의 확인.
 * 기능 구현, 리팩토링 후, 의도대로 작동하는 지 확인.
 
-<span style="font-size:.6rem; text-align: right; display: block;">[목차로 돌아가기](#목차)</span>
+<div dir="rtl">
+  <a href="#목차">목차로 돌아가기</a>
+</div>
 
 개선의 경험 (Experience of Improvement)
 ---
@@ -138,7 +148,9 @@ Controller, Service, Repository 계층별 / 통합 테스트. 다음의 경우�
 - 테스트 실행 순서에 상관없이 초기화된 데이터를 참조할 수 있게 됐습니다.
 - 컨텍스트 로드 횟수를 1회로 줄여, **테스트 수행 시간을 63% 정도 단축**할 수 있었습니다.
 
-<span style="font-size:.6rem; text-align: right; display: block;">[목차로 돌아가기](#목차)</span>
+<div dir="rtl">
+  <a href="#목차">목차로 돌아가기</a>
+</div>
 
 #### 테스트 데이터 생명 주기 관리 전략
 
@@ -194,7 +206,9 @@ Controller, Service, Repository 계층별 / 통합 테스트. 다음의 경우�
 
 이에 스프링의 구조에 대해 관심 갖고 학습 중입니다.
 
-<span style="font-size:.6rem; text-align: right; display: block;">[목차로 돌아가기](#목차)</span>
+<div dir="rtl">
+  <a href="#목차">목차로 돌아가기</a>
+</div>
 
 ### @DataJpaTest 에 Service 가져오기
 
@@ -222,4 +236,6 @@ JPA 가 반환하는 `Page`, `Slice` 를 사용해 간결한 테스트를 작성
   - 이 경험을 통해 테스트 작성 시, 하나의 성공에 대해 반대 케이스의 중요성을 인식.
   - `.bat` 스크립트를 작성 해 데이터베이스 데이터, 로그의 백업.
 
-<span style="font-size:.6rem; text-align: right; display: block;">[목차로 돌아가기](#목차)</span>
+<div dir="rtl">
+  <a href="#목차">목차로 돌아가기</a>
+</div>
