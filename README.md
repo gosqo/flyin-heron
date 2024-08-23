@@ -1,6 +1,22 @@
 > 문서 업데이트: 2024-08-20
 
-소개 <small>(Intro)</small>
+## 목차
+
+1. [소개](#소개-intro)
+2. [사용 기술](#사용-기술-skills)
+3. [구조](#구조-architecture)
+4. [개체간 관계도](#개체간-관계도-erd)
+5. [기능](#기능-features)   
+   1. [Application](#application)   
+   2. [Web Server](#web-server)
+6. [테스트](#테스트-test)
+7. [개선의 경험](#개선의-경험-experience-of-improvement)   
+   1. [테스트 환경 개선](#테스트-환경-개선)   
+      1. [속도 개선](#속도-개선)   
+      2. [테스트 데이터 생명 주기 관리 전략](#테스트-데이터-생명-주기-관리-전략)
+8. [해프닝](#해프닝)
+
+소개 (Intro)
 ---
 회원, 인증, 게시물, 댓글 기반 게시판 서비스로, 개인 풀스택 프로젝트입니다.   
 REST 구조에 따라 API 를 설계, 구현했습니다.   
@@ -9,7 +25,7 @@ CommentLike 관련 기능 추가 중
 
 [서비스 이용해 보기](https://flyin-heron.duckdns.org)
 
-사용 기술 <small>(Skills)</small>
+사용 기술 (Skills)
 ---
 
 * Back-End: Java, Spring Boot, Spring Data JPA
@@ -17,17 +33,17 @@ CommentLike 관련 기능 추가 중
 * DevOps: Nginx, Git
 * Front-End: HTML, CSS, BootStrap, JavaScript
 
-구조 <small>(Architecture)</small>
+구조 (Architecture)
 ---
 ![architecture](./assets/img/20240806_architecture.png)
 
-개체간 관계도 <small>(ERD)</small>
+개체간 관계도 (ERD)
 ---
 ![erd](./assets/img/20240820_erd.png)
 
 CommentLike 관련 기능 추가 중
 
-기능 <small>(Features)</small>
+기능 (Features)
 ---
 
 ### Application
@@ -77,7 +93,7 @@ CommentLike 관련 기능 추가 중
 * 정적 자원 반환 및 `Cache-Control` 지시.
 * 정적 자원을 제외한, 서버로 향하는 모든 접근 로깅.
 
-테스트 <small>(Test)</small>
+테스트 (Test)
 ---
 
 Controller, Service, Repository 계층별 / 통합 테스트. 다음의 경우에 유용하게 사용 중입니다.
@@ -85,7 +101,7 @@ Controller, Service, Repository 계층별 / 통합 테스트. 다음의 경우�
 * 신규 기능 도입 시 기능의 작동 원리, 구조에 대한 지식이 확실하지 않은 부분의 확인.
 * 기능 구현, 리팩토링 후, 의도대로 작동하는 지 확인.
 
-개선의 경험 <small>(Experience of Improvement)</small>
+개선의 경험 (Experience of Improvement)
 ---
 
 ### 테스트 환경 개선
@@ -97,17 +113,20 @@ Controller, Service, Repository 계층별 / 통합 테스트. 다음의 경우�
 ![test improvement](./assets/img/20240806_test_improvement.png)
 
 ##### 배경
-  - 여러 테스트를 묶어 실행 시, `id` 생성 전략에 따른 `id` 값의 증가로 리터럴 `id` 를 통한 엔티티 참조 시, `NoSuchElementException` 발생하는 문제.
-  - 이전 문제를 해결하고자 `@DirtiesContext` 애너테이션 도입 후, 테스트 소요 시간 증가.
+
+- 여러 테스트를 묶어 실행 시, `id` 생성 전략에 따른 `id` 값의 증가로 리터럴 `id` 를 통한 엔티티 참조 시, `NoSuchElementException` 발생하는 문제.
+- 이전 문제를 해결하고자 `@DirtiesContext` 애너테이션 도입 후, 테스트 소요 시간 증가.
 
 ##### 해결 방안
-  - 상속을 통해 상위 클래스 필드로 선언 및 초기화한 엔티티를 통해 `id` 접근.
-  - 상위 클래스에서의 테스트 데이터 초기화 관장. 및 `@DirtiesContext` 제거
+
+- 상속을 통해 상위 클래스 필드로 선언 및 초기화한 엔티티를 통해 `id` 접근.
+- 상위 클래스에서의 테스트 데이터 초기화 관장. 및 `@DirtiesContext` 제거
 
 ##### 결과
-  - 상속을 통해 데이터 초기화, 인스턴스 생성 등 공통적 요소를 효과적으로 관리할 수 있게 됐습니다.
-  - 테스트 실행 순서에 상관없이 초기화된 데이터를 참조할 수 있게 됐습니다.
-  - 컨텍스트 로드 횟수를 1회로 줄여, **테스트 수행 시간을 63% 정도 단축**할 수 있었습니다.
+
+- 상속을 통해 데이터 초기화, 인스턴스 생성 등 공통적 요소를 효과적으로 관리할 수 있게 됐습니다.
+- 테스트 실행 순서에 상관없이 초기화된 데이터를 참조할 수 있게 됐습니다.
+- 컨텍스트 로드 횟수를 1회로 줄여, **테스트 수행 시간을 63% 정도 단축**할 수 있었습니다.
 
 #### 테스트 데이터 생명 주기 관리 전략
 
@@ -131,15 +150,15 @@ Controller, Service, Repository 계층별 / 통합 테스트. 다음의 경우�
 <small style="text-align: center; display: block;"></small>
 
 1. `TestDataInitializer` (데이터 생성)
-   - 테스트에 필요한 데이터를 생성하는 역할을 수행합니다.
-   - 생성한 데이터를 데이터베이스에 저장하는 행위를 추상화한 명세를 제공합니다.
+  - 테스트에 필요한 데이터를 생성하는 역할을 수행합니다.
+  - 생성한 데이터를 데이터베이스에 저장하는 행위를 추상화한 명세를 제공합니다.
 2. `EntityManagerDataInitializer`, `RepositoryDataInitializer` (데이터 저장 주체 분리)
-   - `TestDataInitializer` 를 상속받는 두 객체는 상위 객체에서 생성한 데이터를 데이터베이스에 저장하는 행위를 각각 EntityManager, JpaRepository 를 통해 구현합니다.
+  - `TestDataInitializer` 를 상속받는 두 객체는 상위 객체에서 생성한 데이터를 데이터베이스에 저장하는 행위를 각각 `EntityManager`, `JpaRepository`를 통해 구현합니다.
 3. `DataJpaTestRepositoryDataInitializer`, `SpringBootTestBase` (컨텍스트 분리)
-   - `JpaRepository` 를 사용해 데이터를 저장하는 경우는 두 가지의 컨텍스트로 나누어집니다.
-     - 데이터베이스 관련으로 한정된 컨텍스트
-     - 앱 전체 컨텍스트
-   - 상위 객체가 제공하는 데이터 저장 행위를 각각 다른 컨텍스트에서 사용할 수 있습니다.
+  - `JpaRepository` 를 사용해 데이터를 저장하는 경우는 두 가지의 컨텍스트로 나누어집니다.
+    - 데이터베이스 관련으로 한정된 컨텍스트
+    - 앱 전체 컨텍스트
+  - 상위 객체가 제공하는 데이터 저장 행위를 각각 다른 컨텍스트에서 사용할 수 있습니다.
 
 위와 같이 역할에 따라 계층을 분리하고, 용도에 따라 구현을 분리,
 테스트 클래스가 요구하는 각 맥락에서 필요한 상위 클래스를 상속해, 데이터 저장 메서드를 호출하면,
@@ -167,7 +186,7 @@ Controller, Service, Repository 계층별 / 통합 테스트. 다음의 경우�
 
 서비스 클래스 중, `Page`, `Slice` 의 `content` 가 비어있다면 예외를 던지는 메서드 테스트할 때,   
 `JpaRepository` 를 상속한 인터페이스가 반환하는 `Page`, `Slice` 를 직접 구현해야 하는 조금은 번거로운 문제가 있었습니다.   
----> 이를 해결하기 위해 `@DataJpaTest`, `@Import(TargetService.class)` 를 적용, 
+---> 이를 해결하기 위해 `@DataJpaTest`, `@Import(TargetService.class)` 를 적용,
 JPA 가 반환하는 `Page`, `Slice` 를 사용해 간결한 테스트를 작성할 수 있었습니다.
 
 ### 상속 활용하기
