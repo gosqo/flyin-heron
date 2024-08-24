@@ -2,12 +2,15 @@ package com.vong.manidues.service;
 
 import com.vong.manidues.domain.Board;
 import com.vong.manidues.domain.Comment;
+import com.vong.manidues.domain.CommentLike;
 import com.vong.manidues.domain.Member;
 import com.vong.manidues.dto.comment.*;
+import com.vong.manidues.dto.commentlike.GetCommentsLikedByResponse;
+import com.vong.manidues.global.utility.AuthHeaderUtility;
 import com.vong.manidues.repository.BoardRepository;
+import com.vong.manidues.repository.CommentLikeRepository;
 import com.vong.manidues.repository.CommentRepository;
 import com.vong.manidues.repository.MemberRepository;
-import com.vong.manidues.global.utility.AuthHeaderUtility;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -26,17 +29,46 @@ import java.util.NoSuchElementException;
 @Transactional
 @RequiredArgsConstructor
 public class CommentService {
-    public static final int PAGE_SIZE = 6;
+    private static final int LIKED_COMMENTS_PAGE_SIZE = 10;
+    private static final int NORMAL_COMMENTS_PAGE_SIZE = 6;
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final ClaimExtractor claimExtractor;
+    private final CommentLikeRepository commentLikeRepository;
 
-    private static PageRequest getPageRequest(int pageNumber) {
+    private static PageRequest getNormalCommentsPageRequest(int pageNumber) {
         pageNumber = pageNumber - 1;
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
 
-        return PageRequest.of(pageNumber, PAGE_SIZE, sort);
+        return PageRequest.of(pageNumber, NORMAL_COMMENTS_PAGE_SIZE, sort);
+    }
+
+    private static PageRequest getLikedCommentsPageRequest(int pageNumber) {
+        pageNumber = pageNumber - 1;
+        Sort sort = Sort.by(Sort.Direction.ASC, "id");
+
+        return PageRequest.of(pageNumber, LIKED_COMMENTS_PAGE_SIZE, sort);
+    }
+
+    /**
+     * 회원 자신이 좋아요한 댓글들을 반환. 마이페이지에서 조회
+     *
+     * @param memberEmail 요청한 멤버의 이메일
+     * @param pageNumber  조회할 페이지의 번호
+     * @return 좋아요한 코멘트 Slice 가 담긴 DTO
+     */
+    public GetCommentsLikedByResponse getCommentsLikedBy(String memberEmail, Integer pageNumber) {
+        final Member member = memberRepository.findByEmail(memberEmail).orElseThrow(
+                () -> new NoSuchElementException("존재하지 않는 회원의 댓글 좋아요 여부 조회 요청.")
+        );
+        final Slice<Comment> comments = commentLikeRepository.findByMemberId(
+                        member.getId(), getLikedCommentsPageRequest(pageNumber)
+                ).map(CommentLike::getComment);
+
+        return GetCommentsLikedByResponse.builder()
+                .comments(comments)
+                .build();
     }
 
     public CommentDeleteResponse remove(Long id, HttpServletRequest request) {
@@ -109,7 +141,7 @@ public class CommentService {
     }
 
     public CommentPageResponse getCommentSliceOf(Long boardId, int pageNumber) throws NoResourceFoundException {
-        Pageable pageable = getPageRequest(pageNumber);
+        Pageable pageable = getNormalCommentsPageRequest(pageNumber);
         Slice<Comment> found = commentRepository.findByBoardId(boardId, pageable);
 
         if (found.getContent().isEmpty()) {

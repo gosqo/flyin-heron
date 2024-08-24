@@ -52,6 +52,7 @@ class CommentRepositoryTest extends DataJpaTestRepositoryDataInitializer {
     @Import({CommentService.class})
     @SpyBeans(@SpyBean(ClaimExtractor.class))
     class WithService extends DataJpaTestRepositoryDataInitializer {
+        private static final int PAGE_SIZE = 6;
         private final CommentService commentService;
 
         @Autowired
@@ -73,10 +74,39 @@ class CommentRepositoryTest extends DataJpaTestRepositoryDataInitializer {
         }
 
         @Test
+        void getCommentsLikedBy() {
+            final int pageNumber = 1;
+            commentService.getCommentsLikedBy(member.getEmail(), pageNumber);
+
+            /*select
+            cl1_0.id,
+                    cl1_0.comment_id,
+                    cl1_0.content_modified_at,
+                    cl1_0.deleted_at,
+                    cl1_0.member_id,
+                    cl1_0.registered_at,
+                    cl1_0.status,
+                    cl1_0.updated_at
+            from
+                    comment_like cl1_0
+            join
+                    member m1_0
+            on m1_0.id=cl1_0.member_id
+            where
+                    m1_0.id=?
+            order by
+                    cl1_0.id
+            offset
+                    ? rows
+            fetch
+                    first ? rows only*/
+        }
+
+        @Test
         @DisplayName("Request page is empty, then throws")
         void emptySliceThrows() {
             Long boardId = boards.get(0).getId();
-            int pageCount = COMMENT_COUNT / CommentService.PAGE_SIZE;
+            int pageCount = COMMENT_COUNT / PAGE_SIZE;
             // 1 for throwing exception, 1 for getPageRequest() which index begin from 0.
             int requestPage = (pageCount + 1 + 1);
 
