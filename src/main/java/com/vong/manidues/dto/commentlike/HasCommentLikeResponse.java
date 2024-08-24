@@ -7,7 +7,5 @@ import lombok.Getter;
 @Builder
 public class HasCommentLikeResponse {
     private Integer status;
-    private String message;
-
-    private Boolean hasLike;
+    private boolean hasLike;
 }
