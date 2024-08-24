@@ -38,10 +38,6 @@ public class CommentLike extends IdentityBaseEntity {
     )
     private Member member;
 
-    protected void prePersist() {
-        super.status = EntityStatus.ACTIVE;
-    }
-
     @Override
     public String toString() {
         return "CommentLike{" +

@@ -8,5 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
+
     Slice<Comment> findByBoardId(Long boardId, Pageable pageable);
 }
