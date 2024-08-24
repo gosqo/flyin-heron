@@ -12,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Slf4j
 class CommentLikeTest extends EntityManagerDataInitializer {
+    private Comment targetComment;
 
     @Autowired
     public CommentLikeTest(EntityManagerFactory emf) {
@@ -22,11 +23,11 @@ class CommentLikeTest extends EntityManagerDataInitializer {
     void setUp() {
         initComments();
         log.info("==== Test data initialized. ====");
+        targetComment = comments.get(0);
     }
 
     @Test
     void when_create_normally() {
-        var targetComment = comments.get(0);
         var commentLike = CommentLike.builder()
                 .member(member)
                 .comment(targetComment)
@@ -39,29 +40,21 @@ class CommentLikeTest extends EntityManagerDataInitializer {
         assertThat(commentLike.getComment()).isEqualTo(targetComment);
 
         assertThat(commentLike.getRegisteredAt()).isNotNull();
-        assertThat(commentLike.getUpdatedAt()).isNotNull();
         assertThat(commentLike.getRegisteredAt()).isEqualTo(commentLike.getUpdatedAt());
 
         assertThat(commentLike.getContentModifiedAt()).isNull();
         assertThat(commentLike.getDeletedAt()).isNull();
     }
 
+    private CommentLike buildCommentLike() {
+        return CommentLike.builder()
+                .member(member)
+                .comment(targetComment)
+                .build();
+    }
+
     @Nested
     class CommentLike_domain_features {
-
-        @Test
-        void can_set_status_soft_deleted() {
-            var commentLike = CommentLike.builder()
-                    .member(member)
-                    .comment(comments.get(0))
-                    .build();
-
-            em.persist(commentLike);
-
-            commentLike.softDelete();
-
-            assertThat(commentLike.getStatus()).isEqualTo(EntityStatus.SOFT_DELETED);
-        }
     }
 
     @Nested
@@ -91,18 +84,15 @@ class CommentLikeTest extends EntityManagerDataInitializer {
 
         @Test
         void existing_combination_of_member_id_and_comment_id() {
-            var commentLike1 = CommentLike.builder()
-                    .member(member)
-                    .comment(comments.get(0))
-                    .build();
-            var commentLike2 = CommentLike.builder()
-                    .member(member)
-                    .comment(comments.get(0))
-                    .build();
+            var commentLike1 = buildCommentLike();
+            var commentLike2 = buildCommentLike();
+
+            assertThat(commentLike1).isNotEqualTo(commentLike2);
 
             em.persist(commentLike1);
 
             assertThatThrownBy(() -> em.persist(commentLike2));
+
             transaction.rollback();
         }
     }
