@@ -5,10 +5,9 @@ import com.vong.manidues.domain.fixture.MemberFixture;
 import com.vong.manidues.dto.JsonResponse;
 import com.vong.manidues.dto.auth.AuthenticationResponse;
 import com.vong.manidues.global.exception.ErrorResponse;
-import com.vong.manidues.repository.BoardRepository;
-import com.vong.manidues.repository.CommentRepository;
 import com.vong.manidues.repository.MemberRepository;
 import com.vong.manidues.repository.TokenRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,23 +23,38 @@ class LogoutTest extends SpringBootTestBase {
     private static final String LOGIN_URI = "/api/v1/auth/authenticate";
 
     private final TestTokenBuilder tokenBuilder;
+    private final MemberRepository memberRepository;
+    private final TokenRepository tokenRepository;
 
     @Autowired
     public LogoutTest(
-            MemberRepository memberRepository,
-            TokenRepository tokenRepository,
-            BoardRepository boardRepository,
-            CommentRepository commentRepository,
             TestRestTemplate template,
-            TestTokenBuilder tokenBuilder
+            TestTokenBuilder tokenBuilder,
+            MemberRepository memberRepository,
+            TokenRepository tokenRepository
     ) {
-        super(memberRepository, boardRepository, commentRepository, tokenRepository, template);
+        super(template);
         this.tokenBuilder = tokenBuilder;
+        this.memberRepository = memberRepository;
+        this.tokenRepository = tokenRepository;
     }
 
+    @Override
+    void initData() {
+        member = memberRepository.save(buildMember());
+    }
+
+    @Override
     @BeforeEach
     void setUp() {
-        initMember();
+        initData();
+    }
+
+    @Override
+    @AfterEach
+    void tearDown() {
+        tokenRepository.deleteAll();
+        memberRepository.deleteAll();
     }
 
     @Test

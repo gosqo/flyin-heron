@@ -2,6 +2,7 @@ package com.vong.manidues.global.data;
 
 import com.vong.manidues.domain.Board;
 import com.vong.manidues.domain.Comment;
+import com.vong.manidues.domain.CommentLike;
 import com.vong.manidues.domain.Member;
 import com.vong.manidues.domain.fixture.BoardFixture;
 import com.vong.manidues.domain.member.Role;
@@ -12,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static com.vong.manidues.domain.fixture.MemberFixture.*;
 
@@ -25,6 +27,7 @@ public abstract class TestDataInitializer {
     protected Member member;
     protected List<Board> boards;
     protected List<Comment> comments;
+    protected List<CommentLike> commentLikes;
 
     protected Member buildMember() {
         return Member.builder()
@@ -63,9 +66,19 @@ public abstract class TestDataInitializer {
         return comments;
     }
 
-    protected abstract void initMember();
+    protected List<CommentLike> buildCommentLikes() {
+        List<CommentLike> commentLikes = new ArrayList<>();
 
-    protected abstract void initBoards();
+        IntStream.range(0, COMMENT_COUNT / 2)
+                .forEach(
+                        (i) -> commentLikes.add(
+                                CommentLike.builder()
+                                        .member(member)
+                                        .comment(comments.get(i))
+                                        .build()
+                        )
+                );
 
-    protected abstract void initComments();
+        return commentLikes;
+    }
 }

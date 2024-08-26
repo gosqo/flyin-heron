@@ -40,10 +40,12 @@ abstract class EntityManagerDataInitializer extends TestDataInitializer {
         em.createQuery("DELETE FROM Board b").executeUpdate();
         em.createQuery("DELETE FROM Member m").executeUpdate();
 
+        var commentLikeList = em.createQuery("SELECT cl FROM CommentLike cl").getResultList();
         var commentList = em.createQuery("SELECT c FROM Comment c").getResultList();
         var boardList = em.createQuery("SELECT b FROM Board b").getResultList();
         var memberList = em.createQuery("SELECT m FROM Member m").getResultList();
 
+        assertThat(commentLikeList).isEmpty();
         assertThat(commentList).isEmpty();
         assertThat(boardList).isEmpty();
         assertThat(memberList).isEmpty();
@@ -51,23 +53,26 @@ abstract class EntityManagerDataInitializer extends TestDataInitializer {
         transaction.commit();
     }
 
-    @Override
     protected void initMember() {
         member = buildMember();
         em.persist(member);
     }
 
-    @Override
     protected void initBoards() {
         initMember();
         boards = buildBoards();
         boards.forEach(em::persist);
     }
 
-    @Override
     protected void initComments() {
         initBoards();
         comments = buildComments();
         comments.forEach(em::persist);
+    }
+
+    protected void initCommentLikes() {
+        initComments();
+        commentLikes = buildCommentLikes();
+        commentLikes.forEach(em::persist);
     }
 }

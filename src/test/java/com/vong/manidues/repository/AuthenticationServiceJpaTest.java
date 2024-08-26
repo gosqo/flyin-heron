@@ -38,28 +38,36 @@ class AuthenticationServiceJpaTest {
                     }
             )
     )
-    class WithService extends DataJpaTestRepositoryDataInitializer {
+    class WithService extends RepositoryTestBase {
         private final AuthenticationService authService;
         @MockBean
         private final AuthenticationManager authManager;
 
+        private final MemberRepository memberRepository;
+        private final TokenRepository tokenRepository;
+
         @Autowired
         public WithService(
                 MemberRepository memberRepository
-                , BoardRepository boardRepository
-                , CommentRepository commentRepository
                 , TokenRepository tokenRepository
                 , AuthenticationService authService
                 , AuthenticationManager authManager
         ) {
-            super(memberRepository, boardRepository, commentRepository, tokenRepository);
+            this.memberRepository = memberRepository;
+            this.tokenRepository = tokenRepository;
             this.authService = authService;
             this.authManager = authManager;
         }
 
+        @Override
+        void initData() {
+            member = memberRepository.save(buildMember());
+        }
+
+        @Override
         @BeforeEach
         void setUp() {
-            initMember();
+            initData();
             log.info("==== Test data initialized. ====");
         }
 

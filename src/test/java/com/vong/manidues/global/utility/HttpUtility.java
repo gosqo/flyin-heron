@@ -86,8 +86,8 @@ public class HttpUtility {
 
     public static <T> void logResponse(ResponseEntity<T> response) {
         log.info(response.getBody() == null
-                        ? "response: {}\n{}"
-                        : "response: {}\n{}\n{}"
+                        ? "response: {}\nheaders: {}"
+                        : "response: {}\nheaders: {}\nbody: {}"
                 , response.getStatusCode()
                 , response.getHeaders()
                 , response.getBody()

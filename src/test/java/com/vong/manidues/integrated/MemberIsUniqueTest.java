@@ -5,10 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vong.manidues.domain.fixture.MemberFixture;
 import com.vong.manidues.dto.member.IsUniqueEmailRequest;
 import com.vong.manidues.dto.member.IsUniqueNicknameRequest;
-import com.vong.manidues.repository.BoardRepository;
-import com.vong.manidues.repository.CommentRepository;
 import com.vong.manidues.repository.MemberRepository;
-import com.vong.manidues.repository.TokenRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -25,20 +23,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @AutoConfigureMockMvc
 class MemberIsUniqueTest extends SpringBootTestBase {
-
     private final MockMvc mockMvc;
+    private final MemberRepository memberRepository;
 
     @Autowired
-    public MemberIsUniqueTest(
-            MemberRepository memberRepository,
-            TokenRepository tokenRepository,
-            BoardRepository boardRepository,
-            CommentRepository commentRepository,
-            TestRestTemplate template,
-            MockMvc mockMvc
-    ) {
-        super(memberRepository, boardRepository, commentRepository, tokenRepository, template);
+    public MemberIsUniqueTest(TestRestTemplate template, MockMvc mockMvc, MemberRepository memberRepository) {
+        super(template);
         this.mockMvc = mockMvc;
+        this.memberRepository = memberRepository;
     }
 
     private static String getNicknameRequestBodyAsString(String nickname)
@@ -51,9 +43,21 @@ class MemberIsUniqueTest extends SpringBootTestBase {
         return new ObjectMapper().writeValueAsString(new IsUniqueEmailRequest(email));
     }
 
+    @Override
+    void initData() {
+        member = memberRepository.save(buildMember());
+    }
+
+    @Override
     @BeforeEach
     void setUp() {
-        initMember();
+        initData();
+    }
+
+    @Override
+    @AfterEach
+    void tearDown() {
+        memberRepository.deleteAll();
     }
 
     @Nested

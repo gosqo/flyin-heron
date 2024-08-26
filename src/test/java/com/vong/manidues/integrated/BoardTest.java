@@ -7,13 +7,8 @@ import com.vong.manidues.dto.board.BoardRegisterRequest;
 import com.vong.manidues.dto.board.BoardRegisterResponse;
 import com.vong.manidues.global.utility.HttpUtility;
 import com.vong.manidues.repository.BoardRepository;
-import com.vong.manidues.repository.CommentRepository;
 import com.vong.manidues.repository.MemberRepository;
-import com.vong.manidues.repository.TokenRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpHeaders;
@@ -29,18 +24,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class BoardTest extends SpringBootTestBase {
     private final TestTokenBuilder tokenBuilder;
+    private final MemberRepository memberRepository;
+    private final BoardRepository boardRepository;
 
     @Autowired
     public BoardTest(
-            MemberRepository memberRepository,
-            TokenRepository tokenRepository,
-            BoardRepository boardRepository,
-            CommentRepository commentRepository,
             TestRestTemplate template,
-            TestTokenBuilder tokenBuilder
+            TestTokenBuilder tokenBuilder,
+            MemberRepository memberRepository,
+            BoardRepository boardRepository
     ) {
-        super(memberRepository, boardRepository, commentRepository, tokenRepository, template);
+        super(template);
         this.tokenBuilder = tokenBuilder;
+        this.memberRepository = memberRepository;
+        this.boardRepository = boardRepository;
     }
 
     private static ArrayList<String> getCookieListFromResponse(List<String> cookiesFromResponse) {
@@ -52,9 +49,23 @@ class BoardTest extends SpringBootTestBase {
         return cookiesToSend;
     }
 
+    @Override
+    void initData() {
+        member = memberRepository.save(buildMember());
+        boards = boardRepository.saveAll(buildBoards());
+    }
+
+    @Override
     @BeforeEach
     void setUp() {
-        initBoards();
+        initData();
+    }
+
+    @Override
+    @AfterEach
+    void tearDown() {
+        boardRepository.deleteAll();
+        memberRepository.deleteAll();
     }
 
     @Nested

@@ -1,22 +1,22 @@
 package com.vong.manidues.integrated;
 
 import com.vong.manidues.domain.Token;
-import com.vong.manidues.repository.BoardRepository;
-import com.vong.manidues.repository.CommentRepository;
 import com.vong.manidues.repository.MemberRepository;
 import com.vong.manidues.repository.TokenRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -28,55 +28,78 @@ import static org.awaitility.Awaitility.await;
 @Slf4j
 class TokenSchedulerTest extends SpringBootTestBase {
     private final TestTokenBuilder tokenBuilder;
+    private final MemberRepository memberRepository;
+    private final TokenRepository tokenRepository;
 
     @Autowired
     public TokenSchedulerTest(
-            MemberRepository memberRepository,
-            TokenRepository tokenRepository,
-            BoardRepository boardRepository,
-            CommentRepository commentRepository,
             TestRestTemplate template,
-            TestTokenBuilder tokenBuilder
+            TestTokenBuilder tokenBuilder,
+            MemberRepository memberRepository,
+            TokenRepository tokenRepository
     ) {
-        super(memberRepository, boardRepository, commentRepository, tokenRepository, template);
+        super(template);
         this.tokenBuilder = tokenBuilder;
+        this.memberRepository = memberRepository;
+        this.tokenRepository = tokenRepository;
     }
 
+    @Override
+    void initData() {
+        member = memberRepository.save(buildMember());
+    }
+
+    @Override
     @BeforeEach
     void setUp() {
-        initMember();
+        initData();
     }
 
-    private void saveTokens() {
-        List<String> tokens = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
+    @Override
+    @AfterEach
+    void tearDown() {
+        tokenRepository.deleteAll();
+        memberRepository.deleteAll();
+    }
+
+    private Map<String, Date> buildTestTokens() {
+        Map<String, Date> testTokens = new HashMap<>();
+        int tokenCount = 3;
+        int lastTokenIndex = tokenCount - 1;
+
+        IntStream.range(0, tokenCount).forEach(i -> {
             long expiration = -i * 1_000_000L - 1_000_000L;
 
-            if (i == 2) expiration = -expiration;
-            String token = tokenBuilder.buildToken(new HashMap<>(), member, expiration);
-            tokens.add(token);
-        }
+            if (i == lastTokenIndex) {
+                expiration *= -1; // expiration 미래로 설정.
+            }
 
-        for (String token : tokens) {
-            tokenRepository.save(Token.builder().member(member).token(token).expirationDate(new Date()) // dummy
+            Date expirationDate = new Date(System.currentTimeMillis() + expiration);
+            String token = tokenBuilder.buildToken(member, expiration);
+
+            testTokens.put(token, expirationDate);
+        });
+
+        return testTokens;
+    }
+
+    private void persistMappedTokens(Map<String, Date> testTokens) {
+        for (String token : testTokens.keySet()) {
+            tokenRepository.save(Token.builder()
+                    .member(member)
+                    .token(token)
+                    .expirationDate(testTokens.get(token)) // dummy Date to save expired token
                     .build());
         }
     }
 
-    private void logStoredTokens() {
-        tokenBuilder.getStoredTokens().forEach(i -> log.info(i.toString()));
-    }
-
     @Test
     void delete_expired_tokens() throws InterruptedException {
-        saveTokens();
-        logStoredTokens();
+        persistMappedTokens(buildTestTokens());
 
         await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
             List<Token> leftTokens = tokenRepository.findAll();
             assertThat(leftTokens.size()).isEqualTo(1);
         });
-
-        logStoredTokens();
     }
 }
