@@ -36,11 +36,11 @@ public abstract class BaseEntity {
         this.status = EntityStatus.ACTIVE;
     }
 
-    protected Boolean isActive() {
+    public Boolean isActive() {
         return getStatus().equals(EntityStatus.ACTIVE);
     }
 
-    protected Boolean isSoftDeleted() {
+    public Boolean isSoftDeleted() {
         return getStatus().equals(EntityStatus.SOFT_DELETED);
     }
 

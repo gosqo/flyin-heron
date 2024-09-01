@@ -23,6 +23,7 @@ import static com.vong.manidues.domain.fixture.MemberFixture.*;
 public abstract class TestDataInitializer {
     protected static final int BOARD_COUNT = 3;
     protected static final int COMMENT_COUNT = 20;
+    protected static final int COMMENT_LIKE_COUNT = COMMENT_COUNT / 2;
 
     protected Member member;
     protected List<Board> boards;
@@ -69,14 +70,21 @@ public abstract class TestDataInitializer {
     protected List<CommentLike> buildCommentLikes() {
         List<CommentLike> commentLikes = new ArrayList<>();
 
-        IntStream.range(0, COMMENT_COUNT / 2)
+        // 테스트를 위해 생성된 전체 comments 중, 초기 절반의 comments 에 멤버가 좋아요 함.
+        IntStream.range(0, COMMENT_LIKE_COUNT)
                 .forEach(
-                        (i) -> commentLikes.add(
-                                CommentLike.builder()
-                                        .member(member)
-                                        .comment(comments.get(i))
-                                        .build()
-                        )
+                        (i) -> {
+                            commentLikes.add(
+                                    CommentLike.builder()
+                                            .member(member)
+                                            .comment(comments.get(i))
+                                            .build()
+                            );
+
+                            // production: service layer 에서 일어나는 동작 수행.
+                            Comment added = commentLikes.get(i).getComment();
+                            added.addLikeCount();
+                        }
                 );
 
         return commentLikes;
