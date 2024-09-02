@@ -2,15 +2,19 @@ package com.vong.manidues.service;
 
 import com.vong.manidues.domain.Comment;
 import com.vong.manidues.domain.CommentLike;
+import com.vong.manidues.domain.EntityStatus;
 import com.vong.manidues.domain.Member;
 import com.vong.manidues.repository.CommentLikeRepository;
 import com.vong.manidues.repository.CommentRepository;
 import com.vong.manidues.repository.MemberRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +22,9 @@ public class CommentLikeService {
     private final CommentLikeRepository commentLikeRepository;
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
+
+    @PersistenceContext
+    private EntityManager em;
 
     @Transactional
     public CommentLike deleteCommentLike(Long memberId, Long commentId) {
@@ -48,26 +55,53 @@ public class CommentLikeService {
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 댓글에 좋아요 요청.")
         );
+        AtomicReference<CommentLike> commentLike = new AtomicReference<>();
 
-        CommentLike commentLike = commentLikeRepository.findByMemberIdAndCommentId(memberId, comment.getId())
-                .orElse(null);
+        commentLikeRepository.findByMemberIdAndCommentId(memberId, comment.getId())
+                .ifPresentOrElse(
+                        (stored) -> {
+                            if (stored.getStatus() != EntityStatus.ACTIVE) {
+                                stored.activate();
+                                comment.addLikeCount();
+                            }
+                            commentLike.set(stored);
+                        },
+                        () -> commentLike.set(commentLikeRepository.save(CommentLike.builder()
+                                .member(member)
+                                .comment(comment)
+                                .build()))
+                );
 
-        comment.addLikeCount(); // Comment 엔티티에 좋아요 수 늘임.
-
-        if (commentLike == null) {
-            commentLike = commentLikeRepository.save(CommentLike.builder()
-                    .member(member)
-                    .comment(comment)
-                    .build()
-            );
-
-            return commentLike;
-        }
-
-        if (!commentLike.isActive()) {
-            commentLike.activate();
-        }
-
-        return commentLike;
+        return commentLike.get();
     }
+
+//    @Transactional
+//    public CommentLike registerCommentLike(Long memberId, Long commentId) {
+//        Member member = memberRepository.findById(memberId).orElseThrow(
+//                () -> new NoSuchElementException("존재하지 않는 회원의 댓글 좋아요 요청.")
+//        );
+//        Comment comment = commentRepository.findById(commentId).orElseThrow(
+//                () -> new NoSuchElementException("존재하지 않는 댓글에 좋아요 요청.")
+//        );
+//
+//        CommentLike commentLike = commentLikeRepository.findByMemberIdAndCommentId(memberId, comment.getId())
+//                .orElse(null);
+//
+//        if (commentLike == null) {
+//            commentLike = commentLikeRepository.save(CommentLike.builder()
+//                    .member(member)
+//                    .comment(comment)
+//                    .build()
+//            );
+//
+//            return commentLike;
+//        }
+//
+//        if (!commentLike.isActive()) {
+//            commentLike.activate();
+//            comment.addLikeCount(); // Comment 엔티티에 좋아요 수 늘임.
+//        }
+//
+//        return commentLike;
+//    }
 }

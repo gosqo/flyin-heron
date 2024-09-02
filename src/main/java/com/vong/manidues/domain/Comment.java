@@ -53,7 +53,7 @@ public class Comment {
 
     @ColumnDefault(value = "0")
     @Column(nullable = false)
-    private Long likeCount = 0L;
+    private Long likeCount;
 
     @CreationTimestamp
     private LocalDateTime registerDate;
