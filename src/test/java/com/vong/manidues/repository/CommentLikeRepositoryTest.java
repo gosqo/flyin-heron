@@ -4,6 +4,8 @@ import com.vong.manidues.domain.Comment;
 import com.vong.manidues.domain.CommentLike;
 import com.vong.manidues.domain.EntityStatus;
 import com.vong.manidues.service.CommentLikeService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -30,6 +32,9 @@ class CommentLikeRepositoryTest extends RepositoryTestBase {
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
+    @PersistenceContext
+    private EntityManager em;
+
     private Long memberId;
     private Long commentIdHasCommentLike;
     private Long commentIdToRegisterItsLike;
@@ -73,6 +78,13 @@ class CommentLikeRepositoryTest extends RepositoryTestBase {
         memberId = member.getId();
         commentIdHasCommentLike = comments.get(0).getId();
         commentIdToRegisterItsLike = commentIdHasCommentLike + COMMENT_LIKE_COUNT;
+    }
+
+    @Test
+    void comment_referenced_by_CommentLike_has_1_likeCount() {
+//        em.contains(comments.get(0)); // true
+        Comment comment = commentRepository.findById(commentIdHasCommentLike).orElseThrow();
+        assertThat(comment.getLikeCount()).isEqualTo(1L);
     }
 
     @Test

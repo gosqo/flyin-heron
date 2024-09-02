@@ -80,10 +80,6 @@ public abstract class TestDataInitializer {
                                             .comment(comments.get(i))
                                             .build()
                             );
-
-                            // production: service layer 에서 일어나는 동작 수행.
-                            Comment added = commentLikes.get(i).getComment();
-                            added.addLikeCount();
                         }
                 );
 
