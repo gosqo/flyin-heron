@@ -1,6 +1,5 @@
 package com.vong.manidues.service;
 
-import com.vong.manidues.repository.MemberRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -18,9 +17,6 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class JwtService {
-
-    private final MemberRepository memberRepository;
-
     @Value("${application.security.jwt.secret-key}")
     private String secretKey;
     @Value("${application.security.jwt.access-token.expiration}")
@@ -50,12 +46,8 @@ public class JwtService {
             UserDetails userDetails,
             long expiration
     ) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("id", memberRepository.findByEmail(userDetails.getUsername()).orElseThrow().getId());
-
         return Jwts.builder()
                 .setClaims(extraClaims)
-                .addClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
