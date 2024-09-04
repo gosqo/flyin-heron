@@ -12,7 +12,6 @@ import com.vong.manidues.repository.CommentRepository;
 import com.vong.manidues.repository.MemberRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,7 +62,6 @@ class CommentLikeTest extends SpringBootTestBase {
     }
 
     @Override
-    @Transactional
     void initData() {
         member = memberRepository.save(buildMember());
         boards = boardRepository.saveAll(buildBoards());
@@ -108,14 +106,16 @@ class CommentLikeTest extends SpringBootTestBase {
     }
 
     @Test
-    void register_existing_CommentLike() throws JsonProcessingException {
+    void register_existing_CommentLike() {
         String uri = String.format(TARGET_URI_FORMAT, commentIdHasCommentLike);
         extraClaims = claimsPutMemberId(member);
 
         String token = tokenBuilder.buildToken(extraClaims, member);
 
         final var headers = buildPostHeadersWithToken(token);
-        final var request = buildPostRequestEntity(headers, null, uri);
+        final var request = RequestEntity.post(uri)
+                .headers(headers)
+                .build();
         final var response = template.exchange(request, RegisterCommentLikeResponse.class);
 
         Comment foundComment = commentRepository.findById(commentIdHasCommentLike).orElseThrow();
@@ -125,7 +125,7 @@ class CommentLikeTest extends SpringBootTestBase {
     }
 
     @Test
-    void registerCommentLike() throws JsonProcessingException {
+    void registerCommentLike() {
         Comment storedComment = commentRepository.findById(commentIdToRegisterItsLike).orElseThrow();
 
         assertThat(storedComment.getLikeCount()).isEqualTo(0L);
@@ -139,7 +139,6 @@ class CommentLikeTest extends SpringBootTestBase {
         final var request = RequestEntity.post(uri)
                 .headers(headers)
                 .build();
-//         buildPostRequestEntity(headers, null, uri);
         final var response = template.exchange(request, RegisterCommentLikeResponse.class);
 
         Comment foundComment = commentRepository.findById(commentIdToRegisterItsLike).orElseThrow();
@@ -149,7 +148,7 @@ class CommentLikeTest extends SpringBootTestBase {
     }
 
     @Test
-    void hasLike() throws JsonProcessingException {
+    void hasLike() {
         Long commentId = comments.get(0).getId();
         String uri = String.format(TARGET_URI_FORMAT, commentId);
         extraClaims = claimsPutMemberId(member);

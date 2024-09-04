@@ -74,34 +74,4 @@ public class CommentLikeService {
 
         return commentLike.get();
     }
-
-//    @Transactional
-//    public CommentLike registerCommentLike(Long memberId, Long commentId) {
-//        Member member = memberRepository.findById(memberId).orElseThrow(
-//                () -> new NoSuchElementException("존재하지 않는 회원의 댓글 좋아요 요청.")
-//        );
-//        Comment comment = commentRepository.findById(commentId).orElseThrow(
-//                () -> new NoSuchElementException("존재하지 않는 댓글에 좋아요 요청.")
-//        );
-//
-//        CommentLike commentLike = commentLikeRepository.findByMemberIdAndCommentId(memberId, comment.getId())
-//                .orElse(null);
-//
-//        if (commentLike == null) {
-//            commentLike = commentLikeRepository.save(CommentLike.builder()
-//                    .member(member)
-//                    .comment(comment)
-//                    .build()
-//            );
-//
-//            return commentLike;
-//        }
-//
-//        if (!commentLike.isActive()) {
-//            commentLike.activate();
-//            comment.addLikeCount(); // Comment 엔티티에 좋아요 수 늘임.
-//        }
-//
-//        return commentLike;
-//    }
 }

@@ -21,14 +21,32 @@ class CommentLikeTest extends EntityManagerDataInitializer {
 
     @BeforeEach
     void setUp() {
-        initComments();
+        initComments(); // Comment 까지만 생성, CommentLike 개체 생성하지 않음.
         log.info("==== Test data initialized. ====");
+        em.flush();
+
         targetComment = comments.get(0);
     }
 
     @Test
+    void when_create_normally_its_Comment_likeCount_is_1L() {
+        CommentLike commentLike = CommentLike.builder()
+                .member(member)
+                .comment(targetComment)
+                .build();
+
+        em.persist(commentLike);
+
+        Comment foundComment = em.find(Comment.class, commentLike.getComment().getId());
+
+        // CommentLike @PrePersist 를 통한 comment.likeCount 필드 값 증가
+        assertThat(foundComment.getLikeCount()).isEqualTo(1L);
+        assertThat(commentLike.getComment().getLikeCount()).isEqualTo(1L);
+    }
+
+    @Test
     void when_create_normally() {
-        var commentLike = CommentLike.builder()
+        CommentLike commentLike = CommentLike.builder()
                 .member(member)
                 .comment(targetComment)
                 .build();
@@ -38,6 +56,9 @@ class CommentLikeTest extends EntityManagerDataInitializer {
         assertThat(commentLike.getStatus()).isEqualTo(EntityStatus.ACTIVE);
         assertThat(commentLike.getMember()).isEqualTo(member);
         assertThat(commentLike.getComment()).isEqualTo(targetComment);
+
+        // CommentLike @PrePersist 를 통한 comment.likeCount 필드 값 증가
+        assertThat(commentLike.getComment().getLikeCount()).isEqualTo(1L);
 
         assertThat(commentLike.getRegisteredAt()).isNotNull();
         assertThat(commentLike.getRegisteredAt()).isEqualTo(commentLike.getUpdatedAt());

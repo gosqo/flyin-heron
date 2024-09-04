@@ -67,6 +67,8 @@ class CommentLikeRepositoryTest extends RepositoryTestBase {
         boards = boardRepository.saveAll(buildBoards());
         comments = commentRepository.saveAll(buildComments());
         commentLikes = commentLikeRepository.saveAll(buildCommentLikes());
+
+        em.flush(); // commentLike @PrePersist 에 의한 comment.addLikeCount 적용 update 쿼리 나감.
     }
 
     @Override
@@ -82,7 +84,6 @@ class CommentLikeRepositoryTest extends RepositoryTestBase {
 
     @Test
     void comment_referenced_by_CommentLike_has_1_likeCount() {
-//        em.contains(comments.get(0)); // true
         Comment comment = commentRepository.findById(commentIdHasCommentLike).orElseThrow();
         assertThat(comment.getLikeCount()).isEqualTo(1L);
     }
