@@ -126,7 +126,7 @@ public class HttpUtility {
     public static HttpHeaders buildNginxGetHeaders() {
         var headers = new HttpHeaders();
         headers.add("Connection", "Keep-Alive");
-        headers.add("User-Agent", "Mozilla");
+        headers.add("User-Agent", "Mozilla chrome");
         return headers;
     }
 
