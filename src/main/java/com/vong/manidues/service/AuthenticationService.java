@@ -4,10 +4,10 @@ import com.vong.manidues.domain.Member;
 import com.vong.manidues.domain.Token;
 import com.vong.manidues.dto.auth.AuthenticationRequest;
 import com.vong.manidues.dto.auth.AuthenticationResponse;
-import com.vong.manidues.repository.MemberRepository;
-import com.vong.manidues.repository.TokenRepository;
 import com.vong.manidues.global.exception.custom.DebugNeededException;
 import com.vong.manidues.global.utility.AuthHeaderUtility;
+import com.vong.manidues.repository.MemberRepository;
+import com.vong.manidues.repository.TokenRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.NoSuchElementException;
 
 @Service
@@ -46,7 +47,9 @@ public class AuthenticationService {
         Member member = memberRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new DebugNeededException("인증 통과 후, 조회되지 않는 회원"));
 
-        String accessToken = jwtService.generateAccessToken(member);
+        HashMap<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("id", member.getId());
+        String accessToken = jwtService.generateAccessToken(extraClaims, member);
         String refreshToken = jwtService.generateRefreshToken(member);
 
         saveMemberToken(member, refreshToken);
@@ -80,8 +83,11 @@ public class AuthenticationService {
             Member member
             , String refreshToken
     ) {
+        HashMap<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("id", member.getId());
+
         return AuthenticationResponse.builder()
-                .accessToken(jwtService.generateAccessToken(member))
+                .accessToken(jwtService.generateAccessToken(extraClaims, member))
                 .refreshToken(refreshToken)
                 .build();
     }

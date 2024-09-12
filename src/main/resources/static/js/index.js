@@ -9,5 +9,3 @@ window.addEventListener("load", () => {
     indexDOM.addAuthDependButtons();
     indexDOM.addBoardListButton();
 });
-
-

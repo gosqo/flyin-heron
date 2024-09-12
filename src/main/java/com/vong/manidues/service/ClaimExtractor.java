@@ -38,6 +38,10 @@ public class ClaimExtractor {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public Long extractMemberId(String token) {
+        return extractAllClaims(token).get("id", Long.class);
+    }
+
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);

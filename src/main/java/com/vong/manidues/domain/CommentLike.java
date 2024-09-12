@@ -1,8 +1,10 @@
 package com.vong.manidues.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -13,6 +15,8 @@ import lombok.Getter;
                 , columnNames = {"member_id", "comment_id"}
         )
 )
+@NoArgsConstructor
+@AllArgsConstructor
 public class CommentLike extends IdentityBaseEntity {
     @ManyToOne(
             targetEntity = Comment.class
@@ -37,6 +41,13 @@ public class CommentLike extends IdentityBaseEntity {
             , foreignKey = @ForeignKey(name = "fk_comment_like_member_member_id")
     )
     private Member member;
+
+    @Override
+    @PrePersist
+    public void prePersist() {
+        this.status = EntityStatus.ACTIVE;
+        this.comment.addLikeCount();
+    }
 
     @Override
     public String toString() {

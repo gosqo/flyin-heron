@@ -20,6 +20,21 @@ public class HttpUtility {
         return new HttpHeaders();
     }
 
+    public static HttpHeaders buildDefaultGetHeaders(String headerName, String headerValue) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(headerName, headerValue);
+
+        return headers;
+    }
+
+    public static HttpHeaders buildGetHeadersWithBearerToken(String bearerToken) {
+        return buildDefaultGetHeaders("Authorization", bearerToken);
+    }
+
+    public static HttpHeaders buildGetHeadersWithToken(String token) {
+        return buildDefaultGetHeaders("Authorization", "Bearer " + token);
+    }
+
     public static HttpHeaders buildDefaultPostHeaders() {
         var headers = new HttpHeaders();
         headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
@@ -64,6 +79,15 @@ public class HttpUtility {
         );
     }
 
+    public static RequestEntity<String> buildDeleteRequestEntity(HttpHeaders httpHeaders, String uri)
+            throws JsonProcessingException {
+        return new RequestEntity<>(
+                httpHeaders
+                , HttpMethod.DELETE
+                , URI.create(uri)
+        );
+    }
+
     // DTO into json stringified.
     private static String getMappedBody(Object body)
             throws JsonProcessingException {
@@ -84,6 +108,10 @@ public class HttpUtility {
         return buildPostHeaders("Authorization", "Bearer " + token);
     }
 
+    public static HttpHeaders builder() {
+        return new HttpHeaders();
+    }
+
     public static <T> void logResponse(ResponseEntity<T> response) {
         log.info(response.getBody() == null
                         ? "response: {}\nheaders: {}"
@@ -98,7 +126,7 @@ public class HttpUtility {
     public static HttpHeaders buildNginxGetHeaders() {
         var headers = new HttpHeaders();
         headers.add("Connection", "Keep-Alive");
-        headers.add("User-Agent", "Mozilla");
+        headers.add("User-Agent", "Mozilla chrome");
         return headers;
     }
 

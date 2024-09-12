@@ -5,3 +5,8 @@ textarea {
 #board-content, #comment-content {
     white-space: pre-wrap;
 }
+
+button > img:hover {
+    transform: translateY(-.2rem);
+    transition: transform 0.3s ease;
+}
