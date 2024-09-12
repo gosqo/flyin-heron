@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Slf4j
 class CommentTest extends EntityManagerDataInitializer {
+    private static final String COMMENT_CONTENT = "hello, comment.";
 
     @Autowired
     public CommentTest(EntityManagerFactory emf) {
@@ -21,6 +22,22 @@ class CommentTest extends EntityManagerDataInitializer {
     void setUp() {
         initBoards();
         log.info("==== Test data initialized. ====");
+    }
+
+    @Test
+    void likeCount_cannot_be_negative_number() {
+        Comment comment = Comment.builder()
+                .member(member)
+                .board(boards.get(0))
+                .content(COMMENT_CONTENT)
+                .build();
+
+        em.persist(comment);
+        assertThat(comment.getLikeCount()).isEqualTo(0L);
+
+        comment.subtractLikeCount();
+
+        assertThat(comment.getLikeCount()).isEqualTo(0L);
     }
 
     @Test
@@ -37,7 +54,7 @@ class CommentTest extends EntityManagerDataInitializer {
     @Test
     void can_not_create_without_member() {
         Comment comment = Comment.builder()
-                .content("hello comment")
+                .content(COMMENT_CONTENT)
                 .board(boards.get(0))
                 .build();
 
@@ -48,7 +65,7 @@ class CommentTest extends EntityManagerDataInitializer {
     @Test
     void can_not_create_without_board() {
         Comment comment = Comment.builder()
-                .content("hello comment")
+                .content(COMMENT_CONTENT)
                 .member(member)
                 .build();
 
@@ -59,7 +76,7 @@ class CommentTest extends EntityManagerDataInitializer {
     @Test
     void saveComment() {
         Comment storing = Comment.builder()
-                .content("Hello, comment")
+                .content(COMMENT_CONTENT)
                 .member(member)
                 .board(boards.get(0))
                 .build();

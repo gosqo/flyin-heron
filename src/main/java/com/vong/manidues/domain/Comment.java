@@ -88,7 +88,7 @@ public class Comment {
     }
 
     public void subtractLikeCount() {
-        this.likeCount--;
+        this.likeCount = --this.likeCount < 0 ? DEFAULT_LIKE_COUNT_VALUE : this.likeCount;
     }
 
     public void updateUpdateDate() {
