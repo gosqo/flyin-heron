@@ -33,21 +33,33 @@
       <button class="my-auto btn btn-primary" id="comment-register-button">Register Comment</button>
     </div>
     <div id="comments-container">
+
       <div id="comment-unit" hidden>
+        
         <div class="d-flex justify-content-between comment-unit-row-1">
           <div id="comment-writer" class="my-auto"></div>
           <div class="d-flex comment-unit-row-1-right-side">
             <div id="comment-date" class="my-auto me-2"></div>
           </div>
         </div>
+
         <div class="mb-3">
-          <div id="comment-content" class="ms-3"></div>
+          <div id="comment-content" class="ms-3 mb-1"></div>
+          <div class="ms-4 d-flex">
+            <button id="comment-like-button" class="btn p-0 me-2 d-flex">
+              <img src="/img/icons/unchecked.png" width="22rem">
+            </button>
+            <span id="comment-like-count">count</span>
+          </div>
           <hr />
         </div>
+
       </div>
+
       <div id="load-more-comments-button-area" class="d-flex mb-10" style="display:none !important;">
         <button id="load-more-comments-button" class="btn btn-secondary mx-auto">load more comments</button>
       </div>
+
     </div>
     <div class="mb-5"></div>
   </div>

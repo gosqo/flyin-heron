@@ -3,10 +3,12 @@ import Board from "../board/Board.js";
 import TokenUtility from "../token/TokenUtility.js";
 import AuthChecker from "../token/AuthChecker.js";
 import { DomHtml } from "../dom/DomHtml.js";
+import { CommentLike } from "../commentLike/CommentLike.js";
 
 export class Comment {
     static pageNumber = 1;
     static loadedCommentsCount = 0;
+    static commentLikeManager = new CommentLike();
 
     static async modify(id) {
         const modifiedContent = document.querySelector("#comment-modify-textarea").value;
@@ -84,7 +86,7 @@ export class Comment {
                 if (data === undefined) return;
 
                 Comment.DOM.appendComments(data);
-                if (!data.commentPage.last) {
+                if (data.commentPage.last === false) {
                     Comment.DOM.addLoadMoreCommentButton();
                 }
             })
@@ -251,6 +253,12 @@ export class Comment {
                 Comment.DOM.addCommentManageButton(clonedUnit, data);
             }
 
+            const commentLikeButton = clonedUnit.querySelector("#comment-like-button");
+            commentLikeButton.id = `comment-${data.id}-like-button`;
+            commentLikeButton.addEventListener("click", () => {
+                CommentLike.toggleLike(data.id, null);
+            });
+
             if (firstComment !== undefined) {
                 commentContainer.insertBefore(clonedUnit, firstComment);
                 return;
@@ -259,7 +267,7 @@ export class Comment {
             commentContainer.appendChild(clonedUnit);
         }
 
-        static appendComment(data) {
+        static async appendComment(data) {
             const commentContainer = document.querySelector("#comments-container");
             const clonedUnit = Comment.DOM.cloneCommentUnit();
 
@@ -269,6 +277,27 @@ export class Comment {
             if (AuthChecker.hasAuth() && Comment.Utility.isWriterOf(data)) {
                 Comment.DOM.addCommentManageButton(clonedUnit, data);
             }
+
+            const commentLikeButton = clonedUnit.querySelector("#comment-like-button");
+            commentLikeButton.id = `comment-${data.id}-like-button`;
+
+            if (!AuthChecker.hasAuth()) {
+                commentLikeButton.addEventListener("click", () => {
+                    alert("로그인 이후 사용가능합니다.");
+                });
+                return;
+            }
+
+            const hasLiked = await CommentLike.hasLiked(data.id);
+
+            if (hasLiked === true) {
+                const commentLikeImage = commentLikeButton.querySelector("img");
+                commentLikeImage.src = "/img/icons/checked.png";
+            }
+
+            commentLikeButton.addEventListener("click", () => {
+                CommentLike.toggleLike(data.id, hasLiked);
+            });
         }
 
         static appendComments(data) {
@@ -302,13 +331,15 @@ export class Comment {
         }
 
         static placeData(commentUnit, data) {
+            const commentContent = commentUnit.querySelector("#comment-content");
+
             commentUnit.hidden = false;
             commentUnit.id = `comment${data.id}`;
             commentUnit.className = "comments-selector";
 
             commentUnit.querySelector("#comment-writer").textContent = data.writerNickname;
             commentUnit.querySelector("#comment-date").textContent = Board.Utility.getRecentBoardDate(data);
-            const commentContent = commentUnit.querySelector("#comment-content");
+            commentUnit.querySelector("#comment-like-count").textContent = data.likeCount;
             commentContent.textContent = data.content;
             DomHtml.addHyperLink(commentContent);
         }

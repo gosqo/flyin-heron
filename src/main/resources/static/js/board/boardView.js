@@ -1,6 +1,7 @@
 import { BoardView } from "../libs/board/BoardView.js";
 import { State } from "../libs/state/StateManage.js";
 import Board from "../libs/board/Board.js";
+import { CommentLike } from "../libs/commentLike/CommentLike.js";
 import { Comment } from "../libs/comment/Comment.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -14,6 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     Comment.DOM.addRegisterEvent();
     Comment.DOM.addModifyButtonInModalEvent();
     Comment.getComments();
+    CommentLike.initPageUnloadHandler();
 });
 
 window.addEventListener("popstate", () => {
