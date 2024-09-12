@@ -5,6 +5,7 @@ class PendingCommentLikes {
         this.feat = feat;
         this.ajax = ajax;
         this.idsToRequest = new Set();
+        this.requested = false;
     }
 
     add(id) {
@@ -24,21 +25,31 @@ class PendingCommentLikes {
         this.idsToRequest.forEach(element => {
             toPrint.push(element);
         });
-        console.log(this.feat, toPrint/*.join(" ")*/);
+        console.log(this.feat, toPrint);
     }
 
     request() {
         this.idsToRequest.forEach((id) => {
+            if (this.ajax.name === "registerCommentLike") {
+                CommentLike.likedCommentIds.add(id);
+            }
+
+            if (this.ajax.name === "removeCommentLike") {
+                CommentLike.likedCommentIds.delete(id);
+            }
+
             this.ajax(id);
+            this.idsToRequest.delete(id);
         });
     }
 }
 
 export class CommentLike {
+    static likedCommentIds = new Set();
     static pendingLikesToRegister = new PendingCommentLikes("register", this.registerCommentLike);
     static pendingLikesToDelete = new PendingCommentLikes("delete", this.removeCommentLike);
 
-    static toggleLike(commentId, hasLiked) {
+    static toggleLike(commentId) {
         const commentLikeButton = document.getElementById(`comment-${commentId}-like-button`);
         const commentLikeImage = commentLikeButton.querySelector("img");
         const commentLikeCount = commentLikeButton.nextElementSibling;
@@ -47,25 +58,21 @@ export class CommentLike {
             commentLikeImage.src = "/img/icons/checked.png";
             commentLikeCount.textContent = parseInt(commentLikeCount.textContent) + 1;
 
-            if (!hasLiked) {
-                this.pendingLikesToRegister.add(commentId);
-            }
-            
+            this.pendingLikesToRegister.add(commentId);
+
             if (this.pendingLikesToDelete.contains(commentId)) {
                 this.pendingLikesToDelete.remove(commentId);
             }
-            
+
             this.pendingLikesToRegister.logElements(commentId);
             this.pendingLikesToDelete.logElements(commentId);
             return;
         }
-        
+
         commentLikeImage.src = "/img/icons/unchecked.png";
         commentLikeCount.textContent = parseInt(commentLikeCount.textContent) - 1;
-        
-        if (hasLiked) {
-            this.pendingLikesToDelete.add(commentId);
-        }
+
+        this.pendingLikesToDelete.add(commentId);
 
         if (this.pendingLikesToRegister.contains(commentId)) {
             this.pendingLikesToRegister.remove(commentId);

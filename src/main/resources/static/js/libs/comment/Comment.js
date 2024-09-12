@@ -243,6 +243,7 @@ export class Comment {
         }
 
         static appendJustRegisteredComment(data) {
+            const commentId = data.id;
             const commentContainer = document.querySelector("#comments-container");
             const firstComment = commentContainer.querySelector(".comments-selector");
             const clonedUnit = Comment.DOM.cloneCommentUnit();
@@ -254,9 +255,10 @@ export class Comment {
             }
 
             const commentLikeButton = clonedUnit.querySelector("#comment-like-button");
-            commentLikeButton.id = `comment-${data.id}-like-button`;
+
+            commentLikeButton.id = `comment-${commentId}-like-button`;
             commentLikeButton.addEventListener("click", () => {
-                CommentLike.toggleLike(data.id, null);
+                CommentLike.toggleLike(commentId);
             });
 
             if (firstComment !== undefined) {
@@ -268,6 +270,7 @@ export class Comment {
         }
 
         static async appendComment(data) {
+            const commentId = data.id;
             const commentContainer = document.querySelector("#comments-container");
             const clonedUnit = Comment.DOM.cloneCommentUnit();
 
@@ -279,7 +282,7 @@ export class Comment {
             }
 
             const commentLikeButton = clonedUnit.querySelector("#comment-like-button");
-            commentLikeButton.id = `comment-${data.id}-like-button`;
+            commentLikeButton.id = `comment-${commentId}-like-button`;
 
             if (!AuthChecker.hasAuth()) {
                 commentLikeButton.addEventListener("click", () => {
@@ -288,15 +291,16 @@ export class Comment {
                 return;
             }
 
-            const hasLiked = await CommentLike.hasLiked(data.id);
+            const hasLiked = await CommentLike.hasLiked(commentId);
 
             if (hasLiked === true) {
+                CommentLike.likedCommentIds.add(commentId);
                 const commentLikeImage = commentLikeButton.querySelector("img");
                 commentLikeImage.src = "/img/icons/checked.png";
             }
 
             commentLikeButton.addEventListener("click", () => {
-                CommentLike.toggleLike(data.id, hasLiked);
+                CommentLike.toggleLike(commentId);
             });
         }
 
