@@ -5,7 +5,6 @@ class PendingCommentLikes {
         this.feat = feat;
         this.ajax = ajax;
         this.idsToRequest = new Set();
-        this.requested = false;
     }
 
     add(id) {
@@ -39,7 +38,7 @@ class PendingCommentLikes {
             }
 
             this.ajax(id);
-            this.idsToRequest.delete(id);
+            this.remove(id);
         });
     }
 }
@@ -58,7 +57,9 @@ export class CommentLike {
             commentLikeImage.src = "/img/icons/checked.png";
             commentLikeCount.textContent = parseInt(commentLikeCount.textContent) + 1;
 
-            this.pendingLikesToRegister.add(commentId);
+            if (!this.likedCommentIds.has(commentId)) {
+                this.pendingLikesToRegister.add(commentId);
+            }
 
             if (this.pendingLikesToDelete.contains(commentId)) {
                 this.pendingLikesToDelete.remove(commentId);
@@ -72,7 +73,9 @@ export class CommentLike {
         commentLikeImage.src = "/img/icons/unchecked.png";
         commentLikeCount.textContent = parseInt(commentLikeCount.textContent) - 1;
 
-        this.pendingLikesToDelete.add(commentId);
+        if (this.likedCommentIds.has(commentId)) {
+            this.pendingLikesToDelete.add(commentId);
+        }
 
         if (this.pendingLikesToRegister.contains(commentId)) {
             this.pendingLikesToRegister.remove(commentId);
@@ -83,14 +86,19 @@ export class CommentLike {
     }
 
     static initPageUnloadHandler() {
-        window.addEventListener('beforeunload', () => {
+        // window.addEventListener('pagehide', (e) => { // pagehide 의 경우, 해당 블록에서 수행하는 요청이 비교적 늦게 나감.
+        window.addEventListener('visibilitychange', () => {
+            // e.preventDefault();
 
-            if (this.pendingLikesToRegister.idsToRequest.size > 0) {
-                this.pendingLikesToRegister.request();
-            }
-
-            if (this.pendingLikesToDelete.idsToRequest.size > 0) {
-                this.pendingLikesToDelete.request();
+            if (document.visibilityState === "hidden") { // 해당 조건 없으면 visibilityState === "visible" (페이지 로드)에도 이벤트 발생
+                
+                if (this.pendingLikesToRegister.idsToRequest.size > 0) {
+                    this.pendingLikesToRegister.request();
+                }
+                
+                if (this.pendingLikesToDelete.idsToRequest.size > 0) {
+                    this.pendingLikesToDelete.request();
+                }
             }
         });
     }
@@ -116,6 +124,8 @@ export class CommentLike {
             headers: {
                 "Authorization": localStorage.getItem("access_token"),
             },
+            // visibilitychange 이벤트 콜백에서 Fetch API 호출, document.visibilityState === "hidden" 일 경우 추가.
+            keepalive: "true"
         };
 
         const data = await Fetcher.withAuth(uri, options);
@@ -130,6 +140,7 @@ export class CommentLike {
             headers: {
                 "Authorization": localStorage.getItem("access_token"),
             },
+            keepalive: "true"
         };
 
         const data = await Fetcher.withAuth(uri, options);
