@@ -1,6 +1,9 @@
 package com.vong.manidues.global.config;
 
-import com.vong.manidues.global.filter.*;
+import com.vong.manidues.global.filter.HttpAccessLogFilter;
+import com.vong.manidues.global.filter.JwtAuthenticationEntryPoint;
+import com.vong.manidues.global.filter.JwtAuthenticationFilter;
+import com.vong.manidues.global.filter.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +26,6 @@ public class SecurityConfig {
 
     private final AuthenticationProvider authenticationProvider;
     private final HttpAccessLogFilter httpAccessLogFilter;
-    private final BlacklistFilter blacklistFilter;
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final LogoutHandler logoutHandler;
     private final JwtExceptionFilter jwtExceptionFilter;
@@ -42,7 +44,6 @@ public class SecurityConfig {
 
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(httpAccessLogFilter, LogoutFilter.class)
-                .addFilterBefore(blacklistFilter, LogoutFilter.class)
                 .addFilterBefore(jwtExceptionFilter, LogoutFilter.class)
                 .addFilterBefore(jwtAuthFilter, LogoutFilter.class)
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
