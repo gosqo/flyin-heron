@@ -13,7 +13,7 @@ function initDarkMode() {
         localStorage.setItem("themePreference", "light");
         localTheme = localStorage.getItem("themePreference");
 
-        themeToggleButtonText(themeToggleButton, localTheme);
+        toggleThemeButtonText(themeToggleButton, localTheme);
 
     } else {
 
@@ -45,22 +45,49 @@ function toggleTheme(themeToggleButton, preference) {
 
     if (preference === "dark") {
 
-        themeToggleButtonText(themeToggleButton, preference);
+        toggleThemeButtonText(themeToggleButton, preference);
+        toggleThemeButtonColor(themeToggleButton, preference);
         toggleDarkModeCss(preference);
+        toggleColorIfDarkButtonExist();
 
     } else if (preference === "light") {
-
-        themeToggleButtonText(themeToggleButton, preference);
+        
+        toggleThemeButtonText(themeToggleButton, preference);
+        toggleThemeButtonColor(themeToggleButton, preference);
         toggleDarkModeCss(preference);
-
+        toggleColorIfLightButtonExist(preference);
     }
 }
 
-function themeToggleButtonText(themeToggleButton, preference) {
+function toggleThemeButtonText(themeToggleButton, preference) {
 
     themeToggleButton.textContent = preference === "light"
         ? "Dark mode"
         : "Light mode";
+}
+
+function toggleThemeButtonColor(themeToggleButton, preference) {
+    themeToggleButton.className = preference === "light"
+        ? "btn btn-dark"
+        : "btn btn-light";
+}
+
+function toggleColorIfDarkButtonExist() {
+    const darkButtons = document.querySelectorAll(".btn-dark");
+
+    darkButtons.forEach(element => {
+        element.classList.remove("btn-dark");
+        element.classList.add("btn-light");
+    });
+}
+
+function toggleColorIfLightButtonExist() {
+    const lightButtons = document.querySelectorAll(".btn-light");
+    
+    lightButtons.forEach(element => {
+        element.classList.remove("btn-light");
+        element.classList.add("btn-dark");
+    });
 }
 
 function toggleDarkModeCss(preference) {
@@ -82,7 +109,7 @@ function toggleDarkModeCss(preference) {
         darkModeCss.setAttribute("href", "/css/darkMode.css");
 
         document.querySelector("head").appendChild(darkModeCss);
-        
+
     } else {
 
         var targetNode = document.querySelector(`link[href="/css/darkMode.css"]`);

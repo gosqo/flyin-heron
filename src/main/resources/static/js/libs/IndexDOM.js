@@ -20,8 +20,11 @@ export class IndexDOM {
 
     addLogoutButton() {
         const buttonsArea = document.querySelector("#buttons-area");
+        let preferredButtonClassName = localStorage.getItem("themePreference") === "dark"
+            ? "btn btn-light me-1"
+            : "btn btn-dark me-1";
 
-        const logoutButton = DomCreate.button("logout-button", "btn btn-primary", "logout");
+        const logoutButton = DomCreate.button("logout-button", preferredButtonClassName, "logout");
         logoutButton.addEventListener("click", () => {
             if (Logout.logoutConfirm())
                 Logout.logout();
@@ -32,7 +35,7 @@ export class IndexDOM {
     addJwtTestButton() {
         const buttonsArea = document.querySelector("#buttons-area");
 
-        const jwtTestButton = DomCreate.button("jwt-test-button", "btn btn-primary", "Test JWT");
+        const jwtTestButton = DomCreate.button("jwt-test-button", "btn btn-info me-1", "Test JWT");
         jwtTestButton.onclick = () => this.testJwt.testJwt();
         buttonsArea.append(jwtTestButton);
     }
@@ -40,7 +43,7 @@ export class IndexDOM {
     addLoginButton() {
         const buttonsArea = document.querySelector("#buttons-area");
 
-        const loginButton = DomCreate.button("login-btn", "btn btn-primary", "Login");
+        const loginButton = DomCreate.button("login-btn", "btn btn-primary me-1", "Login");
         loginButton.onclick = () => { location.href = "/login"; };
         buttonsArea.append(loginButton);
     }
@@ -48,7 +51,7 @@ export class IndexDOM {
     addSignUpButton() {
         const buttonsArea = document.querySelector("#buttons-area");
 
-        const signUpButton = DomCreate.button("sign-up-btn", "btn btn-primary", "Sign up");
+        const signUpButton = DomCreate.button("sign-up-btn", "btn btn-success me-1", "Sign up");
         signUpButton.onclick = () => { location.href = "/signUp"; };
         buttonsArea.append(signUpButton);
     }
@@ -56,7 +59,7 @@ export class IndexDOM {
     addBoardListButton() {
         const buttonsArea = document.querySelector("#buttons-area");
 
-        const getBoardButton = DomCreate.button("get-board-btn", "btn btn-primary", "Board List");
+        const getBoardButton = DomCreate.button("get-board-btn", "btn btn-warning", "Board List");
         getBoardButton.onclick = () => { location.href = "/boards"; };
         buttonsArea.append(getBoardButton);
     }

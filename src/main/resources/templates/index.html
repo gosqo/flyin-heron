@@ -7,12 +7,14 @@
 <body>
   <div th:replace="~{fragment/header :: header}"></div>
 
-  <div class="container">
-    <div class="mt-4 mb-3 row">
-      <h2>Hello, you came here, index.</h2>
+  <main class="d-flex" style="height: 25vh;">
+    <div class="container m-auto">
+      <div class="mb-3 d-flex justify-content-center">
+        <h2>Hello, you came here, index.</h2>
+      </div>
+      <div class="mb-3 d-flex justify-content-center" id="buttons-area"></div>
+      <div class="mb-3" id="test-jwt-area"></div>
     </div>
-    <div class="mb-3" id="buttons-area"></div>
-    <div class="mb-3" id="test-jwt-area"></div>
-  </div>
+  </main>
 
   <thymeleaf th:replace="~{fragment/footer}"></thymeleaf>
