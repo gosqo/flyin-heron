@@ -1,4 +1,4 @@
-> 문서 업데이트: 2024-08-26
+> 문서 업데이트: 2024-09-18
 
 ## 목차
 
@@ -21,7 +21,6 @@
 회원, 인증, 게시물, 댓글 기반 게시판 서비스로, 개인 풀스택 프로젝트입니다.   
 REST 구조에 따라 API 를 설계, 구현했습니다.   
 <sup>2024.02 - 현재 진행 중.</sup>   
-CommentLike 관련 기능 추가 중
 
 [서비스 이용해 보기](https://flyin-heron.duckdns.org)
 
@@ -44,8 +43,6 @@ CommentLike 관련 기능 추가 중
 개체간 관계도 (ERD)
 ---
 ![erd](./assets/img/20240820_erd.png)
-
-CommentLike 관련 기능 추가 중
 
 <div dir="rtl">
   <a href="#목차">목차로 돌아가기</a>
@@ -81,7 +78,10 @@ CommentLike 관련 기능 추가 중
 * 댓글 <small>comment</small>
     - 목록 더 불러오기 (`Slice`).
     - 등록, 조회, 수정, 삭제.
-    - ~~좋아요 기능~~(추가 예정)
+    - 좋아요 기능
+      - 버튼 클릭 마다 서버에 요청을 보내면 요청 수가 많아질 것을 대비.
+        - 클라이언트에서 댓글에 대한 최종 좋아요 상태를 기록, 
+        - 페이지를 떠날 때, 기존 상태와 다른 좋아요 기록 일괄 서버로 요청.
 
 ##### Global
 
@@ -264,6 +264,204 @@ Controller, Service, Repository 계층별 / 통합 테스트. 다음의 경우�
 테스트 코드에 친숙해지며, 상속의 이점을 체감 후, 신규 기능 도입에도 적용,   
 `BaseEntity`를 추상 클래스로 등록, 엔티티가 기본적으로 가지는 필드를 관리.   
 엔티티 상태 초기화는 엔티티 성격에 따라 달라지므로 추상 메서드로 선언하고, 하위 클래스에서 구현.
+
+### 댓글 좋아요 기록과 브라우저 히스토리
+
+* [작업내역1](https://github.com/gosqo/manidues/commit/4b2c93c56f536e4f06e93833d8d487b6f2356c73)
+* [작업내역2](https://github.com/gosqo/manidues/commit/4e4d769696abacf0eda154c362ba4e386de7741f) (모바일에서 지원되지 않는 beforeunload 이벤트 수정 포함)
+
+#### 배경
+
+댓글 좋아요 기능 추가 후, 사용자가 기대하는 좋아요 상태와 서버의 좋아요 상태가 불일치하는 버그를 발견했습니다.
+
+버그가 일어나는 사용 사례는
+
+* 특정 댓글에 좋아요 기능 사용 후, 
+* 브라우저의 '뒤로 가기', '앞으로 가기', 기존 좋아요 기록 수정
+
+하는 경우입니다.
+
+문제가 발생한 기존의 코드와 동작은 다음과 같습니다.
+
+![client history affects making requests](./assets/img/20240918_before_commentlike_client_history_affects_making_requests.png)
+
+* `CommentLike.toggleLike()` 는 각 댓글이 DOM 조작을 통해 렌더링할 때, 좋아요 이력을 불러오는 메서드로 조회한 사용자의 해당 댓글 좋아요 여부를 인자로 넘깁니다.
+  * 이 좋아요 여부는 좋아요 버튼 클릭 이벤트에 고정됩니다.
+* 기존 상태와 달라진 좋아요 등록, 삭제 대상 `id`를 `pendingCommentLikes 인스턴스의 idsToRequest: Set`에 담아둡니다.
+* 페이지를 떠날 때, 일괄적으로 `pendingCommentLikes 인스턴스의 request()`를 통해 서버로 요청을 보냅니다. 
+
+```javascript
+class PendingCommentLikes {
+    constructor(feat, ajax) {
+        this.feat = feat;
+        this.ajax = ajax;
+        this.idsToRequest = new Set();
+    }
+
+    // ... idsToRequest 조작 메서드 ...
+
+    request() {
+        this.idsToRequest.forEach((id) => {
+            this.ajax(id);
+        });
+    }
+}
+
+export class CommentLike {
+    static pendingLikesToRegister = new PendingCommentLikes("register", this.registerCommentLike);
+    static pendingLikesToDelete = new PendingCommentLikes("delete", this.removeCommentLike);
+
+    static toggleLike(commentId, hasLiked) {
+        const commentLikeButton = document.getElementById(`comment-${commentId}-like-button`);
+        const commentLikeImage = commentLikeButton.querySelector("img");
+        const commentLikeCount = commentLikeButton.nextElementSibling;
+
+        // 해당 댓글에 좋아요를 하지 않은 상태라면
+        if (commentLikeImage.src.includes("unchecked")) {
+            
+            // 
+            commentLikeImage.src = "/img/icons/checked.png";
+            commentLikeCount.textContent = parseInt(commentLikeCount.textContent) + 1;
+
+            // 좋아요 기록이 없으면 등록할 대상으로 추가.
+            if (!hasLiked) {
+                this.pendingLikesToRegister.add(commentId);
+            }
+
+            // 좋아요 삭제 대상이라면 삭제 대상에서 제거.
+            if (this.pendingLikesToDelete.contains(commentId)) {
+                this.pendingLikesToDelete.remove(commentId);
+            }
+
+            return;
+        }
+
+        commentLikeImage.src = "/img/icons/unchecked.png";
+        commentLikeCount.textContent = parseInt(commentLikeCount.textContent) - 1;
+
+        if (hasLiked) {
+            this.pendingLikesToDelete.add(commentId);
+        }
+
+        if (this.pendingLikesToRegister.contains(commentId)) {
+            this.pendingLikesToRegister.remove(commentId);
+        }
+    }
+    
+    // ... methods ...
+}
+```
+
+#### 원인
+
+버그가 발생하는 원인은 다음과 같았습니다.
+
+* 좋아요 버튼 클릭 이벤트 콜백인 `toggleLike(commentId, hasLiked)` 함수에 사용자의 해당 댓글 좋아요 여부가 고정됩니다.
+  * 이것으로 인해, 좋아요 이력을 불러오는 메서드를 새로 호출하기 전까지, 브라우저에서의 사용자의 해당 댓글 좋아요 여부는 바뀌지 않습니다.
+    * 좋아요를 한 적이 없는 경우, 좋아요 등록 대상으로 고정되고, 삭제 대상에 포함될 수 없게 됩니다. (반대의 경우도 마찬가지)
+* 서버에 등록 요청을 보낸 후, 사용자는 실제 좋아요 기록이 있지만, 해당 댓글에 좋아요를 취소하더라도 
+브라우저는 좋아요 기록이 없기 때문에 좋아요 취소 요청을 만들지 못했습니다.
+
+#### 해결 방안
+
+문제를 해결하기 위해서는 좋아요 등록•삭제 요청에 따라 실제 좋아요 어부를 브라우저에서도 관리하기로 했습니다.
+
+![client history affects making requests](./assets/img/20240918_after_commentlike_client_history_affects_making_requests.png)
+
+* 좋아요한 댓글의 `id`를 담을수 있는 필드(`likedCommentIds: Set`)를 선언.
+* 페이지 최초 로드 시, 사용자가 좋아요한 댓글의`id`를 `likedCommentIds`에 추가.
+    * 댓글에 좋아요 조작 시, `likedCommentIds`에 해당 댓글의 존재여부를 기반으로 서버에 보낼 좋아요 상태 선별.
+* 댓글 좋아요 등록•삭제 요청을 보낼 때,
+    * 등록 요청에 포함된 `id`를 `likedCommentIds`에 저장.
+  * 삭제 요청에 포함된 `id`를 `likedCommentIds`에서 삭제.
+* 더불어 요청을 보낸 후, 댓글 좋아요 등록•삭제할 `id`를 담는 `PendingCommentLikes 인스턴스 필드 idsToRequest`를 비움.
+
+수정 사항은 다음과 같습니다.
+
+
+```javascript
+class PendingCommentLikes {
+    constructor(feat, ajax) {
+        this.feat = feat;
+        this.ajax = ajax;
+        this.idsToRequest = new Set();
+    }
+
+    // ... idsToRequest 조작 메서드 ...
+
+    request() {
+        this.idsToRequest.forEach((id) => {
+        
+            // 등록 요청을 보냈다면, 좋아요한 댓글 목록에 추가.
+            if (this.ajax.name === "registerCommentLike") {
+                CommentLike.likedCommentIds.add(id);
+            }
+
+            // 삭제 요청을 보냈다면, 좋아요한 댓글 목록에서 삭제.
+            if (this.ajax.name === "removeCommentLike") {
+                CommentLike.likedCommentIds.delete(id);
+            }
+
+            this.ajax(id);
+            this.remove(id); // 등록•삭제 요청한 `id`는 idsToRequest 에서 삭제.
+        });
+    }
+}
+
+export class CommentLike {
+    static likedCommentIds = new Set(); // 추가. 브라우저에서 사용자의 좋아요 이력을 관리.
+    static pendingLikesToRegister = new PendingCommentLikes("register", this.registerCommentLike);
+    static pendingLikesToDelete = new PendingCommentLikes("delete", this.removeCommentLike);
+
+    static toggleLike(commentId) {
+        const commentLikeButton = document.getElementById(`comment-${commentId}-like-button`);
+        const commentLikeImage = commentLikeButton.querySelector("img");
+        const commentLikeCount = commentLikeButton.nextElementSibling;
+
+        if (commentLikeImage.src.includes("unchecked")) {
+            commentLikeImage.src = "/img/icons/checked.png";
+            commentLikeCount.textContent = parseInt(commentLikeCount.textContent) + 1;
+
+            // 사용자 좋아요 이력에 해당 id가 없다면 등록 대상에 추가
+            if (!this.likedCommentIds.has(commentId)) {
+                this.pendingLikesToRegister.add(commentId);
+            }
+
+            if (this.pendingLikesToDelete.contains(commentId)) {
+                this.pendingLikesToDelete.remove(commentId);
+            }
+
+            return;
+        }
+
+        commentLikeImage.src = "/img/icons/unchecked.png";
+        commentLikeCount.textContent = parseInt(commentLikeCount.textContent) - 1;
+
+        // 사용자 좋아요 이력에 해당 id가 있다면 삭제 대상에 추가
+        if (this.likedCommentIds.has(commentId)) {
+            this.pendingLikesToDelete.add(commentId);
+        }
+
+        if (this.pendingLikesToRegister.contains(commentId)) {
+            this.pendingLikesToRegister.remove(commentId);
+        }
+    }
+    
+    // ... methods ...
+}
+
+```
+
+#### 결과 및 느낀 점
+
+위처럼 수정을 통해, 해당 문제를 해결할 수 있었습니다.
+
+* 브라우저 히스토리 동작으로 예상치 못한 버그가 발생할 수 있음을 유념해야겠습니다.
+* 하나의 페이지 내에서 서버 자원의 상태를 변경하는 요청을 보낸다면, 해당 자원의 변경된 상태를 반영해야합니다.
+* 서버에 상태 조회 요청하거나, 클라이언트 수준에서 객체를 관리하는 방법 중 선택해, 사용자에게 일관된 정보를 전달할 수 있습니다.
+* 서버 로직이 복잡하거나, 예외 발생 위험이 높은 경우, 실제 서버에 요청을 보내는 것이 좋을 것이고,
+* 로직이 간단하고, 예외 발생 가능성이 적은 경우, 클라이언트 측에서 간단히 이 문제를 해결할 수 있었습니다.
+* 위 사례의 경우, 클라이언트 측 객체 추가로 서버와 클라이언트가 참조하는 자원의 상태 차이를 제거할 수 있었습니다.
 
 ### Shell Script 작성을 통한 1줄 배포
 
