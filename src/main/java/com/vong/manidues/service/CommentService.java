@@ -13,11 +13,7 @@ import com.vong.manidues.repository.CommentRepository;
 import com.vong.manidues.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpMethod;
+import org.springframework.data.domain.*;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +25,8 @@ import java.util.NoSuchElementException;
 @Transactional
 @RequiredArgsConstructor
 public class CommentService {
-    private static final int LIKED_COMMENTS_PAGE_SIZE = 10;
-    private static final int NORMAL_COMMENTS_PAGE_SIZE = 6;
+    public static final int LIKED_COMMENTS_SLICE_SIZE = 10;
+    public static final int NORMAL_COMMENTS_SLICE_SIZE = 6;
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
@@ -41,14 +37,14 @@ public class CommentService {
         pageNumber = pageNumber - 1;
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
 
-        return PageRequest.of(pageNumber, NORMAL_COMMENTS_PAGE_SIZE, sort);
+        return PageRequest.of(pageNumber, NORMAL_COMMENTS_SLICE_SIZE, sort);
     }
 
     private static PageRequest getLikedCommentsPageRequest(int pageNumber) {
         pageNumber = pageNumber - 1;
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
 
-        return PageRequest.of(pageNumber, LIKED_COMMENTS_PAGE_SIZE, sort);
+        return PageRequest.of(pageNumber, LIKED_COMMENTS_SLICE_SIZE, sort);
     }
 
     /**
@@ -63,8 +59,8 @@ public class CommentService {
                 () -> new NoSuchElementException("존재하지 않는 회원의 댓글 좋아요 여부 조회 요청.")
         );
         final Slice<Comment> comments = commentLikeRepository.findByMemberId(
-                        member.getId(), getLikedCommentsPageRequest(pageNumber)
-                ).map(CommentLike::getComment);
+                member.getId(), getLikedCommentsPageRequest(pageNumber)
+        ).map(CommentLike::getComment);
 
         return GetCommentsLikedByResponse.builder()
                 .comments(comments)
@@ -140,14 +136,14 @@ public class CommentService {
                 () -> new NoSuchElementException("존재하지 않는 댓글 조회 요청")));
     }
 
-    public CommentPageResponse getCommentSliceOf(Long boardId, int pageNumber) throws NoResourceFoundException {
+    public Slice<CommentGetResponse> getSliceOfComments(Long boardId, int pageNumber) throws NoResourceFoundException {
         Pageable pageable = getNormalCommentsPageRequest(pageNumber);
         Slice<Comment> found = commentRepository.findByBoardId(boardId, pageable);
 
-        if (found.getContent().isEmpty()) {
-            throw new NoResourceFoundException(HttpMethod.GET, "/api/v1/board/{boardId}/comments?page=" + pageNumber);
-        }
-
-        return CommentPageResponse.of(found);
+        return new SliceImpl<>(
+                found.get().map(CommentGetResponse::of).toList()
+                , found.getPageable()
+                , found.hasNext()
+        );
     }
 }

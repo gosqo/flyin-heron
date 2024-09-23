@@ -5,6 +5,8 @@ import com.vong.manidues.service.CommentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,6 +16,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
+@Slf4j
 public class CommentController {
     private final CommentService service;
 
@@ -41,13 +44,13 @@ public class CommentController {
     }
 
     @GetMapping("/board/{boardId}/comments")
-    public ResponseEntity<CommentPageResponse> getPageOfComment(
+    public ResponseEntity<Slice<CommentGetResponse>> getSliceOfComment(
             @PathVariable("boardId") Long boardId
             , @RequestParam("page-number") int pageNumber
     ) throws NoResourceFoundException {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(service.getCommentSliceOf(boardId, pageNumber));
+                .body(service.getSliceOfComments(boardId, pageNumber));
     }
 
     @GetMapping("/comment/{id}")
