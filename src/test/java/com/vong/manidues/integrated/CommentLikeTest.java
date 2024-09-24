@@ -10,8 +10,6 @@ import com.vong.manidues.repository.BoardRepository;
 import com.vong.manidues.repository.CommentLikeRepository;
 import com.vong.manidues.repository.CommentRepository;
 import com.vong.manidues.repository.MemberRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,10 +34,6 @@ class CommentLikeTest extends SpringBootTestBase {
     private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
 
-    @PersistenceContext
-    private EntityManager em;
-
-    private Long memberId;
     private Long commentIdHasCommentLike;
     private Long commentIdToRegisterItsLike;
     private Map<String, Object> extraClaims;
@@ -67,7 +61,6 @@ class CommentLikeTest extends SpringBootTestBase {
         boards = boardRepository.saveAll(buildBoards());
         comments = commentRepository.saveAll(buildComments());
         commentLikes = commentLikeRepository.saveAll(buildCommentLikes());
-        log.info("EntityManger contains Comment of which id = 1? {}", em.contains(comments.get(0)));
 
         commentRepository.saveAll(comments); // commentLike @PrePersist 수행 내용 DB 에 적용
     }
@@ -78,7 +71,6 @@ class CommentLikeTest extends SpringBootTestBase {
         initData();
         log.info("==== Test data initialized. ====");
 
-        memberId = member.getId();
         commentIdHasCommentLike = comments.get(0).getId();
         commentIdToRegisterItsLike = commentIdHasCommentLike + COMMENT_LIKE_COUNT;
     }
