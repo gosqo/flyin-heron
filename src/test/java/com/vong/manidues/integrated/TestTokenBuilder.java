@@ -1,6 +1,5 @@
 package com.vong.manidues.integrated;
 
-import com.vong.manidues.repository.MemberRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -23,7 +22,6 @@ class TestTokenBuilder {
     private final static long TEST_EXPIRATION = 1_800_000L; // 30 min
     @Value("${application.security.jwt.secret-key}")
     private String secretKey;
-    private final MemberRepository memberRepository;
 
     String buildToken(UserDetails userDetails) {
         return buildToken(new HashMap<>(), userDetails, TEST_EXPIRATION);
