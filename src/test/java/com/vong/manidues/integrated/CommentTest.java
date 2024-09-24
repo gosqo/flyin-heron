@@ -2,7 +2,6 @@ package com.vong.manidues.integrated;
 
 import com.vong.manidues.dto.CustomSliceImpl;
 import com.vong.manidues.dto.comment.CommentGetResponse;
-import com.vong.manidues.global.utility.ObjectMapperUtility;
 import com.vong.manidues.repository.BoardRepository;
 import com.vong.manidues.repository.CommentRepository;
 import com.vong.manidues.repository.MemberRepository;
@@ -58,9 +57,6 @@ public class CommentTest extends SpringBootTestBase {
 
     @Test
     void getCommentsSlice() {
-        // JSON 으로 직렬화된 응답 본문을 역직렬화, 자바 객체에 매핑
-        ObjectMapperUtility.addCustomSliceImplToObjectMapper();
-
         Long targetBoardId = boards.get(0).getId();
         final String requestUri = String.format("/api/v1/board/%d/comments?page-number=1", targetBoardId);
 
