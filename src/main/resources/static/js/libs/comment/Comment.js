@@ -86,7 +86,8 @@ export class Comment {
                 if (data === undefined) return;
 
                 Comment.DOM.appendComments(data);
-                if (data.commentPage.last === false) {
+
+                if (data.last === false) {
                     Comment.DOM.addLoadMoreCommentButton();
                 }
             })
@@ -307,7 +308,7 @@ export class Comment {
         static appendComments(data) {
             const presentCommentIds = Comment.DOM.getPresentCommentIds();
 
-            data.commentPage.content.forEach(datum => {
+            data.content.forEach(datum => {
                 const fetchedCommentId = datum.id;
 
                 if (presentCommentIds.some(presentCommentId => parseInt(presentCommentId) === fetchedCommentId)) {
