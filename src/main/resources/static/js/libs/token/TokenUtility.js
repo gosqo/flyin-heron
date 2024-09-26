@@ -1,3 +1,5 @@
+import { Fetcher } from "../common/Fetcher.js";
+
 export default class TokenUtility {
     static removeTokensIfExpired() {
         const refreshToken = localStorage.getItem('refresh_token');
@@ -40,5 +42,34 @@ export default class TokenUtility {
 
         localStorage.setItem("access_token", `Bearer ${refreshedTokens.access_token}`);
         localStorage.setItem("refresh_token", `Bearer ${refreshedTokens.refresh_token}`);
+    }
+
+    static forceReissueAccessToken() {
+        const accessToken = localStorage.getItem("access_token");
+        const parsed = this.parseJwt(accessToken);
+        const expiry = parsed.exp * 1000; //javascript epoch from milliseconds
+        const now = Date.now();
+        const toExpiry = expiry - now; // from milliseconds
+        const fiveMinutes = 1000 * 60 * 5; // 5 mins
+        const updateTimeout = toExpiry - fiveMinutes; // minus 5 mins.
+        const intervalTimeout = 1000 * 60 * 25; // 25 mins
+
+        if (toExpiry < fiveMinutes) { // 30 mins left
+            Fetcher.refreshBeforeAuthRequiredRequest();
+
+            setInterval(() => {
+                Fetcher.refreshBeforeAuthRequiredRequest();
+            }, intervalTimeout)
+            return ;
+        }
+
+        setTimeout(() => {
+            Fetcher.refreshBeforeAuthRequiredRequest();
+        }, updateTimeout)
+
+        setInterval(() => {
+            Fetcher.refreshBeforeAuthRequiredRequest();
+        }, intervalTimeout)
+
     }
 }

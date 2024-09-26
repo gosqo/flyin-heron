@@ -3,6 +3,7 @@ import { State } from "../libs/state/StateManage.js";
 import Board from "../libs/board/Board.js";
 import { CommentLike } from "../libs/commentLike/CommentLike.js";
 import { Comment } from "../libs/comment/Comment.js";
+import TokenUtility from "../libs/token/TokenUtility.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     const boardId = Board.Utility.getBoardId();
@@ -10,6 +11,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (location.pathname !== (`/board/${boardId}`)) return;
 
     State.replaceCurrentState();
+    
+    TokenUtility.forceReissueAccessToken();
 
     BoardView.DOM.present();
     Comment.DOM.addRegisterEvent();

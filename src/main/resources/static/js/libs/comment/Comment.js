@@ -70,11 +70,10 @@ export class Comment {
             cache: "no-cache"
         }
 
-        await fetch(url, options)
+        fetch(url, options)
             .then(response => {
                 if (response.ok) {
-                    const data = response.json();
-                    return data;
+                    return response.json();
                 }
 
                 if (response.status === 404) return;

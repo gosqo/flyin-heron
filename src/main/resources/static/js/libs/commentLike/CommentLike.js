@@ -57,22 +57,18 @@ export class CommentLike {
             commentLikeImage.src = "/img/icons/checked.png";
             commentLikeCount.textContent = parseInt(commentLikeCount.textContent) + 1;
 
-            if (!this.likedCommentIds.has(commentId)) {
-                this.pendingLikesToRegister.add(commentId);
-            }
-
-            if (this.pendingLikesToDelete.contains(commentId)) {
-                this.pendingLikesToDelete.remove(commentId);
-            }
-
-            this.pendingLikesToRegister.logElements(commentId);
-            this.pendingLikesToDelete.logElements(commentId);
+            this.addToPendingRegister(commentId);
+            
             return;
         }
 
         commentLikeImage.src = "/img/icons/unchecked.png";
         commentLikeCount.textContent = parseInt(commentLikeCount.textContent) - 1;
 
+        this.addToPendingDelete(commentId);
+    }
+
+    static addToPendingDelete(commentId) {
         if (this.likedCommentIds.has(commentId)) {
             this.pendingLikesToDelete.add(commentId);
         }
@@ -85,22 +81,39 @@ export class CommentLike {
         this.pendingLikesToDelete.logElements(commentId);
     }
 
+    static addToPendingRegister(commentId) {
+        if (!this.likedCommentIds.has(commentId)) {
+            this.pendingLikesToRegister.add(commentId);
+        }
+
+        if (this.pendingLikesToDelete.contains(commentId)) {
+            this.pendingLikesToDelete.remove(commentId);
+        }
+
+        this.pendingLikesToRegister.logElements(commentId);
+        this.pendingLikesToDelete.logElements(commentId);
+    }
+
     static initPageUnloadHandler() {
         // window.addEventListener('pagehide', (e) => { // pagehide 의 경우, 해당 블록에서 수행하는 요청이 비교적 늦게 나감.
         window.addEventListener('visibilitychange', () => {
-            // e.preventDefault();
-
             if (document.visibilityState === "hidden") { // 해당 조건 없으면 visibilityState === "visible" (페이지 로드)에도 이벤트 발생
-                
-                if (this.pendingLikesToRegister.idsToRequest.size > 0) {
-                    this.pendingLikesToRegister.request();
-                }
-                
-                if (this.pendingLikesToDelete.idsToRequest.size > 0) {
-                    this.pendingLikesToDelete.request();
-                }
+                this.requestRegister();
+                this.requestDelete();
             }
         });
+    }
+
+    static requestDelete() {
+        if (this.pendingLikesToDelete.idsToRequest.size > 0) {
+            this.pendingLikesToDelete.request();
+        }
+    }
+
+    static requestRegister() {
+        if (this.pendingLikesToRegister.idsToRequest.size > 0) {
+            this.pendingLikesToRegister.request();
+        }
     }
 
     static async hasLiked(commentId) {
@@ -128,12 +141,14 @@ export class CommentLike {
             keepalive: "true"
         };
 
-        const data = await Fetcher.withAuth(uri, options);
-
-        return data;
+        // visibility hidden 상태에서 비동기 요청을 여럿 보낼 수 있지만 await 이 붙으면 이후 요청을 보내지 못함.
+        // 그렇기 때문에 전송으로 마칠 수 있는 요청만을 해당 이벤트 핸들러로 삼는 것이 올바른 사용법인 것으로 보임.
+        // 예외 처리가 불가능
+        // 예외 발생 요인을 사전에 차단하고 요청을 보내기만 하도록 함.
+        Fetcher.withAuth(uri, options);
     }
 
-    static async removeCommentLike(commentId) {
+    static removeCommentLike(commentId) {
         const uri = `/api/v1/comment-like/${commentId}`;
         let options = {
             method: "DELETE",
@@ -143,9 +158,6 @@ export class CommentLike {
             keepalive: "true"
         };
 
-        const data = await Fetcher.withAuth(uri, options);
-
-        return data;
+        Fetcher.withAuth(uri, options);
     }
 }
-

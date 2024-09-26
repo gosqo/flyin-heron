@@ -1,14 +1,13 @@
 import TokenUtility from "../token/TokenUtility.js"
 
 export class Fetcher {
+
     static async withAuth(url, options) {
         try {
             const response1 = await fetch(url, options);
 
             if (response1.status === 401) {
-                const currentRefreshToken = localStorage.getItem("refresh_token")
-                const reissuedTokens = await reissueTokenWith(currentRefreshToken);
-
+                const reissuedTokens = await this.reissueToken();
                 TokenUtility.saveTokens(reissuedTokens);
                 putReissuedTokenOnHeader(options);
                 return await retryWithReissuedToken(url, options);
@@ -22,30 +21,6 @@ export class Fetcher {
             return response1.json();
         } catch (error) {
             console.error("Error: ", error);
-        }
-
-        async function reissueTokenWith(refreshToken) {
-            const url = "/api/v1/auth/refresh-token";
-            const options = {
-                method: "POST",
-                headers: {
-                    "Authorization": refreshToken
-                }
-            };
-
-            try {
-                const response = await fetch(url, options);
-
-                if (!response.ok) {
-                    alert("인증 정보에 문제가 있습니다.\n로그아웃 후 다시 로그인해주십시오.");
-                    throw new Error("Failed to refresh access token");
-                }
-
-                console.log("refreshed, success");
-                return await response.json();
-            } catch (error) {
-                console.error("Error: ", error);
-            }
         }
 
         function putReissuedTokenOnHeader(options) {
@@ -68,6 +43,31 @@ export class Fetcher {
         }
     }
 
+    static async reissueToken() {
+        const url = "/api/v1/auth/refresh-token";
+        const options = {
+            method: "POST",
+            headers: {
+                "Authorization": localStorage.getItem("refresh_token")
+            },
+        };
+
+        try {
+            const response = await fetch(url, options);
+
+            if (!response.ok) {
+                alert("인증 정보에 문제가 있습니다.\n로그아웃 후 다시 로그인해주십시오.");
+                throw new Error("Failed to refresh access token");
+            }
+
+            console.log("refreshed, success");
+            return await response.json();
+        } catch (error) {
+            console.error("Error: ", error);
+        }
+    }
+
+
     static async getAuthRequiredView(pathToGet) {
         const url = pathToGet;
         let options = {
@@ -82,5 +82,14 @@ export class Fetcher {
         } catch (error) {
             console.error("Error: ", error);
         }
+    }
+
+    static async refreshBeforeAuthRequiredRequest() {
+        console.log(localStorage.getItem("access_token"));
+
+        const reissuedTokens = await this.reissueToken();
+        TokenUtility.saveTokens(reissuedTokens);
+
+        console.log(localStorage.getItem("access_token"));
     }
 }
