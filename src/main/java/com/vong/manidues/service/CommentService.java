@@ -136,6 +136,7 @@ public class CommentService {
                 () -> new NoSuchElementException("존재하지 않는 댓글 조회 요청")));
     }
 
+    @Transactional(readOnly = true)
     public Slice<CommentGetResponse> getSliceOfComments(Long boardId, int pageNumber) throws NoResourceFoundException {
         Pageable pageable = getNormalCommentsPageRequest(pageNumber);
         Slice<Comment> found = commentRepository.findByBoardId(boardId, pageable);

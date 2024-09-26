@@ -28,7 +28,7 @@ public class CommentLikeService {
 
     @Transactional
     public CommentLike deleteCommentLike(Long memberId, Long commentId) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(
+        Comment comment = commentRepository.findByIdForUpdate(commentId).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 댓글에 좋아요 삭제 요청.")
         );
         CommentLike commentLike = commentLikeRepository.findByMemberIdAndCommentId(memberId, commentId).orElseThrow(
@@ -52,7 +52,7 @@ public class CommentLikeService {
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 회원의 댓글 좋아요 요청.")
         );
-        Comment comment = commentRepository.findById(commentId).orElseThrow(
+        Comment comment = commentRepository.findByIdForUpdate(commentId).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 댓글에 좋아요 요청.")
         );
         AtomicReference<CommentLike> commentLike = new AtomicReference<>();
