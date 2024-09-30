@@ -29,8 +29,7 @@ export class BoardView {
                 document.querySelector("#board-hits").textContent = `조회 ${boardData.viewCount}`;
                 document.querySelector("#board-date").textContent = Board.Utility.getRecentBoardDate(boardData);
                 const boardContent = document.querySelector("#board-content")
-                boardContent.textContent = boardData.content;
-                DomHtml.addHyperLink(boardContent);
+                DomHtml.addHyperLink(boardContent, boardContent.id, boardData.content);
             }
 
             function addButtons(boardId) {

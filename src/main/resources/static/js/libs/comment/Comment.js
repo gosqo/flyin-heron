@@ -336,6 +336,8 @@ export class Comment {
 
         static placeData(commentUnit, data) {
             const commentContent = commentUnit.querySelector("#comment-content");
+            commentContent.id += "-" + data.id;
+            commentContent.className = "comment-content-selector"
 
             commentUnit.hidden = false;
             commentUnit.id = `comment${data.id}`;
@@ -344,15 +346,15 @@ export class Comment {
             commentUnit.querySelector("#comment-writer").textContent = data.writerNickname;
             commentUnit.querySelector("#comment-date").textContent = Board.Utility.getRecentBoardDate(data);
             commentUnit.querySelector("#comment-like-count").textContent = data.likeCount;
-            commentContent.textContent = data.content;
-            DomHtml.addHyperLink(commentContent);
+            DomHtml.addHyperLink(commentContent, commentContent.id, data.content);
         }
 
         static placeDataWhenModified(commentUnit, data) {
+            const commentContent = commentUnit.querySelector(".comment-content-selector");
+            commentContent.textContent = ""; // clear previous content.
+
             commentUnit.querySelector("#comment-date").textContent = Board.Utility.getRecentBoardDate(data.updatedComment);
-            const commentContent = commentUnit.querySelector("#comment-content");
-            commentContent.textContent = data.updatedComment.content;
-            DomHtml.addHyperLink(commentContent);
+            DomHtml.addHyperLink(commentContent, commentContent.id, data.updatedComment.content);
         }
     }
 }

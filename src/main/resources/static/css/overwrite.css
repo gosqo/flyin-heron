@@ -2,8 +2,12 @@ textarea {
     white-space: pre-wrap;
 }
 
-#board-content, #comment-content {
+#board-content, .comment-content-selector {
     white-space: pre-wrap;
+}
+
+.comment-content-selector > a {
+    word-break: break-all !important;
 }
 
 button > img:hover {
