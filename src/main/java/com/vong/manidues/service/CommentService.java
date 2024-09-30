@@ -17,7 +17,6 @@ import org.springframework.data.domain.*;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.NoSuchElementException;
 
@@ -137,7 +136,7 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public Slice<CommentGetResponse> getSliceOfComments(Long boardId, int pageNumber) throws NoResourceFoundException {
+    public Slice<CommentGetResponse> getSliceOfComments(Long boardId, int pageNumber) {
         Pageable pageable = getNormalCommentsPageRequest(pageNumber);
         Slice<Comment> found = commentRepository.findByBoardId(boardId, pageable);
 
