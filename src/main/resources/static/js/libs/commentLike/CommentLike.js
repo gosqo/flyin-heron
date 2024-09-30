@@ -95,9 +95,9 @@ export class CommentLike {
     }
 
     static initPageUnloadHandler() {
-        // window.addEventListener('pagehide', (e) => { // pagehide 의 경우, 해당 블록에서 수행하는 요청이 비교적 늦게 나감.
         window.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === "hidden") { // 해당 조건 없으면 visibilityState === "visible" (페이지 로드)에도 이벤트 발생
+             // 해당 조건 없으면 visibilityState === "visible" (페이지 로드)에도 이벤트 발생
+            if (document.visibilityState === "hidden") {
                 this.requestRegister();
                 this.requestDelete();
             }

@@ -10,6 +10,7 @@ export class Fetcher {
                 const reissuedTokens = await this.reissueToken();
                 TokenUtility.saveTokens(reissuedTokens);
                 putReissuedTokenOnHeader(options);
+
                 return await retryWithReissuedToken(url, options);
             }
 
