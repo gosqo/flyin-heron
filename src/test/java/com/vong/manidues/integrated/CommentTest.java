@@ -6,6 +6,7 @@ import com.vong.manidues.repository.BoardRepository;
 import com.vong.manidues.repository.CommentRepository;
 import com.vong.manidues.repository.MemberRepository;
 import com.vong.manidues.service.CommentService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,7 @@ public class CommentTest extends SpringBootTestBase {
         initData();
     }
 
+    @AfterEach
     @Override
     void tearDown() {
         commentRepository.deleteAll();

@@ -78,9 +78,10 @@ class CommentLikeTest extends SpringBootTestBase {
     @Override
     @AfterEach
     void tearDown() {
-        commentLikeRepository.deleteAll();
-        commentRepository.deleteAll();
-        boardRepository.deleteAll();
+        log.info("==== Deleting Test data. ====");
+//        commentLikeRepository.deleteAll();
+//        commentRepository.deleteAll();
+//        boardRepository.deleteAll();
         memberRepository.deleteAll();
     }
 
@@ -92,7 +93,7 @@ class CommentLikeTest extends SpringBootTestBase {
     }
 
     @Test
-    void with_existing_CommentLike_Comment_likeCount_is_1L() {
+    void likeCount_of_comment_which_has_existing_CommentLike_is_1L() {
         Comment comment = commentRepository.findById(commentIdHasCommentLike).orElseThrow();
         assertThat(comment.getLikeCount()).isEqualTo(1L);
     }

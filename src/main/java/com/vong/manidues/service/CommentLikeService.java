@@ -69,7 +69,8 @@ public class CommentLikeService {
                         () -> commentLike.set(commentLikeRepository.save(CommentLike.builder()
                                 .member(member)
                                 .comment(comment)
-                                .build()))
+                                .build()
+                        ))
                 );
 
         return commentLike.get();

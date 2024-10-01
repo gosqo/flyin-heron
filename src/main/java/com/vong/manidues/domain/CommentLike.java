@@ -21,6 +21,7 @@ public class CommentLike extends IdentityBaseEntity {
     @ManyToOne(
             targetEntity = Comment.class
             , optional = false
+            , fetch = FetchType.LAZY
     )
     @JoinColumn(
             name = "comment_id"
@@ -33,6 +34,7 @@ public class CommentLike extends IdentityBaseEntity {
     @ManyToOne(
             targetEntity = Member.class
             , optional = false
+            , fetch = FetchType.LAZY
     )
     @JoinColumn(
             name = "member_id"

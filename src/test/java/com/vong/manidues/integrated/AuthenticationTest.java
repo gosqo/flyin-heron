@@ -51,7 +51,7 @@ class AuthenticationTest extends SpringBootTestBase {
 
     @Override
     void initData() {
-        member = memberRepository.saveAndFlush(buildMember());
+        member = memberRepository.save(buildMember());
     }
 
     @Override
