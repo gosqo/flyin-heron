@@ -4,7 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.4'
 }
 
-group = 'com.vong'
+group = 'com.gosqo'
 version = '0.0.3'
 
 java {
@@ -32,6 +32,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2' // javax.annotation.meta.When error
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
