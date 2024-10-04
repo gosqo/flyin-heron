@@ -4,6 +4,7 @@ import Board from "../libs/board/Board.js";
 import { CommentLike } from "../libs/commentLike/CommentLike.js";
 import { Comment } from "../libs/comment/Comment.js";
 import TokenUtility from "../libs/token/TokenUtility.js";
+import AuthChecker from "../libs/token/AuthChecker.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     const boardId = Board.Utility.getBoardId();
@@ -12,7 +13,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     State.replaceCurrentState();
     
-    TokenUtility.forceReissueAccessToken();
+    if (AuthChecker.hasAuth()) {
+        TokenUtility.forceReissueAccessToken();
+    }
 
     BoardView.DOM.present();
     Comment.DOM.addRegisterEvent();
