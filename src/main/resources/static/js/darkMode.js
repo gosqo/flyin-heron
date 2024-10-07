@@ -55,7 +55,7 @@ function toggleTheme(themeToggleButton, preference) {
         toggleThemeButtonText(themeToggleButton, preference);
         toggleThemeButtonColor(themeToggleButton, preference);
         toggleDarkModeCss(preference);
-        toggleColorIfLightButtonExist(preference);
+        toggleColorIfLightButtonExist();
     }
 }
 
@@ -67,9 +67,16 @@ function toggleThemeButtonText(themeToggleButton, preference) {
 }
 
 function toggleThemeButtonColor(themeToggleButton, preference) {
-    themeToggleButton.className = preference === "light"
-        ? "btn btn-dark"
-        : "btn btn-light";
+    if (preference === "light") {
+        themeToggleButton.classList.remove("btn-light");
+        themeToggleButton.classList.add("btn-dark");
+
+        return;
+    }
+
+    themeToggleButton.classList.remove("btn-dark");
+    themeToggleButton.classList.add("btn-light");
+
 }
 
 function toggleColorIfDarkButtonExist() {
