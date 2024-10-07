@@ -4,15 +4,26 @@ import TokenUtility from "../token/TokenUtility.js";
 export class LoginDOM {
     addSubmitEvent() {
         const submitButton = document.querySelector("#submit-form-btn");
-        submitButton.addEventListener("click", async (event) => {
-            event.preventDefault();
 
-            const body = FormUtility.formToBody();
-            this.registerMember(body);
+        submitButton.addEventListener("click", (event) => {
+            this.submitEventHandler(event);
         });
     }
 
-    async registerMember(body) {
+    async submitEventHandler(event) {
+        event.preventDefault();
+
+        const body = FormUtility.formToBody();
+        const data = await this.requestAuthenticate(body);
+
+        if (data === undefined) return;
+
+        TokenUtility.saveToken(data)
+        alert("환영합니다.");
+        location.replace("/");
+    }
+
+    async requestAuthenticate(body) {
         const url = "/api/v1/auth/authenticate";
         const options = {
             headers: {
@@ -31,9 +42,7 @@ export class LoginDOM {
                 return;
             }
 
-            TokenUtility.saveTokens(data)
-            alert("로그인했습니다.");
-            location.replace("/");
+            return data;
         } catch (error) {
             console.error("Error: ", error);
         }

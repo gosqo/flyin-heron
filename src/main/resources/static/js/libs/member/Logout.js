@@ -7,7 +7,6 @@ export default class Logout {
         const url = "/api/v1/auth/logout";
         let options = {
             headers: {
-                "Authorization": localStorage.getItem("refresh_token"),
             },
             method: "POST",
         };
@@ -21,7 +20,6 @@ export default class Logout {
                 console.log(data); // data.status, data.message 접근 가능.
 
                 localStorage.removeItem('access_token');
-                localStorage.removeItem('refresh_token');
 
                 location.reload();
             })

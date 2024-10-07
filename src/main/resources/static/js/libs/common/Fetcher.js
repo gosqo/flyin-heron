@@ -1,4 +1,5 @@
 import TokenUtility from "../token/TokenUtility.js"
+import AuthChecker from "../token/AuthChecker.js";
 
 export class Fetcher {
 
@@ -8,7 +9,9 @@ export class Fetcher {
 
             if (response1.status === 401) {
                 const reissuedTokens = await this.reissueToken();
-                TokenUtility.saveTokens(reissuedTokens);
+                if (reissuedTokens === undefined) { return };
+
+                TokenUtility.saveToken(reissuedTokens);
                 putReissuedTokenOnHeader(options);
 
                 return await retryWithReissuedToken(url, options);
@@ -33,9 +36,9 @@ export class Fetcher {
             return await fetch(url, options)
                 .then(response2 => {
                     if (response2.headers.get("Content-Type") === "text/html;charset=UTF-8") {
-                        const data = response2.text();
-                        return data;
+                        return response2.text();
                     }
+
                     return response2.json();
                 })
                 .catch(error => {
@@ -49,16 +52,19 @@ export class Fetcher {
         const options = {
             method: "POST",
             headers: {
-                "Authorization": localStorage.getItem("refresh_token")
             },
         };
 
         try {
             const response = await fetch(url, options);
 
-            if (!response.ok) {
+            if (response.status === 403) {
                 alert("인증 정보에 문제가 있습니다.\n로그아웃 후 다시 로그인해주십시오.");
                 throw new Error("Failed to refresh access token");
+            }
+
+            if (!response.ok && response.headers.get("Content-Type") === "text/html;charset=UTF-8") {
+                return await response.text();
             }
 
             console.log("refreshed, success");
@@ -86,11 +92,7 @@ export class Fetcher {
     }
 
     static async refreshBeforeAuthRequiredRequest() {
-        console.log(localStorage.getItem("access_token"));
-
         const reissuedTokens = await this.reissueToken();
-        TokenUtility.saveTokens(reissuedTokens);
-
-        console.log(localStorage.getItem("access_token"));
+        TokenUtility.saveToken(reissuedTokens);
     }
 }

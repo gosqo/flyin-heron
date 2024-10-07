@@ -1,25 +1,6 @@
 import { Fetcher } from "../common/Fetcher.js";
 
 export default class TokenUtility {
-    static removeTokensIfExpired() {
-        const refreshToken = localStorage.getItem('refresh_token');
-
-        if (refreshToken === null) throw new Error("인증 정보에 문제가 있습니다. 로그아웃 후 재로그인을 권장합니다.");
-
-        const parsedJwt = TokenUtility.parseJwt(refreshToken);
-        const expiration = parsedJwt.exp;
-        const current = Math.floor(Date.now() / 1000);
-
-        if (current >= expiration) {
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
-            
-            console.log('expired refresh token. removed.');
-            
-            location.reload();
-        }
-    }
-
     static parseJwt(token) {
         const base64Url = token.split(".")[1];
         const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -36,12 +17,11 @@ export default class TokenUtility {
         return JSON.parse(jsonPayload);
     }
 
-    static saveTokens(refreshedTokens) {
-        if (refreshedTokens.access_token === undefined || refreshedTokens.refresh_token === undefined)
-            throw new Error("JWToken cannot be undefined.");
+    static saveToken(responseToken) {
+        if (responseToken.access_token === undefined || responseToken.accessToken === null)
+            throw new Error("JWToken cannot be undefined or null.");
 
-        localStorage.setItem("access_token", `Bearer ${refreshedTokens.access_token}`);
-        localStorage.setItem("refresh_token", `Bearer ${refreshedTokens.refresh_token}`);
+        localStorage.setItem("access_token", `Bearer ${responseToken.access_token}`);
     }
 
     static forceReissueAccessToken() {
@@ -53,15 +33,6 @@ export default class TokenUtility {
         const fiveMinutes = 1000 * 60 * 5; // 5 mins
         const updateTimeout = toExpiry - fiveMinutes; // minus 5 mins.
         const intervalTimeout = 1000 * 60 * 25; // 25 mins
-
-        if (toExpiry < fiveMinutes) { // 30 mins left
-            Fetcher.refreshBeforeAuthRequiredRequest();
-
-            setInterval(() => {
-                Fetcher.refreshBeforeAuthRequiredRequest();
-            }, intervalTimeout)
-            return ;
-        }
 
         setTimeout(() => {
             Fetcher.refreshBeforeAuthRequiredRequest();
