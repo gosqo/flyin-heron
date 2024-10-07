@@ -76,6 +76,10 @@ public class CookieUtility {
      * @return cookieName 을 이름으로 가진 쿠키, 배열에 존재하지 않는다면 null.
      */
     public static Cookie findCookie(String cookieName, Cookie[] cookies) {
+        if (cookies == null) {
+            return null;
+        }
+
         return Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(cookieName))
                 .findFirst()

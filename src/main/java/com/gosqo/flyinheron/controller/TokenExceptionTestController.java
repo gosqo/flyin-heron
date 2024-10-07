@@ -1,7 +1,7 @@
 package com.gosqo.flyinheron.controller;
 
-import com.gosqo.flyinheron.service.ClaimExtractor;
 import com.gosqo.flyinheron.global.utility.AuthHeaderUtility;
+import com.gosqo.flyinheron.service.ClaimExtractor;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ public class TokenExceptionTestController {
     private final ClaimExtractor claimExtractor;
 
     @PreAuthorize("hasRole('ROLE_USER')")
-    @RequestMapping("/tokenValidationTest")
+    @RequestMapping("/token-validation-test")
     public ResponseEntity<Object> tokenValidationTest(HttpServletRequest request) {
         String jwt = AuthHeaderUtility.extractJwt(request);
         Map<String, String> map = new HashMap<>();

@@ -34,9 +34,13 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             return;
         }
 
-        String jwToken = AuthHeaderUtility.extractJwt(request);
+        String jwt = AuthHeaderUtility.extractJwt(request);
 
-        if (throwAnyJwtException(response, jwToken)) return;
+        if (jwt == null) {
+            jwt = AuthHeaderUtility.getRefreshToken(request);
+        }
+
+        if (throwAnyJwtException(response, jwt)) return;
 
         filterChain.doFilter(request, response);
     }

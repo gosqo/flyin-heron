@@ -1,6 +1,7 @@
 package com.gosqo.flyinheron.global.exception;
 
 import com.gosqo.flyinheron.global.exception.custom.DebugNeededException;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -200,6 +201,16 @@ public class GlobalExceptionHandler {
         String userMessage = "서버 오류가 발생했습니다. 문제가 지속될 시 운영진에 연락 부탁드립니다.";
 
         return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, userMessage);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ErrorResponse> handleExpiredJwtException(
+            ExpiredJwtException ex
+    ) {
+        logException(ex);
+        String userMessage = "토큰이 만료되어 서버에 도달했습니다.";
+
+        return buildResponseEntity(HttpStatus.UNAUTHORIZED, userMessage);
     }
 
     @ExceptionHandler(DebugNeededException.class)

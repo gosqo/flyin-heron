@@ -5,10 +5,8 @@ import com.gosqo.flyinheron.domain.Token;
 import com.gosqo.flyinheron.dto.auth.AuthenticationRequest;
 import com.gosqo.flyinheron.dto.auth.AuthenticationResponse;
 import com.gosqo.flyinheron.global.exception.custom.DebugNeededException;
-import com.gosqo.flyinheron.global.utility.AuthHeaderUtility;
 import com.gosqo.flyinheron.repository.MemberRepository;
 import com.gosqo.flyinheron.repository.TokenRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +17,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @Service
@@ -32,7 +31,9 @@ public class AuthenticationService {
     private final ClaimExtractor claimExtractor;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    public Map<String, String> authenticate(AuthenticationRequest request) {
+        final Map<String, String> tokensToResponse = new HashMap<>();
+
         var authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -47,18 +48,18 @@ public class AuthenticationService {
         Member member = memberRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new DebugNeededException("인증 통과 후, 조회되지 않는 회원"));
 
-        HashMap<String, Object> extraClaims = new HashMap<>();
-        extraClaims.put("id", member.getId());
-        String accessToken = jwtService.generateAccessToken(extraClaims, member);
         String refreshToken = jwtService.generateRefreshToken(member);
 
         saveMemberToken(member, refreshToken);
 
-        return buildAuthenticationResponse(accessToken, refreshToken);
+        tokensToResponse.put("accessToken", buildAccessTokenWithClaims(member));
+        tokensToResponse.put("refreshToken", refreshToken);
+
+        return tokensToResponse;
     }
 
-    public AuthenticationResponse refreshToken(HttpServletRequest request) {
-        final String formerRefreshToken = AuthHeaderUtility.extractJwt(request);
+    public Map<String, String> refreshToken(String formerRefreshToken) {
+        final Map<String, String> tokensToResponse = new HashMap<>();
         final String userEmail = claimExtractor.extractUserEmail(formerRefreshToken);
         final Member member = memberRepository.findByEmail(userEmail).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 회원에 대한 조회.")
@@ -68,15 +69,33 @@ public class AuthenticationService {
                 () -> new NoSuchElementException("데이터베이스에 존재하지 않는 리프레시 토큰.")
         );
 
+        String refreshTokenToResponse = formerRefreshToken;
+
         if (needToReissue(formerRefreshToken)) {
             final String reissuedRefreshToken = jwtService.generateRefreshToken(member);
 
-            saveMemberToken(member, reissuedRefreshToken);
-            tokenRepository.deleteByToken(formerRefreshToken);
+            tokenRepository.findByToken(reissuedRefreshToken).ifPresentOrElse(
+                    (stored) -> {}
+                    , () -> {
+                        saveMemberToken(member, reissuedRefreshToken);
+                        tokenRepository.deleteByToken(formerRefreshToken);
+                    }
+            );
 
-            return buildAuthenticationResponse(member, reissuedRefreshToken);
+            refreshTokenToResponse = reissuedRefreshToken;
         }
-        return buildAuthenticationResponse(member, formerRefreshToken);
+
+        tokensToResponse.put("accessToken", buildAccessTokenWithClaims(member));
+        tokensToResponse.put("refreshToken", refreshTokenToResponse);
+
+        return tokensToResponse;
+    }
+
+    private String buildAccessTokenWithClaims(Member member) {
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("id", member.getId());
+
+        return jwtService.generateAccessToken(extraClaims, member);
     }
 
     private AuthenticationResponse buildAuthenticationResponse(

@@ -1,9 +1,11 @@
 package com.gosqo.flyinheron.service;
 
 import com.gosqo.flyinheron.domain.Token;
-import com.gosqo.flyinheron.repository.TokenRepository;
-import com.gosqo.flyinheron.global.utility.AuthHeaderUtility;
 import com.gosqo.flyinheron.dto.ResponseBodyWriter;
+import com.gosqo.flyinheron.global.utility.AuthHeaderUtility;
+import com.gosqo.flyinheron.global.utility.CookieUtility;
+import com.gosqo.flyinheron.repository.TokenRepository;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+
+import static com.gosqo.flyinheron.controller.AuthenticationController.REFRESH_TOKEN_COOKIE_NAME;
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +55,7 @@ public class LogoutService implements LogoutHandler {
             return;
         }
         // header Authorization header == null 인 경우 NullPointerException
-        final String refreshToken = AuthHeaderUtility.extractJwt(request);
+        final String refreshToken = AuthHeaderUtility.getRefreshToken(request);
         final List<Token> storedTokens = tokenRepository.findAllByToken(refreshToken).stream().toList();
 
         if (storedTokens.isEmpty()) { // refreshToken entity 가 존재하지 않는다면,
@@ -63,7 +67,13 @@ public class LogoutService implements LogoutHandler {
 
         int deletedTokenCount = tokenRepository.deleteByToken(refreshToken);
         log.info("Deleted token count is: {}", deletedTokenCount);
-        responseWith200(response);
+
+        Cookie deleteRefreshToken = CookieUtility.findCookie(REFRESH_TOKEN_COOKIE_NAME, request.getCookies());
+        deleteRefreshToken.setMaxAge(0);
+        deleteRefreshToken.setPath("/");
+        response.addCookie(deleteRefreshToken);
+
+        responseWith200(request, response);
     }
 
     private void responseWith400(HttpServletResponse response) {
@@ -74,7 +84,7 @@ public class LogoutService implements LogoutHandler {
         }
     }
 
-    private void responseWith200(HttpServletResponse response) {
+    private void responseWith200(HttpServletRequest request, HttpServletResponse response) {
         try {
             responseBodyWriter.setResponseWithBody(
                     response
