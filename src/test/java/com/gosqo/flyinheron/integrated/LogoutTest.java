@@ -5,6 +5,8 @@ import com.gosqo.flyinheron.domain.fixture.MemberFixture;
 import com.gosqo.flyinheron.dto.JsonResponse;
 import com.gosqo.flyinheron.dto.auth.AuthenticationResponse;
 import com.gosqo.flyinheron.global.exception.ErrorResponse;
+import com.gosqo.flyinheron.global.utility.RequestCookie;
+import com.gosqo.flyinheron.global.utility.RespondedCookie;
 import com.gosqo.flyinheron.repository.MemberRepository;
 import com.gosqo.flyinheron.repository.TokenRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -12,10 +14,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
-import static com.gosqo.flyinheron.global.utility.HttpUtility.buildPostHeadersWithToken;
-import static com.gosqo.flyinheron.global.utility.HttpUtility.buildPostRequestEntity;
+import static com.gosqo.flyinheron.controller.AuthenticationController.REFRESH_TOKEN_COOKIE_NAME;
+import static com.gosqo.flyinheron.global.utility.HttpUtility.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LogoutTest extends SpringBootTestBase {
@@ -84,10 +87,20 @@ class LogoutTest extends SpringBootTestBase {
         assertThat(loginResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(loginResponse.getBody()).isNotNull();
         assertThat(loginResponse.getBody().getAccessToken()).isNotNull();
-        assertThat(loginResponse.getBody().getRefreshToken()).isNotNull();
 
-        final var refreshToken = loginResponse.getBody().getRefreshToken();
-        final var logoutHeaders = buildPostHeadersWithToken(refreshToken);
+        final var loginResponseHeaders = loginResponse.getHeaders().get(HttpHeaders.SET_COOKIE);
+        assertThat(loginResponseHeaders).isNotNull();
+
+        final var refreshTokenCookie = RespondedCookie
+                .extract(loginResponseHeaders, REFRESH_TOKEN_COOKIE_NAME);
+        assertThat(refreshTokenCookie).isNotNull();
+
+        final var refreshToken = RespondedCookie.getCookieValue(refreshTokenCookie);
+
+        final var logoutHeaders = buildDefaultPostHeaders();
+        final var requestCookieValue = RequestCookie.valueWith(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
+        logoutHeaders.add(HttpHeaders.COOKIE, requestCookieValue);
+
         final var logoutRequest = buildPostRequestEntity(logoutHeaders, null, LOGOUT_URI);
         final var logoutResponse = template.exchange(logoutRequest, JsonResponse.class);
 

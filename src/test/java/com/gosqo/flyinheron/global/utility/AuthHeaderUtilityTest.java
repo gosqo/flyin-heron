@@ -8,7 +8,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
 class AuthHeaderUtilityTest {
@@ -41,7 +40,7 @@ class AuthHeaderUtilityTest {
     }
 
     @Test
-    void extractJwtFromNoAuthHeader() {
-        assertThatThrownBy(() -> AuthHeaderUtility.extractJwt(mockRequestNoAuth));
+    void extract_JWT_from_no_authHeader_returns_null() {
+        assertThat(AuthHeaderUtility.extractJwt(mockRequestNoAuth)).isNull();
     }
 }
