@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -211,6 +212,23 @@ public class GlobalExceptionHandler {
         String userMessage = "토큰이 만료되어 서버에 도달했습니다.";
 
         return buildResponseEntity(HttpStatus.UNAUTHORIZED, userMessage);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public Object handleHttpRequestMethodNotSupportedException(
+            HttpServletRequest request
+            , HttpServletResponse response
+            , HttpRequestMethodNotSupportedException ex
+    ) {
+        logException(ex);
+
+        if (request.getMethod().matches(HttpMethod.GET.name())) {
+            response.setStatus(404);
+            return "error/404";
+        }
+        String userMessage = "예외가 발생했습니다. 반복적으로 발생한다면 운영진에 연락 부탁드립니다.";
+
+        return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, userMessage);
     }
 
     @ExceptionHandler(DebugNeededException.class)
