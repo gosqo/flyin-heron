@@ -41,6 +41,5 @@ export default class TokenUtility {
         setInterval(() => {
             Fetcher.refreshBeforeAuthRequiredRequest();
         }, intervalTimeout)
-
     }
 }
