@@ -7,21 +7,22 @@ import static com.gosqo.flyinheron.controller.AuthenticationController.REFRESH_T
 
 public class AuthHeaderUtility {
 
-    private static String extractAuthHeader(HttpServletRequest request) {
-        return request.getHeader("Authorization");
-    }
-
     public static boolean isNotAuthenticated(HttpServletRequest request) {
-        String refreshToken = getRefreshToken(request);
-        String authHeader = extractAuthHeader(request);
+        if (request.getRequestURI().equals("/api/v1/auth/refresh-token")) {
+            String refreshToken = getRefreshToken(request);
 
-        return (authHeader == null || !authHeader.startsWith("Bearer ")) && refreshToken.isBlank();
+            return refreshToken.isBlank();
+        }
+
+        String authHeader = request.getHeader("Authorization");
+
+        return authHeader == null || !authHeader.startsWith("Bearer ");
     }
 
     public static String extractJwt(HttpServletRequest request) throws NullPointerException {
-        String authHeader = extractAuthHeader(request);
+        String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null) {
+        if (authHeader == null || authHeader.equals("null")) {
             return null;
         }
 

@@ -32,9 +32,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        String refreshToken = AuthHeaderUtility.getRefreshToken(request);
-
-        final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
 
@@ -43,7 +40,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        jwt = authHeader == null ? refreshToken : authHeader.substring(7);
+        jwt = request.getRequestURI().equals("/api/v1/auth/refresh-token")
+                ? AuthHeaderUtility.getRefreshToken(request)
+                : AuthHeaderUtility.extractJwt(request);
+
         userEmail = claimExtractor.extractUserEmail(jwt);
 
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {

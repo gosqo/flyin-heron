@@ -29,16 +29,16 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws IOException, ServletException {
+        String jwt;
+
         if (AuthHeaderUtility.isNotAuthenticated(request)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String jwt = AuthHeaderUtility.extractJwt(request);
-
-        if (jwt == null) {
-            jwt = AuthHeaderUtility.getRefreshToken(request);
-        }
+        jwt = request.getRequestURI().equals("/api/v1/auth/refresh-token")
+                ? AuthHeaderUtility.getRefreshToken(request)
+                : AuthHeaderUtility.extractJwt(request);
 
         if (throwAnyJwtException(response, jwt)) return;
 
@@ -68,6 +68,9 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             response.sendError(400, "올바른 접근이 아닙니다. 로그아웃 후 다시 로그인 해주십시오.");
 
             return true;
+        } catch (RuntimeException ex) {
+            log.warn(ex.getMessage());
+            response.sendError(500, "인증 정보에 문제가 있습니다. 로그아웃 후 로그인 하심시오.");
         }
         return false;
     }
