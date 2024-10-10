@@ -49,19 +49,15 @@ public class GlobalExceptionHandler {
         return getFirstFileFromStackTrace(ex).getMethodName();
     }
 
-    private void logException(Exception ex) {
-        log.info("{}: {}", ex.getClass().getName(), ex.getMessage());
+    private String exceptionNameAndMessage(Exception ex) {
+        return String.format("%s: %s", ex.getClass().getName(), ex.getMessage());
     }
-
-    private void logWhereThrows(Exception ex) {
-        log.warn("thrown in: {}\nclosest Project files is: {}"
+    
+    private String whichThrow(Exception ex) {
+        return String.format("thrown in: %s\n\tclosest Project files is: %s"
                 , getFirstFileFromStackTrace(ex)
                 , getFirstProjectFileFromStackTrace(ex.getStackTrace())
         );
-    }
-
-    private void logErrorStackTrace(Exception ex) {
-        log.error("", ex);
     }
 
     private ResponseEntity<ErrorResponse> buildResponseEntity(
@@ -81,8 +77,8 @@ public class GlobalExceptionHandler {
             , HttpServletRequest request
             , HttpServletResponse response
     ) {
-        logException(ex);
-        logErrorStackTrace(ex);
+        log.info(exceptionNameAndMessage(ex));
+        log.warn("", ex);
 
         if (request.getMethod().equalsIgnoreCase(HttpMethod.GET.name())) {
             response.setStatus(HttpStatus.FORBIDDEN.value());
@@ -99,8 +95,8 @@ public class GlobalExceptionHandler {
             NoResourceFoundException ex
             , HttpServletResponse response
     ) {
-        logException(ex);
-        logWhereThrows(ex);
+        log.info(exceptionNameAndMessage(ex));
+        log.warn(whichThrow(ex));
 
         if (ex.getHttpMethod().matches(HttpMethod.GET.name())) {
             response.setStatus(404);
@@ -116,8 +112,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBadCredentialsException(
             BadCredentialsException ex
     ) {
-        logException(ex);
-        logWhereThrows(ex);
+        log.info(exceptionNameAndMessage(ex));
+        log.warn(whichThrow(ex));
         String userMessage = "이메일 혹은 패스워드를 확인 해주세요.";
 
         return buildResponseEntity(HttpStatus.BAD_REQUEST, userMessage);
@@ -127,8 +123,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleDataIntegrityViolationException(
             DataIntegrityViolationException ex
     ) {
-        logException(ex);
-        logWhereThrows(ex);
+        log.info(exceptionNameAndMessage(ex));
+        log.warn(whichThrow(ex));
 
         String userMessage;
 
@@ -144,7 +140,7 @@ public class GlobalExceptionHandler {
             default -> userMessage = "자원의 입력 및 수정이 지정된 형식에 맞지 않거나 중복을 발생시킵니다.";
         }
 
-        logErrorStackTrace(ex);
+        log.warn("", ex);
 
         return buildResponseEntity(HttpStatus.BAD_REQUEST, userMessage);
     }
@@ -153,8 +149,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleAuthenticationException(
             AuthenticationException ex
     ) {
-        logException(ex);
-        logErrorStackTrace(ex);
+        log.info(exceptionNameAndMessage(ex));
+        log.warn("", ex);
         String userMessage = "인증에 실패했습니다.";
 
         return buildResponseEntity(HttpStatus.BAD_REQUEST, userMessage);
@@ -164,8 +160,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleNoSuchElementException(
             NoSuchElementException ex
     ) {
-        logException(ex);
-        logWhereThrows(ex);
+        log.info(exceptionNameAndMessage(ex));
+        log.warn(whichThrow(ex));
         String userMessage = "존재하지 않는 자원에 대한 요청입니다.";
 
         return buildResponseEntity(HttpStatus.BAD_REQUEST, userMessage);
@@ -175,8 +171,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException ex
     ) {
-        logException(ex);
-        logWhereThrows(ex);
+        log.info(exceptionNameAndMessage(ex));
+        log.warn(whichThrow(ex));
         String userMessage = ex.getFieldErrors().get(0).getDefaultMessage();
 
         return buildResponseEntity(HttpStatus.BAD_REQUEST, userMessage);
@@ -186,8 +182,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
             MethodArgumentTypeMismatchException ex
     ) {
-        logException(ex);
-        logWhereThrows(ex);
+        log.info(exceptionNameAndMessage(ex));
+        log.warn(whichThrow(ex));
         String userMessage = "올바른 요청이 아닙니다.";
 
         return buildResponseEntity(HttpStatus.BAD_REQUEST, userMessage);
@@ -197,8 +193,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleNullPointerException(
             NullPointerException ex
     ) {
-        logException(ex);
-        logErrorStackTrace(ex);
+        log.info(exceptionNameAndMessage(ex));
+        log.warn("", ex);
         String userMessage = "서버 오류가 발생했습니다. 문제가 지속될 시 운영진에 연락 부탁드립니다.";
 
         return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, userMessage);
@@ -208,7 +204,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleExpiredJwtException(
             ExpiredJwtException ex
     ) {
-        logException(ex);
+        log.info(exceptionNameAndMessage(ex));
         String userMessage = "토큰이 만료되어 서버에 도달했습니다.";
 
         return buildResponseEntity(HttpStatus.UNAUTHORIZED, userMessage);
@@ -220,7 +216,7 @@ public class GlobalExceptionHandler {
             , HttpServletResponse response
             , HttpRequestMethodNotSupportedException ex
     ) {
-        logException(ex);
+        log.info(exceptionNameAndMessage(ex));
 
         if (request.getMethod().matches(HttpMethod.GET.name())) {
             response.setStatus(404);
@@ -235,8 +231,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleDebugNeededException(
             DebugNeededException ex
     ) {
-        logException(ex);
-        logErrorStackTrace(ex);
+        log.info(exceptionNameAndMessage(ex));
+        log.warn("", ex);
         String userMessage = "서버 오류가 발생했습니다. 문제가 지속될 시 운영진에 연락 부탁드립니다.";
 
         return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, userMessage);
@@ -246,8 +242,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleRuntimeException(
             RuntimeException ex
     ) {
-        logException(ex);
-        logErrorStackTrace(ex);
+        log.info(exceptionNameAndMessage(ex));
+        log.warn("", ex);
         String userMessage = "서버 오류가 발생했습니다. 문제가 지속될 시 운영진에 연락 부탁드립니다.";
 
         return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, userMessage);
@@ -257,8 +253,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleException(
             Exception ex
     ) {
-        logException(ex);
-        logErrorStackTrace(ex);
+        log.info(exceptionNameAndMessage(ex));
+        log.warn("", ex);
         String userMessage = "서버 오류가 발생했습니다. 문제가 지속될 시 운영진에 연락 부탁드립니다.";
 
         return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, userMessage);
