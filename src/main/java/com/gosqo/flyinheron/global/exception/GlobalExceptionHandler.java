@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,8 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 @Slf4j
@@ -52,7 +55,7 @@ public class GlobalExceptionHandler {
     private String exceptionNameAndMessage(Exception ex) {
         return String.format("%s: %s", ex.getClass().getName(), ex.getMessage());
     }
-    
+
     private String whichThrow(Exception ex) {
         return String.format("thrown in: %s\n\tclosest Project files is: %s"
                 , getFirstFileFromStackTrace(ex)
@@ -222,9 +225,16 @@ public class GlobalExceptionHandler {
             response.setStatus(404);
             return "error/404";
         }
-        String userMessage = "예외가 발생했습니다. 반복적으로 발생한다면 운영진에 연락 부탁드립니다.";
 
-        return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, userMessage);
+        String userMessage = "API 사용에 합의되지 않은 요청입니다.";
+        String supportedMethod = Objects.requireNonNull(ex.getSupportedHttpMethods())
+                .stream()
+                .map(HttpMethod::toString)
+                .collect(Collectors.joining(", "));
+
+        response.setHeader(HttpHeaders.ALLOW, supportedMethod);
+
+        return buildResponseEntity(HttpStatus.METHOD_NOT_ALLOWED, userMessage);
     }
 
     @ExceptionHandler(DebugNeededException.class)
