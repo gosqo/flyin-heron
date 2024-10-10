@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -31,18 +32,12 @@ public class AuthenticationService {
     private final ClaimExtractor claimExtractor;
     private final AuthenticationManager authenticationManager;
 
-    public Map<String, String> authenticate(AuthenticationRequest request) {
+    public Map<String, String> authenticate(AuthenticationRequest request) throws AuthenticationException {
         final Map<String, String> tokensToResponse = new HashMap<>();
 
-        var authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
+        authenticationManager.authenticate( // throws AuthenticationException
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
-        log.info("Authenticated: {}", authentication.isAuthenticated());
-        log.info("Principal: {}", authentication.getPrincipal());
-        log.info("Authorities: {}", authentication.getAuthorities());
 
         // authenticationManager.authenticate(Authentication) 을 통과하면 아래 예외는 던져지지 않음.
         Member member = memberRepository.findByEmail(request.getEmail())
