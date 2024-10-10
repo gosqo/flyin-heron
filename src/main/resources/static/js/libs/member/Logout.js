@@ -1,4 +1,4 @@
-export default class Logout {
+export class Logout {
     static logoutConfirm() {
         return confirm("로그아웃 하시겠습니까?");
     }

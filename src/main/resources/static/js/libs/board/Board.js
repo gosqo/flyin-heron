@@ -1,7 +1,7 @@
-import TokenUtility from "../token/TokenUtility.js"
-import DateTimeUtility from "../common/DateTimeUtility.js";
+import { TokenUtility } from "../token/TokenUtility.js"
+import { DateTimeUtility } from "../common/DateTimeUtility.js";
 
-export default class Board {
+export class Board {
     static Utility = class {
         static getBoardId() {
             const modifyViewPathRegex = /^\/board\/\d+\/modify$/;

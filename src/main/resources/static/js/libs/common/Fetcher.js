@@ -1,5 +1,5 @@
-import TokenUtility from "../token/TokenUtility.js"
-import AuthChecker from "../token/AuthChecker.js";
+import { TokenUtility } from "../token/TokenUtility.js"
+import { AuthChecker } from "../token/AuthChecker.js";
 
 export class Fetcher {
 

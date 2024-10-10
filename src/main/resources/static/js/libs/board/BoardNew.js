@@ -1,5 +1,5 @@
 import { Fetcher } from "../common/Fetcher.js";
-import FormUtility from "../common/FormUtility.js";
+import { FormUtility } from "../common/FormUtility.js";
 import { DomCreate } from "../dom/DomCreate.js";
 
 export class BoardNew {

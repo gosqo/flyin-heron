@@ -1,4 +1,4 @@
-export default class FormUtility {
+export class FormUtility {
     static formToBody() {
         const form = document.querySelector("#form");
         const formData = new FormData(form);

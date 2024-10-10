@@ -1,7 +1,7 @@
-import AuthChecker from "./token/AuthChecker.js";
+import { AuthChecker } from "./token/AuthChecker.js";
 import { DomCreate } from "./dom/DomCreate.js";
-import Logout from "./member/Logout.js";
-import TestJwt from "./token/TestJwt.js";
+import { Logout } from "./member/Logout.js";
+import { TestJwt } from "./token/TestJwt.js";
 
 export class IndexDOM {
     testJwt = new TestJwt();

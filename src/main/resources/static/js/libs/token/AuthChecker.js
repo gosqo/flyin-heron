@@ -1,4 +1,4 @@
-export default class AuthChecker {
+export class AuthChecker {
     static hasAuth() {
         // localStorage.getItem(item) 함수로 접근 시, Object 반환, 해당 Object 비어 있으면 null.
         // localStorage.access_token 으로 접근 시, Storage 객체 하위 접근 시, 정의되어있지 않으면 undefined.

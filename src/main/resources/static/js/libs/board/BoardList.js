@@ -2,7 +2,7 @@ import { DomCreate } from "../dom/DomCreate.js";
 import { State } from "../state/StateManage.js";
 import { BoardFetcher } from "./BoardFetcher.js";
 import { Fetcher } from "../common/Fetcher.js";
-import Board from "./Board.js";
+import { Board } from "./Board.js";
 
 export class BoardList {
     static Utility = class {

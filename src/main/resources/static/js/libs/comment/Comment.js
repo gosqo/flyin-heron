@@ -1,7 +1,7 @@
 import { Fetcher } from "../common/Fetcher.js";
-import Board from "../board/Board.js";
-import TokenUtility from "../token/TokenUtility.js";
-import AuthChecker from "../token/AuthChecker.js";
+import { Board } from "../board/Board.js";
+import { TokenUtility } from "../token/TokenUtility.js";
+import { AuthChecker } from "../token/AuthChecker.js";
 import { DomHtml } from "../dom/DomHtml.js";
 import { CommentLike } from "../commentLike/CommentLike.js";
 

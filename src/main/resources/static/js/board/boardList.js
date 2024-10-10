@@ -1,14 +1,21 @@
 import { BoardList } from "../libs/board/BoardList.js";
-import AuthChecker from "../libs/token/AuthChecker.js";
+import { AuthChecker } from "../libs/token/AuthChecker.js";
 import { State } from "../libs/state/StateManage.js";
+import { TokenUtility } from "../libs/token/TokenUtility.js"
 
 document.addEventListener("DOMContentLoaded", async () => {
     if (!location.pathname.startsWith("/boards")) return;
 
     State.replaceCurrentState();
 
-    if (AuthChecker.hasAuth())
-        BoardList.DOM.addNewBoardButton();
+    if (AuthChecker.hasAuth()) {
+        try {
+            TokenUtility.invalidateRefreshTokenInLocalStorage();
+            BoardList.DOM.addNewBoardButton();
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     BoardList.DOM.presentBoardList();
 });

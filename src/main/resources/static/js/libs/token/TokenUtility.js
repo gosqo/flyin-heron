@@ -1,6 +1,6 @@
 import { Fetcher } from "../common/Fetcher.js";
 
-export default class TokenUtility {
+export class TokenUtility {
     static parseJwt(token) {
         const base64Url = token.split(".")[1];
         const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -42,4 +42,17 @@ export default class TokenUtility {
             Fetcher.refreshBeforeAuthRequiredRequest();
         }, intervalTimeout)
     }
+
+    static invalidateRefreshTokenInLocalStorage() {
+        const refreshTokenInLocalStorage = localStorage.getItem("refresh_token");
+
+        if (refreshTokenInLocalStorage !== null) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("refresh_token");
+            
+            alert("인증 정보 관리 방식 변경으로 로그아웃 처리되었습니다. 이후 로그인 하시면 정상적으로 회원 기능을 사용하실 수 있습니다.")
+            throw new Error("logged out.");
+        }
+    }
+
 }

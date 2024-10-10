@@ -2,8 +2,8 @@ import { Fetcher } from "../common/Fetcher.js";
 import { BoardFetcher } from "./BoardFetcher.js";
 import { DomCreate } from "../dom/DomCreate.js";
 import { State } from "../state/StateManage.js";
-import AuthChecker from "../token/AuthChecker.js";
-import Board from "./Board.js";
+import { AuthChecker } from "../token/AuthChecker.js";
+import { Board } from "./Board.js";
 import { DomHtml } from "../dom/DomHtml.js";
 
 export class BoardView {

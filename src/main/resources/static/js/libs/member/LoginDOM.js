@@ -1,5 +1,5 @@
-import FormUtility from "../common/FormUtility.js";
-import TokenUtility from "../token/TokenUtility.js";
+import { FormUtility } from "../common/FormUtility.js";
+import { TokenUtility } from "../token/TokenUtility.js";
 
 export class LoginDOM {
     addSubmitEvent() {

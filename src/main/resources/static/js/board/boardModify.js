@@ -1,5 +1,5 @@
 import { BoardModifyView } from "../libs/board/BoardModify.js";
-import Board from "../libs/board/Board.js";
+import { Board } from "../libs/board/Board.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     const boardId = Board.Utility.getBoardId();

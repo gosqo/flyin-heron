@@ -1,10 +1,10 @@
 import { BoardView } from "../libs/board/BoardView.js";
 import { State } from "../libs/state/StateManage.js";
-import Board from "../libs/board/Board.js";
+import { Board } from "../libs/board/Board.js";
 import { CommentLike } from "../libs/commentLike/CommentLike.js";
 import { Comment } from "../libs/comment/Comment.js";
-import TokenUtility from "../libs/token/TokenUtility.js";
-import AuthChecker from "../libs/token/AuthChecker.js";
+import { TokenUtility } from "../libs/token/TokenUtility.js";
+import { AuthChecker } from "../libs/token/AuthChecker.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     const boardId = Board.Utility.getBoardId();
@@ -14,7 +14,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     State.replaceCurrentState();
     
     if (AuthChecker.hasAuth()) {
-        TokenUtility.forceReissueAccessToken();
+        try {
+            TokenUtility.invalidateRefreshTokenInLocalStorage();
+            TokenUtility.forceReissueAccessToken();
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     BoardView.DOM.present();

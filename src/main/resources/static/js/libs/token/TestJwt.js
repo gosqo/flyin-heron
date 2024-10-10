@@ -1,7 +1,7 @@
 import { Fetcher } from "../common/Fetcher.js"
 import { DomCreate } from "../dom/DomCreate.js";
 
-export default class TestJwt {
+export class TestJwt {
     async testJwt() {
         const accessToken = localStorage.getItem("access_token")
         const url = "/token-validation-test";

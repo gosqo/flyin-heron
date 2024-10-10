@@ -1,4 +1,4 @@
-export default class DateTimeUtility {
+export class DateTimeUtility {
     static formatDate(data) {
         // LocalDateTime 형식의 JSON 값을 Date 객체로 변환
         const date = new Date(data);

@@ -1,8 +1,8 @@
 import { Fetcher } from "../common/Fetcher.js";
-import FormUtility from "../common/FormUtility.js";
+import { FormUtility } from "../common/FormUtility.js";
 import { DomCreate } from "../dom/DomCreate.js";
 import { BoardFetcher } from "./BoardFetcher.js";
-import Board from "./Board.js";
+import { Board } from "./Board.js";
 import { State } from "../state/StateManage.js";
 
 export class BoardModifyView {

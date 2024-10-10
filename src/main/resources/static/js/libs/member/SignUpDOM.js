@@ -1,4 +1,4 @@
-import FormUtility from "../common/FormUtility.js";
+import { FormUtility } from "../common/FormUtility.js";
 
 export class SignUpDOM {
     submitButton = document.querySelector("#submit-form-btn");
