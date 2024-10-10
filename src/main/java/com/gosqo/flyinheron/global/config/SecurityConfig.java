@@ -3,7 +3,6 @@ package com.gosqo.flyinheron.global.config;
 import com.gosqo.flyinheron.global.filter.HttpAccessLogFilter;
 import com.gosqo.flyinheron.global.filter.JwtAuthenticationEntryPoint;
 import com.gosqo.flyinheron.global.filter.JwtAuthenticationFilter;
-import com.gosqo.flyinheron.global.filter.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +27,6 @@ public class SecurityConfig {
     private final HttpAccessLogFilter httpAccessLogFilter;
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final LogoutHandler logoutHandler;
-    private final JwtExceptionFilter jwtExceptionFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -44,7 +42,6 @@ public class SecurityConfig {
 
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(httpAccessLogFilter, LogoutFilter.class)
-                .addFilterBefore(jwtExceptionFilter, LogoutFilter.class)
                 .addFilterBefore(jwtAuthFilter, LogoutFilter.class)
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                         httpSecurityExceptionHandlingConfigurer
