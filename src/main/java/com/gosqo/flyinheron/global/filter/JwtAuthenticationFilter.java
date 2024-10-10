@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        jwt = request.getRequestURI().equals("/api/v1/auth/refresh-token")
+        jwt = AuthHeaderUtility.needRefreshToken(request)
                 ? AuthHeaderUtility.getRefreshToken(request)
                 : AuthHeaderUtility.extractJwt(request);
         userEmail = extractUserEmail(jwt, response);
