@@ -1,5 +1,6 @@
 package com.gosqo.flyinheron.global.config;
 
+import com.gosqo.flyinheron.global.filter.FilterExceptionHandler;
 import com.gosqo.flyinheron.global.filter.HttpAccessLogFilter;
 import com.gosqo.flyinheron.global.filter.JwtAuthenticationEntryPoint;
 import com.gosqo.flyinheron.global.filter.JwtAuthenticationFilter;
@@ -24,6 +25,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 public class SecurityConfig {
 
     private final AuthenticationProvider authenticationProvider;
+    private final FilterExceptionHandler filterExceptionHandler;
     private final HttpAccessLogFilter httpAccessLogFilter;
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final LogoutHandler logoutHandler;
@@ -41,6 +43,7 @@ public class SecurityConfig {
                 )
 
                 .authenticationProvider(authenticationProvider)
+                .addFilterBefore(filterExceptionHandler, LogoutFilter.class)
                 .addFilterBefore(httpAccessLogFilter, LogoutFilter.class)
                 .addFilterBefore(jwtAuthFilter, LogoutFilter.class)
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->

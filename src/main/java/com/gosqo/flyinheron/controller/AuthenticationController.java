@@ -54,7 +54,12 @@ public class AuthenticationController {
             HttpServletRequest request
             , HttpServletResponse response
     ) {
-        final String formerRefreshToken = AuthHeaderUtility.getRefreshToken(request);
+        final String formerRefreshToken = AuthHeaderUtility.extractRefreshToken(request);
+
+        if (formerRefreshToken == null) {
+            throw new IllegalArgumentException("refresh token cannot be null or empty.");
+        }
+
         final Map<String, String> tokens = service.refreshToken(formerRefreshToken);
         final String refreshTokenToResponse = tokens.get("refreshToken");
 

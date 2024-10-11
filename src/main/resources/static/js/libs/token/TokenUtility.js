@@ -44,14 +44,40 @@ export class TokenUtility {
     }
 
     static invalidateRefreshTokenInLocalStorage() {
-        const refreshTokenInLocalStorage = localStorage.getItem("refresh_token");
+        const refreshTokenInLocalStorage = localStorage.getItem("refresh_token").substring(7);
 
         if (refreshTokenInLocalStorage !== null) {
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("refresh_token");
-            
-            alert("인증 정보 관리 방식 변경으로 로그아웃 처리되었습니다. 이후 로그인 하시면 정상적으로 회원 기능을 사용하실 수 있습니다.")
-            throw new Error("logged out.");
+
+            let date = new Date();
+            date.setMinutes(date.getMinutes() + 1);
+
+            document.cookie = "sref=" + refreshTokenInLocalStorage + "; path=/; expires=" + date.toUTCString() + ";";
+
+            const url = "/api/v1/auth/logout";
+            let options = {
+                headers: {
+                },
+                method: "POST",
+            };
+
+            fetch(url, options)
+                .then(response => {
+                    console.log(response);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data); // data.status, data.message 접근 가능.
+
+                    localStorage.removeItem("access_token");
+                    localStorage.removeItem("refresh_token");
+
+                    alert("인증 정보 관리 방식 변경으로 로그아웃 처리되었습니다. 이후 로그인 하시면 정상적으로 회원 기능을 사용하실 수 있습니다.")
+                })
+                .catch(error => {
+                    console.error("Error: ", error);
+                });
+
+            throw new Error("server processed user logged out."); // 회원 전용 UI 노출, 기능 제제를 위한 예외.
         }
     }
 

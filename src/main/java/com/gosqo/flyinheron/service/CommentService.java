@@ -69,7 +69,7 @@ public class CommentService {
     }
 
     public CommentDeleteResponse remove(Long id, HttpServletRequest request) {
-        final String token = AuthHeaderUtility.extractJwt(request);
+        final String token = AuthHeaderUtility.extractAccessToken(request);
         final String requestUserEmail = claimExtractor.extractUserEmail(token);
         final Comment storedComment = commentRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 게시물 delete 요청.")
@@ -87,7 +87,7 @@ public class CommentService {
     }
 
     public CommentUpdateResponse modify(Long id, HttpServletRequest request, CommentUpdateRequest requestBody) {
-        final String token = AuthHeaderUtility.extractJwt(request);
+        final String token = AuthHeaderUtility.extractAccessToken(request);
         final String requestUserEmail = claimExtractor.extractUserEmail(token);
         final Comment storedComment = commentRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 댓글 수정 요청.")
@@ -110,7 +110,7 @@ public class CommentService {
     }
 
     public CommentRegisterResponse register(HttpServletRequest request, CommentRegisterRequest requestBody) {
-        final String token = AuthHeaderUtility.extractJwt(request);
+        final String token = AuthHeaderUtility.extractAccessToken(request);
         final String requestUserEmail = claimExtractor.extractUserEmail(token);
         final Member member = memberRepository.findByEmail(requestUserEmail).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 회원의 댓글 등록 요청. (토큰 서명 키 유출 가능성)")

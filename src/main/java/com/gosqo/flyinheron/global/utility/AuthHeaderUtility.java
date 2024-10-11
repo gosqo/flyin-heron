@@ -1,6 +1,5 @@
 package com.gosqo.flyinheron.global.utility;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Arrays;
@@ -20,35 +19,37 @@ public class AuthHeaderUtility {
     public static boolean isNotAuthenticated(HttpServletRequest request) {
 
         if (needRefreshToken(request)) {
-            String refreshToken = getRefreshToken(request);
+            final String refreshTokenCookieValue = CookieUtility
+                    .findCookie(REFRESH_TOKEN_COOKIE_NAME, request.getCookies())
+                    .getValue();
 
-            return refreshToken.isBlank();
+            return refreshTokenCookieValue == null || refreshTokenCookieValue.isBlank();
         }
 
-        String authHeader = request.getHeader("Authorization");
+        String authHeaderValue = request.getHeader("Authorization");
 
-        return authHeader == null || !authHeader.startsWith("Bearer ");
+        return authHeaderValue == null || !authHeaderValue.startsWith("Bearer ");
     }
 
-    public static String extractJwt(HttpServletRequest request) throws NullPointerException {
-        String authHeader = request.getHeader("Authorization");
+    public static String extractAccessToken(HttpServletRequest request) throws NullPointerException {
+        String authHeaderValue = request.getHeader("Authorization");
 
-        if (authHeader == null || authHeader.equals("null")) {
+        if (authHeaderValue == null || authHeaderValue.equals("null")) {
             return null;
         }
 
-        return authHeader.substring(7);
+        return authHeaderValue.substring(7); // accessToken
     }
 
-    public static String getRefreshToken(HttpServletRequest request) {
-        String refreshToken = "";
+    public static String extractRefreshToken(HttpServletRequest request) {
+        final String refreshTokenCookieValue = CookieUtility
+                .findCookie(REFRESH_TOKEN_COOKIE_NAME, request.getCookies())
+                .getValue();
 
-        Cookie cookie = CookieUtility.findCookie(REFRESH_TOKEN_COOKIE_NAME, request.getCookies());
-
-        if (cookie != null) {
-            refreshToken = cookie.getValue();
+        if (refreshTokenCookieValue == null || refreshTokenCookieValue.isBlank()) {
+            return null;
         }
 
-        return refreshToken;
+        return refreshTokenCookieValue; // refreshToken
     }
 }

@@ -22,7 +22,7 @@ public class TokenExceptionTestController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping("/token-validation-test")
     public ResponseEntity<Object> tokenValidationTest(HttpServletRequest request) {
-        String jwt = AuthHeaderUtility.extractJwt(request);
+        String jwt = AuthHeaderUtility.extractAccessToken(request);
         Map<String, String> map = new HashMap<>();
 
         map.put("email", claimExtractor.extractUserEmail(jwt));

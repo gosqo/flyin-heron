@@ -2,8 +2,6 @@ package com.gosqo.flyinheron.global.filter;
 
 import com.gosqo.flyinheron.global.utility.AuthHeaderUtility;
 import com.gosqo.flyinheron.service.ClaimExtractor;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,9 +43,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         jwt = AuthHeaderUtility.needRefreshToken(request)
-                ? AuthHeaderUtility.getRefreshToken(request)
-                : AuthHeaderUtility.extractJwt(request);
-        userEmail = extractUserEmail(jwt, response);
+                ? AuthHeaderUtility.extractRefreshToken(request)
+                : AuthHeaderUtility.extractAccessToken(request);
+        userEmail = claimExtractor.extractUserEmail(jwt);
 
         if (userEmail == null) {
             return;
@@ -62,30 +60,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    private String extractUserEmail(String jwt, HttpServletResponse response) throws IOException {
-        String userEmail;
-        try {
-            userEmail = claimExtractor.extractUserEmail(jwt);
-
-            return userEmail;
-        } catch (ExpiredJwtException ex) {
-            response.sendError(401, "토큰 만료.");
-        } catch (JwtException ex) {
-            log.warn("""
-                            *** manipulated token *** response with 400. {}: {}
-                            tried token: {}"""
-                    , ex.getClass().getName()
-                    , ex.getMessage()
-                    , jwt
-            );
-            response.sendError(400, "올바른 접근이 아닙니다. 로그아웃 후 다시 로그인 해주십시오.");
-        } catch (Exception ex) {
-            log.warn(ex.getMessage());
-            response.sendError(500, "인증 정보에 문제가 있습니다. 로그아웃 후 로그인 하심시오.");
-        }
-
-        return null;
     }
 }

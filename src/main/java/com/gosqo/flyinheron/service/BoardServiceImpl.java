@@ -53,7 +53,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public BoardRegisterResponse register(HttpServletRequest request, BoardRegisterRequest requestBody) {
-        final String token = AuthHeaderUtility.extractJwt(request);
+        final String token = AuthHeaderUtility.extractAccessToken(request);
         final String requestUserEmail = claimExtractor.extractUserEmail(token);
         final Member member = memberRepository.findByEmail(requestUserEmail).orElseThrow(
                 () -> new NoSuchElementException("No Member present with the email.")
@@ -68,7 +68,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public BoardUpdateResponse update(Long id, HttpServletRequest request, BoardUpdateRequest requestBody) {
-        final String token = AuthHeaderUtility.extractJwt(request);
+        final String token = AuthHeaderUtility.extractAccessToken(request);
         final String requestUserEmail = claimExtractor.extractUserEmail(token);
         final Board storedBoard = boardRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 게시물 update 요청.")
@@ -92,7 +92,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public BoardDeleteResponse delete(Long id, HttpServletRequest request) {
-        final String token = AuthHeaderUtility.extractJwt(request);
+        final String token = AuthHeaderUtility.extractAccessToken(request);
         final String requestUserEmail = claimExtractor.extractUserEmail(token);
         final Board storedBoard = boardRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 게시물 delete 요청.")

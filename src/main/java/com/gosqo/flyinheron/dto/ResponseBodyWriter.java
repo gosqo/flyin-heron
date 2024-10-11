@@ -17,7 +17,7 @@ public class ResponseBodyWriter {
             String message
     ) throws IOException {
         response.setStatus(statusCode);
-        response.setContentType(MediaType.APPLICATION_JSON.toString());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
         response.getWriter().println(writeBody(statusCode, message));
     }

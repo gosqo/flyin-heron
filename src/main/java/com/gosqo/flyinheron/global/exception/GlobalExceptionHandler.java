@@ -192,12 +192,21 @@ public class GlobalExceptionHandler {
         return buildResponseEntity(HttpStatus.BAD_REQUEST, userMessage);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
+            IllegalArgumentException ex
+    ) {
+        log.warn(ex.getMessage(), ex);
+        String userMessage = "올바른 요청이 아닙니다.";
+
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, userMessage);
+    }
+
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<ErrorResponse> handleNullPointerException(
             NullPointerException ex
     ) {
-        log.info(exceptionNameAndMessage(ex));
-        log.warn("", ex);
+        log.warn(ex.getMessage(), ex);
         String userMessage = "서버 오류가 발생했습니다. 문제가 지속될 시 운영진에 연락 부탁드립니다.";
 
         return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, userMessage);

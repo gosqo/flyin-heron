@@ -27,7 +27,7 @@ public class CommentLikeController {
             @PathVariable(value = "commentId") Long commentId
             , HttpServletRequest request
     ) {
-        String jwt = AuthHeaderUtility.extractJwt(request);
+        String jwt = AuthHeaderUtility.extractAccessToken(request);
         Long memberId = claimExtractor.extractMemberId(jwt);
 
         boolean hasLike = commentLikeService.hasLike(memberId, commentId);
@@ -46,7 +46,7 @@ public class CommentLikeController {
             @PathVariable(value = "commentId") Long commentId
             , HttpServletRequest request
     ) {
-        String jwt = AuthHeaderUtility.extractJwt(request);
+        String jwt = AuthHeaderUtility.extractAccessToken(request);
         Long memberId = (claimExtractor.extractMemberId(jwt));
 
         commentLikeService.registerCommentLike(memberId, commentId);
@@ -65,7 +65,7 @@ public class CommentLikeController {
             @PathVariable(value = "commentId") Long commentId
             , HttpServletRequest request
     ) {
-        String jwt = AuthHeaderUtility.extractJwt(request);
+        String jwt = AuthHeaderUtility.extractAccessToken(request);
         Long memberId = (claimExtractor.extractMemberId(jwt));
 
         commentLikeService.deleteCommentLike(memberId, commentId);

@@ -50,16 +50,11 @@ public class LogoutService implements LogoutHandler {
             HttpServletResponse response,
             Authentication authentication
     ) {
-        if (AuthHeaderUtility.isNotAuthenticated(request)) {
-            responseWith400(response);
-            return;
-        }
-        // header Authorization header == null 인 경우 NullPointerException
-        final String refreshToken = AuthHeaderUtility.getRefreshToken(request);
+        final String refreshToken = AuthHeaderUtility.extractRefreshToken(request);
         final List<Token> storedTokens = tokenRepository.findAllByToken(refreshToken).stream().toList();
 
         if (storedTokens.isEmpty()) { // refreshToken entity 가 존재하지 않는다면,
-            log.info("user tried refresh token that does not exist on database.");
+            log.warn("user tried refresh token that does not exist on database.");
             responseWith400(response);
 
             return;
@@ -78,7 +73,10 @@ public class LogoutService implements LogoutHandler {
 
     private void responseWith400(HttpServletResponse response) {
         try {
-            response.sendError(400, "올바른 요청이 아닙니다.");
+            responseBodyWriter.setResponseWithBody(
+                    response
+                    , 400
+                    , "올바른 요청이 아닙니다.");
         } catch (IOException e) {
             log.info(e.getMessage());
         }
