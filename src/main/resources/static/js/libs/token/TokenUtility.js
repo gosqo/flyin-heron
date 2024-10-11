@@ -44,14 +44,16 @@ export class TokenUtility {
     }
 
     static invalidateRefreshTokenInLocalStorage() {
-        const refreshTokenInLocalStorage = localStorage.getItem("refresh_token").substring(7);
+        const bearerRefreshToken = localStorage.getItem("refresh_token");
 
-        if (refreshTokenInLocalStorage !== null) {
+        if (bearerRefreshToken !== null) {
+
+            const refreshToken = bearerRefreshToken.substring(7);
 
             let date = new Date();
             date.setMinutes(date.getMinutes() + 1);
 
-            document.cookie = "sref=" + refreshTokenInLocalStorage + "; path=/; expires=" + date.toUTCString() + ";";
+            document.cookie = "sref=" + refreshToken + "; path=/; expires=" + date.toUTCString() + ";";
 
             const url = "/api/v1/auth/logout";
             let options = {
