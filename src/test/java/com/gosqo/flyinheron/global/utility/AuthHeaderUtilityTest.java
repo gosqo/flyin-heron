@@ -36,11 +36,11 @@ class AuthHeaderUtilityTest {
 
     @Test
     void extractJwtFromAuthHeader() {
-        assertThat(AuthHeaderUtility.extractJwt(mockRequestAuth)).isEqualTo("some.valid.token");
+        assertThat(AuthHeaderUtility.extractAccessToken(mockRequestAuth)).isEqualTo("some.valid.token");
     }
 
     @Test
     void extract_JWT_from_no_authHeader_returns_null() {
-        assertThat(AuthHeaderUtility.extractJwt(mockRequestNoAuth)).isNull();
+        assertThat(AuthHeaderUtility.extractAccessToken(mockRequestNoAuth)).isNull();
     }
 }

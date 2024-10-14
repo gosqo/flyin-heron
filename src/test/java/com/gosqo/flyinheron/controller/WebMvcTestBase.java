@@ -1,5 +1,6 @@
 package com.gosqo.flyinheron.controller;
 
+import com.gosqo.flyinheron.dto.ResponseBodyWriter;
 import com.gosqo.flyinheron.global.config.ApplicationConfig;
 import com.gosqo.flyinheron.global.config.SecurityConfig;
 import com.gosqo.flyinheron.global.utility.AuthHeaderUtility;
@@ -33,6 +34,7 @@ import org.springframework.test.web.servlet.MockMvc;
                 , @MockBean(AuthHeaderUtility.class)
                 , @MockBean(MemberRepository.class)
                 , @MockBean(LogoutHandler.class)
+                , @MockBean(ResponseBodyWriter.class)
         }
 )
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)

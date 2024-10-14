@@ -3,9 +3,9 @@ package com.gosqo.flyinheron.service;
 import com.gosqo.flyinheron.domain.Board;
 import com.gosqo.flyinheron.domain.Comment;
 import com.gosqo.flyinheron.domain.Member;
-import com.gosqo.flyinheron.repository.BoardRepository;
 import com.gosqo.flyinheron.dto.comment.CommentRegisterRequest;
 import com.gosqo.flyinheron.dto.comment.CommentUpdateRequest;
+import com.gosqo.flyinheron.repository.BoardRepository;
 import com.gosqo.flyinheron.repository.CommentRepository;
 import com.gosqo.flyinheron.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,10 +57,6 @@ class CommentServiceTest {
     @InjectMocks
     private CommentService service;
 
-    /**
-     * claimExtractor 에서 발생할 수 있는 예외는 모두
-     * 앞선 Filter layer JwtExceptionFilter 클래스에서 처리.
-     */
     private MockHttpServletRequest requestWithAuthHeader;
 
     @BeforeEach
