@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
@@ -66,27 +67,33 @@ public class GlobalExceptionHandler {
     );
 
     @ExceptionHandler(Exception.class)
-    public Object handleGetRequestExceptions(Exception e, HttpServletRequest request, HttpServletResponse response) {
+    public Object handleGetRequestExceptions(Exception e, HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
 
         if (request.getMethod().equalsIgnoreCase(HttpMethod.GET.name())) {
 
             if (BAD_REQUEST_EXCEPTIONS.contains(e.getClass())) {
+                response.setStatus(400);
                 return "error/400";
             }
 
             if (UNAUTHORIZED_EXCEPTIONS.contains(e.getClass())) {
+                response.setStatus(401);
                 return "error/401";
             }
 
             if (FORBIDDEN_EXCEPTIONS.contains(e.getClass())) {
+                response.setStatus(403);
                 return "error/403";
             }
 
             if (NOT_FOUND_EXCEPTIONS.contains(e.getClass())) {
-                return "error/403";
+                response.setStatus(404);
+                return "error/404";
             }
 
             if (INTERNAL_SERVER_EXCEPTIONS.contains(e.getClass())) {
+                response.setStatus(500);
                 return "error/500";
             }
         }
