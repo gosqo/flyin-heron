@@ -3,20 +3,20 @@
 
 <head>
   <thymeleaf th:replace="~{fragment/htmlHead}"></thymeleaf>
-  <title>404 Not Found</title>
+  <title>401 Unauthorized</title>
 </head>
 
 <body>
-  <thymeleaf th:replace="~{fragment/htmlHead}"></thymeleaf>
+  <div th:replace="~{fragment/header :: header}"></div>
 
   <div class="container">
     <div class="mb-3 row" style="margin-top: 2rem;">
-      <h2>요청하신 자료가 존재하지 않습니다.</h2>
-      <h2>requested resource is not exist.</h2>
+      <h2>잠시 후 다시 시도해주십시오. 문제가 지속적으로 발생한다면 운영진에 연락 바랍니다.</h2>
+      <h2>Unauthorized</h2>
     </div>
     <div class="mb-3" id="buttons-area">
       <button class="btn btn-secondary" onclick="location.href = '/';">메인으로</button>
     </div>
   </div>
 
-<thymeleaf th:replace="~{fragment/footer}"></thymeleaf>
+  <thymeleaf th:replace="~{fragment/footer}"></thymeleaf>
