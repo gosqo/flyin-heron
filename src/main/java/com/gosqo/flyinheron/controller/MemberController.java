@@ -34,19 +34,31 @@ public class MemberController {
     public ResponseEntity<Object> isUniqueEmail(
             @Valid @RequestBody IsUniqueEmailRequest request
     ) {
-        IsUniqueEmailResponse response = service.isUniqueEmail(request);
+        boolean isUnique = service.isUniqueEmail(request);
+        HttpStatus statusCode = isUnique ? HttpStatus.OK : HttpStatus.CONFLICT;
+        String message = isUnique ? "사용 가능한 이메일 주소입니다." : "이미 존재하는 이메일입니다.";
+
         return ResponseEntity
-                .status(response.getStatus())
-                .body(response);
+                .status(statusCode)
+                .body(IsUniqueEmailResponse.builder()
+                        .status(statusCode.value())
+                        .message(message)
+                        .build());
     }
 
     @PostMapping("/isUniqueNickname")
     public ResponseEntity<Object> isUniqueNickname(
             @Valid @RequestBody IsUniqueNicknameRequest request
     ) {
-        IsUniqueNicknameResponse response = service.isUniqueNickname(request);
+        boolean isUnique = service.isUniqueNickname(request);
+        HttpStatus statusCode = isUnique ? HttpStatus.OK : HttpStatus.CONFLICT;
+        String message = isUnique ? "사용 가능한 닉네임입니다." : "이미 존재하는 닉네임입니다.";
+
         return ResponseEntity
-                .status(response.getStatus())
-                .body(response);
+                .status(statusCode)
+                .body(IsUniqueNicknameResponse.builder()
+                        .status(statusCode.value())
+                        .message(message)
+                        .build());
     }
 }
