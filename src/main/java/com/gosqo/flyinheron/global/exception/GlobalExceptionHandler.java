@@ -152,7 +152,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleAuthenticationException(
             AuthenticationException ex
     ) {
-        log.info(exceptionNameAndMessage(ex));
         log.warn("", ex);
         String userMessage = "인증에 실패했습니다.";
 
@@ -250,7 +249,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleDebugNeededException(
             DebugNeededException ex
     ) {
-        log.info(exceptionNameAndMessage(ex));
         log.warn("", ex);
         String userMessage = "서버 오류가 발생했습니다. 문제가 지속될 시 운영진에 연락 부탁드립니다.";
 
@@ -261,7 +259,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleRuntimeException(
             RuntimeException ex
     ) {
-        log.info(exceptionNameAndMessage(ex));
         log.warn("", ex);
         String userMessage = "서버 오류가 발생했습니다. 문제가 지속될 시 운영진에 연락 부탁드립니다.";
 
@@ -272,7 +269,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleException(
             Exception ex
     ) {
-        log.info(exceptionNameAndMessage(ex));
         log.warn("", ex);
         String userMessage = "서버 오류가 발생했습니다. 문제가 지속될 시 운영진에 연락 부탁드립니다.";
 
