@@ -116,7 +116,7 @@ class AuthenticationTest extends SpringBootTestBase {
     }
 
     @Test
-    void if_requested_refresh_token_not_exist_on_database_response_Bad_Request() throws JsonProcessingException {
+    void if_requested_refresh_token_not_exist_on_database_response_Not_Found() throws JsonProcessingException {
         final var refreshToken = jwtService.generateRefreshToken(member);
         final var headers = buildDefaultPostHeaders();
 
@@ -127,7 +127,7 @@ class AuthenticationTest extends SpringBootTestBase {
         final var response = template.exchange(request, ErrorResponse.class);
 
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Nested
