@@ -34,7 +34,7 @@ public class ExceptionTestController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/access-denied")
-    public void throwAuthRequired() {
+    public void throwAccessDenied() {
         // 403 without token, throws AccessDeniedException
     }
 
