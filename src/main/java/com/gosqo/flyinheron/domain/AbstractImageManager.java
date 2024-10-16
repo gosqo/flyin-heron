@@ -28,7 +28,7 @@ public abstract class AbstractImageManager {
             Files.createDirectories(target);
         }
 
-        Path fullPath = Paths.get(targetDir, "/", replacedFilename);
+        Path fullPath = Paths.get(targetDir, replacedFilename);
 
         if (copyOption == null) {
             Files.copy(inputStream, fullPath);
