@@ -1,59 +1,72 @@
 package com.gosqo.flyinheron.domain;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.IntStream;
 
-import static com.gosqo.flyinheron.domain.AbstractImageManagerTest.IMAGE_CLIENT_PATH;
-import static com.gosqo.flyinheron.domain.MemberProfileImageManager.MEMBER_PROFILE_IMAGE_PATH;
+import static com.gosqo.flyinheron.domain.DefaultImageManagerTest.CLIENT_IMAGE_DIR;
+import static com.gosqo.flyinheron.domain.MemberProfileImageManager.MEMBER_IMAGE_DIR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@Slf4j
 class MemberProfileImageTest {
+    private static final Long MEMBER_ID = 20L;
     private static final String CLIENT_IMAGE_FILENAME = "profile image.png";
+    private static final String CLIENT_IMAGE_FILENAME2 = "profile image2.png";
+    private static final Path SOURCE = Paths.get(CLIENT_IMAGE_DIR, CLIENT_IMAGE_FILENAME);
+    private static final Path SOURCE2 = Paths.get(CLIENT_IMAGE_DIR, CLIENT_IMAGE_FILENAME2);
+    private final MemberProfileImageManager manager;
+    private MemberProfileImage profileImage;
 
-    private final Path source = Paths.get(IMAGE_CLIENT_PATH, CLIENT_IMAGE_FILENAME);
-    private MemberProfileImage memberProfileImage;
+    MemberProfileImageTest() {
+        this.manager = new MemberProfileImageManager();
+    }
 
     @BeforeEach
     void setUp() throws IOException {
-        this.memberProfileImage = MemberProfileImage.builder()
-                .manager(new MemberProfileImageManager())
-                .memberId(1L)
-                .inputStream(Files.newInputStream(source))
-                .originalFilename(CLIENT_IMAGE_FILENAME)
+        InputStream inputStream = Files.newInputStream(SOURCE);
+
+        this.profileImage = MemberProfileImage.builder()
+                .manager(manager)
+                .memberId(MEMBER_ID)
+                .inputStream(inputStream)
+                .originalFilename(SOURCE.getFileName().toString())
                 .build();
     }
 
     @Test
-    void toEntity_before_save_throws_IllegalStateException() {
-        assertThatThrownBy(() -> memberProfileImage.toEntity())
+    void toEntity_before_save_throws_IllegalStateException() throws IOException {
+        assertThatThrownBy(profileImage::toEntity)
                 .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
     void saveMemberProfileImage() throws IOException {
-        memberProfileImage.saveMemberProfileImage();
-        Path saved = Paths.get(memberProfileImage.getFileFullPath());
+        String fullPath = profileImage.saveMemberProfileImage();
+        Path output = Paths.get(fullPath);
 
-        assertThat(saved.toFile().exists()).isTrue();
+        assertThat(output.toFile().exists()).isTrue();
     }
 
     @Test
     void toEntity_after_save() throws IOException {
         // given
-        memberProfileImage.saveMemberProfileImage();
+        profileImage.saveMemberProfileImage();
 
         // when
-        MemberProfileImageJpaEntity entity = memberProfileImage.toEntity();
+        MemberProfileImageJpaEntity entity = profileImage.toEntity();
 
         // then
-        assertThat(entity.getFileFullPath()).contains(
-                MEMBER_PROFILE_IMAGE_PATH, "1", "/profile/"
+        assertThat(entity.getFullPath()).contains(
+                MEMBER_IMAGE_DIR, "1", "/profile/"
                 , CLIENT_IMAGE_FILENAME.replaceAll(" ", "-")
         );
     }
@@ -61,21 +74,40 @@ class MemberProfileImageTest {
     @Test
     void remove_former_if_exists_then_save_new_one() throws IOException {
         // given
-        String fullPath = memberProfileImage.saveMemberProfileImage();
-        MemberProfileImage change = MemberProfileImage.builder()
-                .manager(new MemberProfileImageManager())
-                .memberId(1L)
-                .inputStream(Files.newInputStream(source))
-                .originalFilename("changed file.png")
-                .fileFullPath(fullPath)
+        DefaultImageManager defaultImageManager = new DefaultImageManager();
+
+        // dummies to be deleted.
+        Path dummy = Paths.get(CLIENT_IMAGE_DIR, CLIENT_IMAGE_FILENAME);
+        IntStream.range(0, 5).forEach(i -> {
+            try (InputStream stream = Files.newInputStream(dummy)) {
+                defaultImageManager.saveLocal(
+                        stream
+                        , CLIENT_IMAGE_FILENAME.replace(".", i + ".")
+                        , profileImage.getTargetDir()
+                );
+            } catch (IOException e) {
+                log.info("IOException. occurred, check.");
+            }
+        });
+
+        Path formerOutput = Paths.get(profileImage.saveMemberProfileImage());
+
+        assertThat(formerOutput.toFile().exists()).isTrue();
+
+        InputStream newInputStream = Files.newInputStream(SOURCE2);
+
+        MemberProfileImage newImage = MemberProfileImage.builder()
+                .manager(manager)
+                .memberId(MEMBER_ID)
+                .inputStream(newInputStream)
+                .originalFilename(SOURCE2.getFileName().toString())
                 .build();
-        ;
 
         // when
-        change.saveMemberProfileImage();
+        Path latterOutput = Paths.get(newImage.saveMemberProfileImage());
 
         // then
-        assertThat(Paths.get(fullPath).toFile().exists()).isFalse();
-        assertThat(Paths.get(change.getFileFullPath()).toFile().exists()).isTrue();
+        assertThat(formerOutput.toFile().exists()).isFalse();
+        assertThat(latterOutput.toFile().exists()).isTrue();
     }
 }

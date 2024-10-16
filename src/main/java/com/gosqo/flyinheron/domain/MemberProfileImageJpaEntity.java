@@ -9,12 +9,12 @@ import lombok.Getter;
 public class MemberProfileImageJpaEntity extends UuidBaseEntity {
     private Long memberId;
     private String originalFilename;
-    private String fileFullPath;
+    private String fullPath;
 
     @Builder
-    public MemberProfileImageJpaEntity(Long memberId, String originalFilename, String fileFullPath) {
+    public MemberProfileImageJpaEntity(Long memberId, String originalFilename, String fullPath) {
         this.memberId = memberId;
         this.originalFilename = originalFilename;
-        this.fileFullPath = fileFullPath;
+        this.fullPath = fullPath;
     }
 }

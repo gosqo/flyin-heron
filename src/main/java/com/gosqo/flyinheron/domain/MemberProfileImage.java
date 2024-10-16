@@ -2,14 +2,19 @@ package com.gosqo.flyinheron.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
+import java.util.stream.Stream;
 
-import static com.gosqo.flyinheron.domain.MemberProfileImageManager.MEMBER_PROFILE_IMAGE_PATH;
+import static com.gosqo.flyinheron.domain.DefaultImageManager.LOCAL_STORAGE_DIR;
+import static com.gosqo.flyinheron.domain.MemberProfileImageManager.MEMBER_IMAGE_DIR;
 
 @Getter
+@Slf4j
 public class MemberProfileImage {
     private static final CopyOption MEMBER_PROFILE_IMAGE_COPYOPTION = StandardCopyOption.REPLACE_EXISTING;
 
@@ -19,8 +24,7 @@ public class MemberProfileImage {
     private final String originalFilename;
     private final String renamedFilename;
     private final String targetDir;
-    private final Boolean exist;
-    private String fileFullPath;
+    private String fullPath;
 
     @Builder
     public MemberProfileImage(
@@ -28,56 +32,65 @@ public class MemberProfileImage {
             , Long memberId
             , InputStream inputStream
             , String originalFilename
-            , String fileFullPath
+            , String fullPath
     ) {
         this.manager = manager;
         this.memberId = memberId;
         this.inputStream = inputStream;
         this.originalFilename = originalFilename;
-        this.fileFullPath = fileFullPath;
+        this.fullPath = fullPath;
 
-        this.exist = this.fileFullPath != null;
         this.renamedFilename = manager.renameFile(this.originalFilename);
-        this.targetDir = MEMBER_PROFILE_IMAGE_PATH + this.memberId.toString() + "/profile/";
+        this.targetDir = MEMBER_IMAGE_DIR + this.memberId + "/profile/";
     }
 
     public static MemberProfileImage of(MemberProfileImageJpaEntity entity) {
         return MemberProfileImage.builder()
                 // ...
-                .fileFullPath(entity.getFileFullPath())
+                .fullPath(entity.getFullPath())
                 .build();
     }
 
     public String saveMemberProfileImage() throws IOException {
+        File targetFolder = Paths.get(this.targetDir).toFile();
 
-        if (this.exist) {
-            deleteSubFilesOf();
+        if (targetFolder.exists() && targetFolder.listFiles() != null) {
+            deleteSubFiles(this.targetDir);
         }
 
-        this.fileFullPath = manager.saveLocal(
-                this.inputStream, this.renamedFilename, this.targetDir, MEMBER_PROFILE_IMAGE_COPYOPTION
-        );
+        this.fullPath = manager.saveLocal(this.inputStream, this.renamedFilename, this.targetDir);
 
-        return this.fileFullPath;
+        return this.fullPath;
     }
 
-    private void deleteSubFilesOf() throws IOException {
-        String target = this.fileFullPath.substring(0, this.fileFullPath.lastIndexOf("/"));
-        Path deletePathRoot = Paths.get(target);
-        Files.walk(deletePathRoot)
-                .filter(path -> !path.equals(deletePathRoot))
-                .map(Path::toFile).filter(file -> !file.delete()).map(file -> "Failed to delete: " + file).forEach(System.err::println);
+    private void deleteSubFiles(String targetDir) throws IOException {
+
+        if (!targetDir.startsWith(LOCAL_STORAGE_DIR) || targetDir.equals(LOCAL_STORAGE_DIR)) {
+            throw new IllegalArgumentException("argument targetDir should refer under the LOCAL_STORAGE_PATH");
+        }
+
+        Path targetFolder = Paths.get(targetDir);
+
+        try (Stream<Path> files = Files.walk(targetFolder)) {
+            files
+                    .filter(path -> !path.equals(targetFolder))
+                    .map(Path::toFile)
+                    .filter(file -> !file.delete())
+                    .map(file -> "Failed to delete: " + file)
+                    .forEach(log::warn);
+        }
     }
 
     public MemberProfileImageJpaEntity toEntity() {
-        if (fileFullPath == null || fileFullPath.isBlank()) {
+
+        if (this.fullPath == null || this.fullPath.isBlank()) {
             throw new IllegalStateException("image file full path can not be null or blank.");
         }
 
         return MemberProfileImageJpaEntity.builder()
                 .memberId(this.memberId)
                 .originalFilename(this.originalFilename)
-                .fileFullPath(this.fileFullPath)
+                .fullPath(this.fullPath)
                 .build();
     }
 }
