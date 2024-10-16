@@ -1,6 +1,7 @@
 package com.gosqo.flyinheron.domain;
 
 import com.gosqo.flyinheron.domain.member.Role;
+import com.gosqo.flyinheron.repository.MemberProfileImageJpaEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,6 +25,9 @@ public class Member implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private MemberProfileImageJpaEntity profileImage;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Token> tokens;
@@ -62,6 +66,14 @@ public class Member implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    public void updateProfileImage(MemberProfileImageJpaEntity profileImage) {
+        this.profileImage = profileImage;
+
+        if (this.profileImage.getMember() == null) {
+            this.profileImage.updateMember(this);
+        }
+    }
 
     public void updatePassword(String changedPassword) {
         this.password = changedPassword;

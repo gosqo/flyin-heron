@@ -1,5 +1,6 @@
 package com.gosqo.flyinheron.domain;
 
+import com.gosqo.flyinheron.repository.MemberProfileImageJpaEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,7 @@ public class MemberProfileImage {
     private final InputStream inputStream;
     private final String originalFilename;
     private final String renamedFilename;
-    private final String targetDir;
+    private final String storageDir;
     private String fullPath;
 
     @Builder
@@ -32,33 +33,35 @@ public class MemberProfileImage {
             , Long memberId
             , InputStream inputStream
             , String originalFilename
+            , String renamedFilename
             , String fullPath
     ) {
         this.manager = manager;
         this.memberId = memberId;
         this.inputStream = inputStream;
         this.originalFilename = originalFilename;
-        this.fullPath = fullPath;
 
         this.renamedFilename = manager.renameFile(this.originalFilename);
-        this.targetDir = MEMBER_IMAGE_DIR + this.memberId + "/profile/";
+        this.storageDir = MEMBER_IMAGE_DIR + this.memberId + "/profile/";
     }
 
     public static MemberProfileImage of(MemberProfileImageJpaEntity entity) {
         return MemberProfileImage.builder()
-                // ...
+                .memberId(entity.getMember().getId())
+                .originalFilename(entity.getOriginalFilename())
+                .renamedFilename(entity.getRenamedFilename())
                 .fullPath(entity.getFullPath())
                 .build();
     }
 
-    public String saveMemberProfileImage() throws IOException {
-        File targetFolder = Paths.get(this.targetDir).toFile();
+    public String saveLocal() throws IOException {
+        File targetFolder = Paths.get(this.storageDir).toFile();
 
         if (targetFolder.exists() && targetFolder.listFiles() != null) {
-            deleteSubFiles(this.targetDir);
+            deleteSubFiles(this.storageDir);
         }
 
-        this.fullPath = manager.saveLocal(this.inputStream, this.renamedFilename, this.targetDir);
+        this.fullPath = manager.saveLocal(this.inputStream, this.renamedFilename, this.storageDir);
 
         return this.fullPath;
     }
@@ -81,15 +84,16 @@ public class MemberProfileImage {
         }
     }
 
-    public MemberProfileImageJpaEntity toEntity() {
+    public MemberProfileImageJpaEntity toEntity(Member member) {
 
         if (this.fullPath == null || this.fullPath.isBlank()) {
             throw new IllegalStateException("image file full path can not be null or blank.");
         }
 
         return MemberProfileImageJpaEntity.builder()
-                .memberId(this.memberId)
+                .member(member)
                 .originalFilename(this.originalFilename)
+                .renamedFilename(this.renamedFilename)
                 .fullPath(this.fullPath)
                 .build();
     }

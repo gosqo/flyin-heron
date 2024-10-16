@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest(showSql = false)
 @Import(JpaAuditingConfig.class)
 @Slf4j
-abstract class EntityManagerDataInitializer extends TestDataInitializer {
+public abstract class EntityManagerDataInitializer extends TestDataInitializer {
     protected final EntityManager em;
     protected EntityTransaction transaction;
 
@@ -38,16 +38,19 @@ abstract class EntityManagerDataInitializer extends TestDataInitializer {
         em.createQuery("DELETE FROM CommentLike cl").executeUpdate();
         em.createQuery("DELETE FROM Comment c").executeUpdate();
         em.createQuery("DELETE FROM Board b").executeUpdate();
+        em.createQuery("DELETE FROM MemberProfileImageJpaEntity mp").executeUpdate();
         em.createQuery("DELETE FROM Member m").executeUpdate();
 
         var commentLikeList = em.createQuery("SELECT cl FROM CommentLike cl").getResultList();
         var commentList = em.createQuery("SELECT c FROM Comment c").getResultList();
         var boardList = em.createQuery("SELECT b FROM Board b").getResultList();
+        var profileImageList = em.createQuery("SELECT mp FROM MemberProfileImageJpaEntity mp").getResultList();
         var memberList = em.createQuery("SELECT m FROM Member m").getResultList();
 
         assertThat(commentLikeList).isEmpty();
         assertThat(commentList).isEmpty();
         assertThat(boardList).isEmpty();
+        assertThat(profileImageList).isEmpty();
         assertThat(memberList).isEmpty();
 
         transaction.commit();

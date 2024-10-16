@@ -30,7 +30,7 @@ import java.util.UUID;
  */
 @Slf4j
 public class DefaultImageManager {
-    protected static final String LOCAL_STORAGE_DIR = System.getenv("FLYINHERON_STORAGE");
+    public static final String LOCAL_STORAGE_DIR = System.getenv("FLYINHERON_STORAGE");
 
     protected String saveLocal(
             InputStream inputStream

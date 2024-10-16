@@ -1,5 +1,6 @@
 package com.gosqo.flyinheron.domain;
 
+import com.gosqo.flyinheron.repository.MemberProfileImageJpaEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,14 +44,14 @@ class MemberProfileImageTest {
     }
 
     @Test
-    void toEntity_before_save_throws_IllegalStateException() throws IOException {
-        assertThatThrownBy(profileImage::toEntity)
+    void toEntity_before_saveLocal_throws_IllegalStateException() throws IOException {
+        assertThatThrownBy(() -> profileImage.toEntity(null))
                 .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
     void saveMemberProfileImage() throws IOException {
-        String fullPath = profileImage.saveMemberProfileImage();
+        String fullPath = profileImage.saveLocal();
         Path output = Paths.get(fullPath);
 
         assertThat(output.toFile().exists()).isTrue();
@@ -59,10 +60,10 @@ class MemberProfileImageTest {
     @Test
     void toEntity_after_save() throws IOException {
         // given
-        profileImage.saveMemberProfileImage();
+        profileImage.saveLocal();
 
         // when
-        MemberProfileImageJpaEntity entity = profileImage.toEntity();
+        MemberProfileImageJpaEntity entity = profileImage.toEntity(null);
 
         // then
         assertThat(entity.getFullPath()).contains(
@@ -83,14 +84,14 @@ class MemberProfileImageTest {
                 defaultImageManager.saveLocal(
                         stream
                         , CLIENT_IMAGE_FILENAME.replace(".", i + ".")
-                        , profileImage.getTargetDir()
+                        , profileImage.getStorageDir()
                 );
             } catch (IOException e) {
                 log.info("IOException. occurred, check.");
             }
         });
 
-        Path formerOutput = Paths.get(profileImage.saveMemberProfileImage());
+        Path formerOutput = Paths.get(profileImage.saveLocal());
 
         assertThat(formerOutput.toFile().exists()).isTrue();
 
@@ -104,7 +105,7 @@ class MemberProfileImageTest {
                 .build();
 
         // when
-        Path latterOutput = Paths.get(newImage.saveMemberProfileImage());
+        Path latterOutput = Paths.get(newImage.saveLocal());
 
         // then
         assertThat(formerOutput.toFile().exists()).isFalse();
