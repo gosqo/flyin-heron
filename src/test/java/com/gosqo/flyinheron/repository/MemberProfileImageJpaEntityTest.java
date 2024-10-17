@@ -4,7 +4,8 @@ import com.gosqo.flyinheron.domain.EntityManagerDataInitializer;
 import com.gosqo.flyinheron.domain.Member;
 import com.gosqo.flyinheron.domain.MemberProfileImage;
 import com.gosqo.flyinheron.domain.MemberProfileImageManager;
-import jakarta.persistence.EntityManagerFactory;
+import com.gosqo.flyinheron.global.data.TestDataRemover;
+import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,8 +27,8 @@ class MemberProfileImageJpaEntityTest extends EntityManagerDataInitializer {
     private static final Path SOURCE = Paths.get(CLIENT_IMAGE_DIR, CLIENT_IMAGE_FILENAME);
 
     @Autowired
-    public MemberProfileImageJpaEntityTest(EntityManagerFactory emf) {
-        super(emf);
+    public MemberProfileImageJpaEntityTest(EntityManager em, TestDataRemover remover) {
+        super(em, remover);
     }
 
     @BeforeEach
@@ -66,9 +67,6 @@ class MemberProfileImageJpaEntityTest extends EntityManagerDataInitializer {
 
         assertThat(em.contains(entity)).isFalse();
         assertThat(em.contains(member)).isFalse();
-
-        transaction.commit();
-        transaction.begin();
 
         // when
 

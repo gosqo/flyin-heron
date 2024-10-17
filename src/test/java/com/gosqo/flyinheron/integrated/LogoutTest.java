@@ -4,13 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gosqo.flyinheron.domain.fixture.MemberFixture;
 import com.gosqo.flyinheron.dto.JsonResponse;
 import com.gosqo.flyinheron.dto.auth.AuthenticationResponse;
+import com.gosqo.flyinheron.global.data.TestDataRemover;
 import com.gosqo.flyinheron.global.exception.ErrorResponse;
 import com.gosqo.flyinheron.global.utility.RequestCookie;
 import com.gosqo.flyinheron.global.utility.RespondedCookie;
 import com.gosqo.flyinheron.repository.MemberRepository;
 import com.gosqo.flyinheron.repository.TokenRepository;
 import com.gosqo.flyinheron.service.JwtService;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +33,13 @@ class LogoutTest extends SpringBootTestBase {
 
     @Autowired
     public LogoutTest(
-            TestRestTemplate template,
-            JwtService jwtService,
-            MemberRepository memberRepository,
-            TokenRepository tokenRepository
+            TestRestTemplate template
+            , JwtService jwtService
+            , MemberRepository memberRepository
+            , TokenRepository tokenRepository
+            , TestDataRemover remover
     ) {
-        super(template);
+        super(template, remover);
         this.jwtService = jwtService;
         this.memberRepository = memberRepository;
         this.tokenRepository = tokenRepository;
@@ -53,13 +54,6 @@ class LogoutTest extends SpringBootTestBase {
     @BeforeEach
     void setUp() {
         initData();
-    }
-
-    @Override
-    @AfterEach
-    void tearDown() {
-        tokenRepository.deleteAll();
-        memberRepository.deleteAll();
     }
 
     @Test

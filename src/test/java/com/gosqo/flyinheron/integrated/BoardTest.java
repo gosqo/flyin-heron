@@ -5,10 +5,14 @@ import com.gosqo.flyinheron.domain.Board;
 import com.gosqo.flyinheron.dto.board.BoardGetResponse;
 import com.gosqo.flyinheron.dto.board.BoardRegisterRequest;
 import com.gosqo.flyinheron.dto.board.BoardRegisterResponse;
+import com.gosqo.flyinheron.global.data.TestDataRemover;
 import com.gosqo.flyinheron.global.utility.HttpUtility;
 import com.gosqo.flyinheron.repository.BoardRepository;
 import com.gosqo.flyinheron.repository.MemberRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpHeaders;
@@ -29,12 +33,13 @@ class BoardTest extends SpringBootTestBase {
 
     @Autowired
     public BoardTest(
-            TestRestTemplate template,
-            TestTokenBuilder tokenBuilder,
-            MemberRepository memberRepository,
-            BoardRepository boardRepository
+            TestRestTemplate template
+            , TestTokenBuilder tokenBuilder
+            , MemberRepository memberRepository
+            , BoardRepository boardRepository
+            , TestDataRemover remover
     ) {
-        super(template);
+        super(template, remover);
         this.tokenBuilder = tokenBuilder;
         this.memberRepository = memberRepository;
         this.boardRepository = boardRepository;
@@ -59,13 +64,6 @@ class BoardTest extends SpringBootTestBase {
     @BeforeEach
     void setUp() {
         initData();
-    }
-
-    @Override
-    @AfterEach
-    void tearDown() {
-        boardRepository.deleteAll();
-        memberRepository.deleteAll();
     }
 
     @Nested

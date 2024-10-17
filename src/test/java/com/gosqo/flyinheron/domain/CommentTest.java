@@ -1,6 +1,7 @@
 package com.gosqo.flyinheron.domain;
 
-import jakarta.persistence.EntityManagerFactory;
+import com.gosqo.flyinheron.global.data.TestDataRemover;
+import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,8 +15,8 @@ class CommentTest extends EntityManagerDataInitializer {
     private static final String COMMENT_CONTENT = "hello, comment.";
 
     @Autowired
-    public CommentTest(EntityManagerFactory emf) {
-        super(emf);
+    public CommentTest(EntityManager em, TestDataRemover remover) {
+        super(em, remover);
     }
 
     @BeforeEach
@@ -48,7 +49,6 @@ class CommentTest extends EntityManagerDataInitializer {
                 .build();
 
         assertThatThrownBy(() -> em.persist(comment));
-        transaction.rollback();
     }
 
     @Test
@@ -59,7 +59,6 @@ class CommentTest extends EntityManagerDataInitializer {
                 .build();
 
         assertThatThrownBy(() -> em.persist(comment));
-        transaction.rollback();
     }
 
     @Test
@@ -70,7 +69,6 @@ class CommentTest extends EntityManagerDataInitializer {
                 .build();
 
         assertThatThrownBy(() -> em.persist(comment));
-        transaction.rollback();
     }
 
     @Test

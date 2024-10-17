@@ -1,10 +1,10 @@
 package com.gosqo.flyinheron.integrated;
 
 import com.gosqo.flyinheron.domain.Token;
+import com.gosqo.flyinheron.global.data.TestDataRemover;
 import com.gosqo.flyinheron.repository.MemberRepository;
 import com.gosqo.flyinheron.repository.TokenRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +33,13 @@ class TokenSchedulerTest extends SpringBootTestBase {
 
     @Autowired
     public TokenSchedulerTest(
-            TestRestTemplate template,
-            TestTokenBuilder tokenBuilder,
-            MemberRepository memberRepository,
-            TokenRepository tokenRepository
+            TestRestTemplate template
+            , TestTokenBuilder tokenBuilder
+            , MemberRepository memberRepository
+            , TokenRepository tokenRepository
+            , TestDataRemover remover
     ) {
-        super(template);
+        super(template, remover);
         this.tokenBuilder = tokenBuilder;
         this.memberRepository = memberRepository;
         this.tokenRepository = tokenRepository;
@@ -53,13 +54,6 @@ class TokenSchedulerTest extends SpringBootTestBase {
     @BeforeEach
     void setUp() {
         initData();
-    }
-
-    @Override
-    @AfterEach
-    void tearDown() {
-        tokenRepository.deleteAll();
-        memberRepository.deleteAll();
     }
 
     private Map<String, Date> buildTestTokens() {

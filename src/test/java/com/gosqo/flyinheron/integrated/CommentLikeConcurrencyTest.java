@@ -5,12 +5,11 @@ import com.gosqo.flyinheron.domain.Member;
 import com.gosqo.flyinheron.dto.CustomSliceImpl;
 import com.gosqo.flyinheron.dto.comment.CommentGetResponse;
 import com.gosqo.flyinheron.dto.commentlike.RegisterCommentLikeResponse;
+import com.gosqo.flyinheron.global.data.TestDataRemover;
 import com.gosqo.flyinheron.repository.BoardRepository;
-import com.gosqo.flyinheron.repository.CommentLikeRepository;
 import com.gosqo.flyinheron.repository.CommentRepository;
 import com.gosqo.flyinheron.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,24 +34,22 @@ public class CommentLikeConcurrencyTest extends SpringBootTestBase {
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
-    private final CommentLikeRepository commentLikeRepository;
     private Map<String, Object> extraClaims;
 
     @Autowired
     CommentLikeConcurrencyTest(
-            TestRestTemplate template,
-            TestTokenBuilder tokenBuilder,
-            MemberRepository memberRepository,
-            BoardRepository boardRepository,
-            CommentRepository commentRepository,
-            CommentLikeRepository commentLikeRepository
+            TestRestTemplate template
+            , TestTokenBuilder tokenBuilder
+            , MemberRepository memberRepository
+            , BoardRepository boardRepository
+            , CommentRepository commentRepository
+            , TestDataRemover remover
     ) {
-        super(template);
+        super(template, remover);
         this.tokenBuilder = tokenBuilder;
         this.memberRepository = memberRepository;
         this.boardRepository = boardRepository;
         this.commentRepository = commentRepository;
-        this.commentLikeRepository = commentLikeRepository;
     }
 
     @Override
@@ -67,15 +64,6 @@ public class CommentLikeConcurrencyTest extends SpringBootTestBase {
     void setUp() {
         initData();
         extraClaims = new HashMap<>();
-    }
-
-    @AfterEach
-    @Override
-    void tearDown() {
-        commentLikeRepository.deleteAll();
-        commentRepository.deleteAll();
-        boardRepository.deleteAll();
-        memberRepository.deleteAll();
     }
 
     private Map<String, Object> claimsPutMemberId(Member member) {

@@ -5,6 +5,7 @@ import com.gosqo.flyinheron.domain.Token;
 import com.gosqo.flyinheron.domain.fixture.MemberFixture;
 import com.gosqo.flyinheron.dto.auth.AuthenticationRequest;
 import com.gosqo.flyinheron.dto.auth.AuthenticationResponse;
+import com.gosqo.flyinheron.global.data.TestDataRemover;
 import com.gosqo.flyinheron.global.exception.ErrorResponse;
 import com.gosqo.flyinheron.global.utility.HttpUtility;
 import com.gosqo.flyinheron.global.utility.RequestCookie;
@@ -14,7 +15,6 @@ import com.gosqo.flyinheron.repository.TokenRepository;
 import com.gosqo.flyinheron.service.ClaimExtractor;
 import com.gosqo.flyinheron.service.JwtService;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -41,13 +41,14 @@ class AuthenticationTest extends SpringBootTestBase {
 
     @Autowired
     public AuthenticationTest(
-            TestRestTemplate template,
-            MemberRepository memberRepository,
-            TokenRepository tokenRepository,
-            ClaimExtractor claimExtractor,
-            JwtService jwtService
+            TestRestTemplate template
+            , MemberRepository memberRepository
+            , TokenRepository tokenRepository
+            , ClaimExtractor claimExtractor
+            , JwtService jwtService
+            , TestDataRemover remover
     ) {
-        super(template);
+        super(template, remover);
         this.memberRepository = memberRepository;
         this.tokenRepository = tokenRepository;
         this.claimExtractor = claimExtractor;
@@ -63,13 +64,6 @@ class AuthenticationTest extends SpringBootTestBase {
     @BeforeEach
     void setUp() {
         initData();
-    }
-
-    @Override
-    @AfterEach
-    void tearDown() {
-        tokenRepository.deleteAll();
-        memberRepository.deleteAll();
     }
 
     @Test

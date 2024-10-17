@@ -1,8 +1,9 @@
 package com.gosqo.flyinheron.domain;
 
+import com.gosqo.flyinheron.global.data.TestDataRemover;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BaseEntityTest extends EntityManagerDataInitializer {
 
     @Autowired
-    public BaseEntityTest(EntityManagerFactory emf) {
-        super(emf);
+    public BaseEntityTest(EntityManager em, TestDataRemover remover) {
+        super(em, remover);
     }
 
     private TestEntity newTestEntity() {
@@ -42,7 +43,7 @@ class BaseEntityTest extends EntityManagerDataInitializer {
 */
 
         em.persist(testEntity);
-        transaction.commit();
+
 //        log.info("{}", testEntity);
 /*
         TestEntity{
@@ -77,8 +78,6 @@ class BaseEntityTest extends EntityManagerDataInitializer {
 
         testEntity.softDelete();
 
-        transaction.commit();
-
         var found = em.find(TestEntity.class, testEntity.getId());
 
         assertThat(found.getStatus()).isEqualTo(EntityStatus.SOFT_DELETED);
@@ -90,14 +89,13 @@ class BaseEntityTest extends EntityManagerDataInitializer {
         var testEntity = newTestEntity();
 
         em.persist(testEntity); // 저장
-        transaction.commit();
+        em.flush();
 
         var found = em.find(TestEntity.class, testEntity.getId());
         assertThat(found.getDeletedAt()).isNull();
 
-        transaction.begin();
         found.softDelete(); // 소프트 삭제
-        transaction.commit();
+        em.flush();
 
         var softDeletedEntity = em.find(TestEntity.class, found.getId());
 
@@ -106,9 +104,7 @@ class BaseEntityTest extends EntityManagerDataInitializer {
         assertThat(softDeletedEntity.isSoftDeleted()).isTrue();
         assertThat(softDeletedEntity.getUpdatedAt()).isNotEqualTo(softDeletedEntity.getRegisteredAt());
 
-        transaction.begin();
         softDeletedEntity.activate(); // 소프트 삭제된 엔티티 재활성화
-        transaction.commit();
 
         var activatedEntity = em.find(TestEntity.class, softDeletedEntity.getId());
 

@@ -2,11 +2,11 @@ package com.gosqo.flyinheron.integrated;
 
 import com.gosqo.flyinheron.dto.CustomSliceImpl;
 import com.gosqo.flyinheron.dto.comment.CommentGetResponse;
+import com.gosqo.flyinheron.global.data.TestDataRemover;
 import com.gosqo.flyinheron.repository.BoardRepository;
 import com.gosqo.flyinheron.repository.CommentRepository;
 import com.gosqo.flyinheron.repository.MemberRepository;
 import com.gosqo.flyinheron.service.CommentService;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +25,13 @@ public class CommentTest extends SpringBootTestBase {
 
     @Autowired
     public CommentTest(
-            TestRestTemplate template,
-            MemberRepository memberRepository,
-            BoardRepository boardRepository,
-            CommentRepository commentRepository
+            TestRestTemplate template
+            , MemberRepository memberRepository
+            , BoardRepository boardRepository
+            , CommentRepository commentRepository
+            , TestDataRemover remover
     ) {
-        super(template);
+        super(template, remover);
         this.memberRepository = memberRepository;
         this.boardRepository = boardRepository;
         this.commentRepository = commentRepository;
@@ -47,14 +48,6 @@ public class CommentTest extends SpringBootTestBase {
     @Override
     void setUp() {
         initData();
-    }
-
-    @AfterEach
-    @Override
-    void tearDown() {
-        commentRepository.deleteAll();
-        boardRepository.deleteAll();
-        memberRepository.deleteAll();
     }
 
     @Test

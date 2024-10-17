@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gosqo.flyinheron.domain.fixture.MemberFixture;
 import com.gosqo.flyinheron.dto.member.IsUniqueEmailRequest;
 import com.gosqo.flyinheron.dto.member.IsUniqueNicknameRequest;
+import com.gosqo.flyinheron.global.data.TestDataRemover;
 import com.gosqo.flyinheron.repository.MemberRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -27,8 +27,13 @@ class MemberIsUniqueTest extends SpringBootTestBase {
     private final MemberRepository memberRepository;
 
     @Autowired
-    public MemberIsUniqueTest(TestRestTemplate template, MockMvc mockMvc, MemberRepository memberRepository) {
-        super(template);
+    public MemberIsUniqueTest(
+            TestRestTemplate template
+            , MockMvc mockMvc
+            , MemberRepository memberRepository
+            , TestDataRemover remover
+    ) {
+        super(template, remover);
         this.mockMvc = mockMvc;
         this.memberRepository = memberRepository;
     }
@@ -52,12 +57,6 @@ class MemberIsUniqueTest extends SpringBootTestBase {
     @BeforeEach
     void setUp() {
         initData();
-    }
-
-    @Override
-    @AfterEach
-    void tearDown() {
-        memberRepository.deleteAll();
     }
 
     @Nested

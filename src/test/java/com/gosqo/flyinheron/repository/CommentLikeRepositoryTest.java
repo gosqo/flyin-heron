@@ -5,7 +5,6 @@ import com.gosqo.flyinheron.domain.CommentLike;
 import com.gosqo.flyinheron.domain.EntityStatus;
 import com.gosqo.flyinheron.service.CommentLikeService;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -32,8 +31,7 @@ class CommentLikeRepositoryTest extends RepositoryTestBase {
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
-    @PersistenceContext
-    private EntityManager em;
+    private final EntityManager em;
 
     private Long memberId;
     private Long commentIdHasCommentLike;
@@ -46,12 +44,14 @@ class CommentLikeRepositoryTest extends RepositoryTestBase {
             MemberRepository memberRepository,
             BoardRepository boardRepository,
             CommentRepository commentRepository
+            , EntityManager em
     ) {
         this.commentLikeService = commentLikeService;
         this.commentLikeRepository = commentLikeRepository;
         this.memberRepository = memberRepository;
         this.boardRepository = boardRepository;
         this.commentRepository = commentRepository;
+        this.em = em;
     }
 
     private static PageRequest getLikedCommentsPageRequest(int pageNumber) {
@@ -69,6 +69,7 @@ class CommentLikeRepositoryTest extends RepositoryTestBase {
         commentLikes = commentLikeRepository.saveAll(buildCommentLikes());
 
         em.flush(); // commentLike @PrePersist 에 의한 comment.addLikeCount 적용 update 쿼리 나감.
+        em.clear();
     }
 
     @Override
@@ -92,8 +93,8 @@ class CommentLikeRepositoryTest extends RepositoryTestBase {
     void findByMemberId() {
         int pageNumber = 1;
         Slice<Comment> commentsLikedByMember = commentLikeRepository.findByMemberId(
-                        memberId, getLikedCommentsPageRequest(pageNumber))
-                .map(CommentLike::getComment);
+                        memberId, getLikedCommentsPageRequest(pageNumber)
+                ).map(CommentLike::getComment);
 
         commentsLikedByMember.getContent().forEach((item) -> log.info("{}", item));
     }
