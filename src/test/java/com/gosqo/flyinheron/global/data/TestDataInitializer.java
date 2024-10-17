@@ -41,28 +41,31 @@ public abstract class TestDataInitializer {
     protected List<Board> buildBoards() {
         List<Board> boards = new ArrayList<>();
 
-        for (int i = 0; i < BOARD_COUNT; i++) {
-            Board board = Board.builder()
-                    .member(member)
-                    .title("Board title " + (i + 1))
-                    .content("Board content " + (i + 1))
-                    .build();
-            boards.add(board);
-        }
+        IntStream.range(0, BOARD_COUNT).forEach(
+                i -> boards.add(
+                        Board.builder()
+                                .member(member)
+                                .title("Board title " + (i + 1))
+                                .content("Board content " + (i + 1))
+                                .build()
+                )
+        );
+
         return boards;
     }
 
     protected List<Comment> buildComments() {
         List<Comment> comments = new ArrayList<>();
 
-        for (int i = 0; i < COMMENT_COUNT; i++) {
-            Comment comment = Comment.builder()
-                    .member(member)
-                    .board(boards.get(0))
-                    .content("Hello, Comment " + (i + 1))
-                    .build();
-            comments.add(comment);
-        }
+        IntStream.range(0, COMMENT_COUNT).forEach(
+                i -> comments.add(
+                        Comment.builder()
+                                .member(member)
+                                .board(boards.get(0))
+                                .content("Hello, Comment " + (i + 1))
+                                .build())
+        );
+
         return comments;
     }
 
@@ -70,17 +73,14 @@ public abstract class TestDataInitializer {
         List<CommentLike> commentLikes = new ArrayList<>();
 
         // 테스트를 위해 생성된 전체 comments 중, 초기 절반의 comments 에 멤버가 좋아요 함.
-        IntStream.range(0, COMMENT_LIKE_COUNT)
-                .forEach(
-                        (i) -> {
-                            commentLikes.add(
-                                    CommentLike.builder()
-                                            .member(member)
-                                            .comment(comments.get(i))
-                                            .build()
-                            );
-                        }
-                );
+        IntStream.range(0, COMMENT_LIKE_COUNT).forEach(
+                i -> commentLikes.add(
+                        CommentLike.builder()
+                                .member(member)
+                                .comment(comments.get(i))
+                                .build()
+                )
+        );
 
         return commentLikes;
     }
