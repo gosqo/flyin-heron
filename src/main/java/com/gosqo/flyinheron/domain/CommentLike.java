@@ -44,10 +44,12 @@ public class CommentLike extends IdentityBaseEntity {
     )
     private Member member;
 
-    @Override
-    @PrePersist
-    public void prePersist() {
-        this.status = EntityStatus.ACTIVE;
+    // 추후 @PrePersist 에 해당 로직이 필요하다면,
+    // 상위클래스에 abstract prePersistDetail() 같은 추상 메서드 선언해서
+    // 하위 클래스에서 필요한 메서드 구현하고,
+    // 상위 클래스에 prePersist 에 prePersistDetail() 메서드 실행을 추가하는 방법도 있음.
+    @PostPersist
+    public void postPersist() {
         this.comment.addLikeCount();
     }
 

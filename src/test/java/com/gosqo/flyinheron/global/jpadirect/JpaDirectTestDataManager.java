@@ -13,7 +13,7 @@ public abstract class JpaDirectTestDataManager extends TestDataInitializer {
     protected EntityTransaction transaction;
 
     public JpaDirectTestDataManager() {
-        this.em = JpaDirect.getEntityManager();
+        this.em = JpaDirect.getTestOnlyEntityManagerFactory().createEntityManager();
 
         this.transaction = em.getTransaction();
         transaction.begin();
@@ -47,6 +47,8 @@ public abstract class JpaDirectTestDataManager extends TestDataInitializer {
         em.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
 
         transaction.commit();
+
+        em.close();
     }
 
     protected void initMember() {

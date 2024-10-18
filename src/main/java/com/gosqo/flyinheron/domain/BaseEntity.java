@@ -2,23 +2,17 @@ package com.gosqo.flyinheron.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @MappedSuperclass
 @Getter
-@EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
     @Enumerated(value = EnumType.STRING)
     protected EntityStatus status;
 
-    @CreatedDate
     @Column(nullable = false)
     protected LocalDateTime registeredAt;
-    @LastModifiedDate
     @Column(nullable = false)
     protected LocalDateTime updatedAt;
     protected LocalDateTime contentModifiedAt;
@@ -32,8 +26,17 @@ public abstract class BaseEntity {
      * 해당 객체를 상속하는 경우, 개체 status 초기화 변경 필요가 있다면 @Override 해야함.
      */
     @PrePersist
-    protected void prePersist() {
+    void prePersist() {
+        LocalDateTime now = LocalDateTime.now();
+
         this.status = EntityStatus.ACTIVE;
+        this.registeredAt = now;
+        this.updatedAt = now;
+    }
+
+    @PreUpdate
+    void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 
     public Boolean isActive() {

@@ -12,14 +12,19 @@
         <class>com.gosqo.flyinheron.domain.Board</class>
         <class>com.gosqo.flyinheron.domain.Comment</class>
         <class>com.gosqo.flyinheron.domain.CommentLike</class>
+        <class>com.gosqo.flyinheron.domain.TestEntity</class>
         <class>com.gosqo.flyinheron.repository.jpaentity.MemberProfileImageJpaEntity</class>
 
         <properties>
+            <property name="packagesToScan" value="com.gosqo.domain"/>
+            <property name="packagesToScan" value="com.gosqo.repository.jpaentity"/>
+
             <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:mem:test;Mode=MYSQL"/>
             <property name="jakarta.persistence.jdbc.user" value="sa"/>
             <property name="jakarta.persistence.jdbc.password" value=""/>
 
+            <property name="hibernate.id.new_generator_mappings" value="true"/>
             <property name="hibernate.hbm2ddl.auto" value="update"/>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
