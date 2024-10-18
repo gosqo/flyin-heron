@@ -11,6 +11,7 @@ import com.gosqo.flyinheron.repository.BoardRepository;
 import com.gosqo.flyinheron.repository.CommentLikeRepository;
 import com.gosqo.flyinheron.repository.CommentRepository;
 import com.gosqo.flyinheron.repository.MemberRepository;
+import com.gosqo.flyinheron.service.JwtService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 class CommentLikeTest extends SpringBootTestBase {
     private static final String TARGET_URI_FORMAT = "/api/v1/comment-like/%d";
-    private final TestTokenBuilder tokenBuilder;
+    private final JwtService jwtService;
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
@@ -41,7 +42,7 @@ class CommentLikeTest extends SpringBootTestBase {
     @Autowired
     public CommentLikeTest(
             TestRestTemplate template
-            , TestTokenBuilder tokenBuilder
+            , JwtService jwtService
             , MemberRepository memberRepository
             , BoardRepository boardRepository
             , CommentRepository commentRepository
@@ -49,7 +50,7 @@ class CommentLikeTest extends SpringBootTestBase {
             , TestDataRemover remover
     ) {
         super(template, remover);
-        this.tokenBuilder = tokenBuilder;
+        this.jwtService = jwtService;
         this.memberRepository = memberRepository;
         this.boardRepository = boardRepository;
         this.commentRepository = commentRepository;
@@ -88,7 +89,7 @@ class CommentLikeTest extends SpringBootTestBase {
         String uri = String.format(TARGET_URI_FORMAT, commentIdHasCommentLike);
         extraClaims = claimsPutMemberId(member);
 
-        String token = tokenBuilder.buildToken(extraClaims, member);
+        String token = jwtService.generateAccessToken(extraClaims, member);
 
         final var headers = buildPostHeadersWithToken(token);
         final var request = RequestEntity.post(uri)
@@ -111,7 +112,7 @@ class CommentLikeTest extends SpringBootTestBase {
         String uri = String.format(TARGET_URI_FORMAT, commentIdToRegisterItsLike);
         extraClaims = claimsPutMemberId(member);
 
-        String token = tokenBuilder.buildToken(extraClaims, member);
+        String token = jwtService.generateAccessToken(extraClaims, member);
 
         final var headers = buildPostHeadersWithToken(token);
         final var request = RequestEntity.post(uri)
@@ -131,7 +132,7 @@ class CommentLikeTest extends SpringBootTestBase {
         String uri = String.format(TARGET_URI_FORMAT, commentId);
         extraClaims = claimsPutMemberId(member);
 
-        String token = tokenBuilder.buildToken(extraClaims, member);
+        String token = jwtService.generateAccessToken(extraClaims, member);
         final var headers = buildGetHeadersWithToken(token);
         final var request = buildGetRequestEntity(headers, uri);
 
@@ -146,7 +147,7 @@ class CommentLikeTest extends SpringBootTestBase {
         String uri = String.format(TARGET_URI_FORMAT, commentId);
         extraClaims = claimsPutMemberId(member);
 
-        String token = tokenBuilder.buildToken(extraClaims, member);
+        String token = jwtService.generateAccessToken(extraClaims, member);
 
         final var headers = buildGetHeadersWithToken(token);
         final var request = buildDeleteRequestEntity(headers, uri);

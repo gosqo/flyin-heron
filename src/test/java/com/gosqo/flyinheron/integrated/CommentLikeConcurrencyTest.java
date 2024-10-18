@@ -9,6 +9,7 @@ import com.gosqo.flyinheron.global.data.TestDataRemover;
 import com.gosqo.flyinheron.repository.BoardRepository;
 import com.gosqo.flyinheron.repository.CommentRepository;
 import com.gosqo.flyinheron.repository.MemberRepository;
+import com.gosqo.flyinheron.service.JwtService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CommentLikeConcurrencyTest extends SpringBootTestBase {
 
     private static final String TARGET_URI_FORMAT = "/api/v1/comment-like/%d";
-    private final TestTokenBuilder tokenBuilder;
+    private final JwtService jwtService;
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
@@ -39,14 +40,14 @@ public class CommentLikeConcurrencyTest extends SpringBootTestBase {
     @Autowired
     CommentLikeConcurrencyTest(
             TestRestTemplate template
-            , TestTokenBuilder tokenBuilder
+            , JwtService jwtService
             , MemberRepository memberRepository
             , BoardRepository boardRepository
             , CommentRepository commentRepository
             , TestDataRemover remover
     ) {
         super(template, remover);
-        this.tokenBuilder = tokenBuilder;
+        this.jwtService = jwtService;
         this.memberRepository = memberRepository;
         this.boardRepository = boardRepository;
         this.commentRepository = commentRepository;
@@ -77,7 +78,7 @@ public class CommentLikeConcurrencyTest extends SpringBootTestBase {
         Long targetCommentIdFrom = comments.get(0).getId();
 
         extraClaims = claimsPutMemberId(member);
-        final var token = tokenBuilder.buildToken(extraClaims, member);
+        final var token = jwtService.generateAccessToken(extraClaims, member);
         final var headers = buildPostHeadersWithToken(token);
 
         final int countToRegister = 6;

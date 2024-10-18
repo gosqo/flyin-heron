@@ -4,6 +4,7 @@ import com.gosqo.flyinheron.domain.Token;
 import com.gosqo.flyinheron.global.data.TestDataRemover;
 import com.gosqo.flyinheron.repository.MemberRepository;
 import com.gosqo.flyinheron.repository.TokenRepository;
+import com.gosqo.flyinheron.service.JwtService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,20 +28,20 @@ import static org.awaitility.Awaitility.await;
 )
 @Slf4j
 class TokenSchedulerTest extends SpringBootTestBase {
-    private final TestTokenBuilder tokenBuilder;
+    private final JwtService jwtService;
     private final MemberRepository memberRepository;
     private final TokenRepository tokenRepository;
 
     @Autowired
     public TokenSchedulerTest(
             TestRestTemplate template
-            , TestTokenBuilder tokenBuilder
+            , JwtService jwtService
             , MemberRepository memberRepository
             , TokenRepository tokenRepository
             , TestDataRemover remover
     ) {
         super(template, remover);
-        this.tokenBuilder = tokenBuilder;
+        this.jwtService = jwtService;
         this.memberRepository = memberRepository;
         this.tokenRepository = tokenRepository;
     }
@@ -63,7 +64,7 @@ class TokenSchedulerTest extends SpringBootTestBase {
             }
 
             Date expirationDate = new Date(System.currentTimeMillis() + expiration);
-            String token = tokenBuilder.buildToken(member, expiration);
+            String token = jwtService.generateRefreshToken(member, expiration);
 
             testTokens.put(token, expirationDate);
         });

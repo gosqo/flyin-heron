@@ -9,6 +9,7 @@ import com.gosqo.flyinheron.global.data.TestDataRemover;
 import com.gosqo.flyinheron.global.utility.HttpUtility;
 import com.gosqo.flyinheron.repository.BoardRepository;
 import com.gosqo.flyinheron.repository.MemberRepository;
+import com.gosqo.flyinheron.service.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -27,20 +28,20 @@ import static com.gosqo.flyinheron.global.utility.HttpUtility.buildGetRequestEnt
 import static org.assertj.core.api.Assertions.assertThat;
 
 class BoardTest extends SpringBootTestBase {
-    private final TestTokenBuilder tokenBuilder;
+    private final JwtService jwtService;
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
 
     @Autowired
     public BoardTest(
             TestRestTemplate template
-            , TestTokenBuilder tokenBuilder
+            , JwtService jwtService
             , MemberRepository memberRepository
             , BoardRepository boardRepository
             , TestDataRemover remover
     ) {
         super(template, remover);
-        this.tokenBuilder = tokenBuilder;
+        this.jwtService = jwtService;
         this.memberRepository = memberRepository;
         this.boardRepository = boardRepository;
     }
@@ -104,7 +105,7 @@ class BoardTest extends SpringBootTestBase {
         public void boardPostNormally_ItShouldBeLike() throws JsonProcessingException {
             // given
             // to build HTTP headers with Authorization
-            final var accessToken = tokenBuilder.buildToken(member);
+            final var accessToken = jwtService.generateAccessToken(member);
             final var bearerAccessToken = "Bearer " + accessToken;
             // build body, JSON 형태의 스트링으로 보내지 않고 객체로 전달해도 테스트 가능.
             final var body = BoardRegisterRequest.builder()
