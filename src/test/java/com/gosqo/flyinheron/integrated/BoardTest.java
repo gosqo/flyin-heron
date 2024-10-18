@@ -54,16 +54,10 @@ class BoardTest extends SpringBootTestBase {
         return cookiesToSend;
     }
 
-    @Override
-    void initData() {
-        member = memberRepository.save(buildMember());
-        boards = boardRepository.saveAll(buildBoards());
-    }
-
-    @Override
     @BeforeEach
     void setUp() {
-        initData();
+        member = memberRepository.save(buildMember());
+        boards = boardRepository.saveAll(buildBoards());
     }
 
     @Nested

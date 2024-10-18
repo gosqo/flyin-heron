@@ -56,20 +56,14 @@ class CommentLikeTest extends SpringBootTestBase {
         this.commentLikeRepository = commentLikeRepository;
     }
 
-    @Override
-    void initData() {
+    @BeforeEach
+    void setUp() {
         member = memberRepository.save(buildMember());
         boards = boardRepository.saveAll(buildBoards());
         comments = commentRepository.saveAll(buildComments());
         commentLikes = commentLikeRepository.saveAll(buildCommentLikes());
 
         commentRepository.saveAll(comments); // commentLike @PrePersist 수행 내용 DB 에 적용
-    }
-
-    @Override
-    @BeforeEach
-    void setUp() {
-        initData();
         log.info("==== Test data initialized. ====");
 
         commentIdHasCommentLike = comments.get(0).getId();

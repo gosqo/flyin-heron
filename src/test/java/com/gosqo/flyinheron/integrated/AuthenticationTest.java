@@ -55,15 +55,9 @@ class AuthenticationTest extends SpringBootTestBase {
         this.jwtService = jwtService;
     }
 
-    @Override
-    void initData() {
-        member = memberRepository.save(buildMember());
-    }
-
-    @Override
     @BeforeEach
     void setUp() {
-        initData();
+        member = memberRepository.save(buildMember());
     }
 
     @Test

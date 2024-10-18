@@ -52,17 +52,12 @@ public class CommentLikeConcurrencyTest extends SpringBootTestBase {
         this.commentRepository = commentRepository;
     }
 
-    @Override
-    void initData() {
+    @BeforeEach
+    void setUp() {
         member = memberRepository.save(buildMember());
         boards = boardRepository.saveAll(buildBoards());
         comments = commentRepository.saveAll(buildComments());
-    }
 
-    @BeforeEach
-    @Override
-    void setUp() {
-        initData();
         extraClaims = new HashMap<>();
     }
 

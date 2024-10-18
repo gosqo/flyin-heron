@@ -19,14 +19,8 @@ abstract class SpringBootTestBase extends TestDataInitializer {
         this.remover = remover;
     }
 
-    abstract void initData();
-
-    abstract void setUp();
-
     @AfterEach
     void tearDown() {
         remover.removeAll();
     }
-
-    ;
 }

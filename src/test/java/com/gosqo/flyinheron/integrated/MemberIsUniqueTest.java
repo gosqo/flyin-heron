@@ -48,15 +48,9 @@ class MemberIsUniqueTest extends SpringBootTestBase {
         return new ObjectMapper().writeValueAsString(new IsUniqueEmailRequest(email));
     }
 
-    @Override
-    void initData() {
-        member = memberRepository.save(buildMember());
-    }
-
-    @Override
     @BeforeEach
     void setUp() {
-        initData();
+        member = memberRepository.save(buildMember());
     }
 
     @Nested

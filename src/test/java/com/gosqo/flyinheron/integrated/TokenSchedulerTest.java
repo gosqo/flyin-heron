@@ -45,15 +45,9 @@ class TokenSchedulerTest extends SpringBootTestBase {
         this.tokenRepository = tokenRepository;
     }
 
-    @Override
-    void initData() {
-        member = memberRepository.save(buildMember());
-    }
-
-    @Override
     @BeforeEach
     void setUp() {
-        initData();
+        member = memberRepository.save(buildMember());
     }
 
     private Map<String, Date> buildTestTokens() {

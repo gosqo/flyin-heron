@@ -37,17 +37,11 @@ public class CommentTest extends SpringBootTestBase {
         this.commentRepository = commentRepository;
     }
 
-    @Override
-    void initData() {
+    @BeforeEach
+    void setUp() {
         member = memberRepository.save(buildMember());
         boards = boardRepository.saveAll(buildBoards());
         comments = commentRepository.saveAll(buildComments());
-    }
-
-    @BeforeEach
-    @Override
-    void setUp() {
-        initData();
     }
 
     @Test
@@ -59,7 +53,8 @@ public class CommentTest extends SpringBootTestBase {
 
         ResponseEntity<CustomSliceImpl<CommentGetResponse>> response = template.exchange(
                 request,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getBody()).isNotNull();
