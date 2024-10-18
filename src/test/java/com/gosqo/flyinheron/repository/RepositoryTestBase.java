@@ -8,8 +8,4 @@ import org.springframework.context.annotation.Import;
 @DataJpaTest(showSql = false)
 @Import(JpaAuditingConfig.class)
 abstract class RepositoryTestBase extends TestDataInitializer {
-
-    abstract void initData();
-
-    abstract void setUp();
 }

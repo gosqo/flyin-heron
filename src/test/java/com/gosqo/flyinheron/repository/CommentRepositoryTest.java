@@ -28,17 +28,11 @@ class CommentRepositoryTest extends RepositoryTestBase {
         this.commentRepository = commentRepository;
     }
 
-    @Override
-    void initData() {
+    @BeforeEach
+    void setUp() {
         member = memberRepository.saveAndFlush(buildMember());
         boards = boardRepository.saveAll(buildBoards());
         comments = commentRepository.saveAll(buildComments());
-    }
-
-    @Override
-    @BeforeEach
-    void setUp() {
-        initData();
         log.info("==== Test data initialized. ====");
     }
 

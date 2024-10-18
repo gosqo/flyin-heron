@@ -61,8 +61,8 @@ class CommentLikeRepositoryTest extends RepositoryTestBase {
         return PageRequest.of(pageNumber, LIKED_COMMENTS_PAGE_SIZE, sort);
     }
 
-    @Override
-    void initData() {
+    @BeforeEach
+    void setUp() {
         member = memberRepository.save(buildMember());
         boards = boardRepository.saveAll(buildBoards());
         comments = commentRepository.saveAll(buildComments());
@@ -70,12 +70,6 @@ class CommentLikeRepositoryTest extends RepositoryTestBase {
 
         em.flush(); // commentLike @PrePersist 에 의한 comment.addLikeCount 적용 update 쿼리 나감.
         em.clear();
-    }
-
-    @Override
-    @BeforeEach
-    void setUp() {
-        initData();
         log.info("==== Test data initialized. ====");
 
         memberId = member.getId();
