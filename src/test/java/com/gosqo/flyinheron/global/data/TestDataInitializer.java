@@ -8,7 +8,6 @@ import com.gosqo.flyinheron.domain.member.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +15,6 @@ import java.util.stream.IntStream;
 
 import static com.gosqo.flyinheron.domain.fixture.MemberFixture.*;
 
-@ActiveProfiles("test")
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @Slf4j
 public abstract class TestDataInitializer {
