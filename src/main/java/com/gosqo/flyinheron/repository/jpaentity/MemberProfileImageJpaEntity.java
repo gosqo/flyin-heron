@@ -1,4 +1,4 @@
-package com.gosqo.flyinheron.repository;
+package com.gosqo.flyinheron.repository.jpaentity;
 
 import com.gosqo.flyinheron.domain.Member;
 import com.gosqo.flyinheron.domain.UuidBaseEntity;

@@ -1,7 +1,7 @@
 package com.gosqo.flyinheron.domain;
 
 import com.gosqo.flyinheron.domain.member.Role;
-import com.gosqo.flyinheron.repository.MemberProfileImageJpaEntity;
+import com.gosqo.flyinheron.repository.jpaentity.MemberProfileImageJpaEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
