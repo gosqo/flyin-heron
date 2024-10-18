@@ -3,7 +3,6 @@ package com.gosqo.flyinheron.service;
 import com.gosqo.flyinheron.domain.Member;
 import com.gosqo.flyinheron.domain.Token;
 import com.gosqo.flyinheron.dto.auth.AuthenticationRequest;
-import com.gosqo.flyinheron.dto.auth.AuthenticationResponse;
 import com.gosqo.flyinheron.global.exception.custom.DebugNeededException;
 import com.gosqo.flyinheron.repository.MemberRepository;
 import com.gosqo.flyinheron.repository.TokenRepository;
@@ -91,29 +90,6 @@ public class AuthenticationService {
         extraClaims.put("id", member.getId());
 
         return jwtService.generateAccessToken(extraClaims, member);
-    }
-
-    private AuthenticationResponse buildAuthenticationResponse(
-            Member member
-            , String refreshToken
-    ) {
-        HashMap<String, Object> extraClaims = new HashMap<>();
-        extraClaims.put("id", member.getId());
-
-        return AuthenticationResponse.builder()
-                .accessToken(jwtService.generateAccessToken(extraClaims, member))
-                .refreshToken(refreshToken)
-                .build();
-    }
-
-    private AuthenticationResponse buildAuthenticationResponse(
-            String accessToken
-            , String refreshToken
-    ) {
-        return AuthenticationResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
     }
 
     private void saveMemberToken(Member member, String jwtToken) {
