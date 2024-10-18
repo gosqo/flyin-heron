@@ -48,6 +48,9 @@ export class TokenUtility {
 
         if (bearerRefreshToken !== null) {
 
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("refresh_token");
+
             const refreshToken = bearerRefreshToken.substring(7);
 
             let date = new Date();
@@ -69,10 +72,6 @@ export class TokenUtility {
                 })
                 .then(data => {
                     console.log(data); // data.status, data.message 접근 가능.
-
-                    localStorage.removeItem("access_token");
-                    localStorage.removeItem("refresh_token");
-
                     alert("인증 정보 관리 방식 변경으로 로그아웃 처리되었습니다. 이후 로그인 하시면 정상적으로 회원 기능을 사용하실 수 있습니다.")
                 })
                 .catch(error => {
