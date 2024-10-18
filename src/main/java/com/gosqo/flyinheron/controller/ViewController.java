@@ -15,6 +15,16 @@ public class ViewController {
         return "index";
     }
 
+    @GetMapping("/login")
+    public String viewLogin() {
+        return "member/login";
+    }
+
+    @GetMapping("/signUp")
+    public String viewSignUp() {
+        return "member/signUp";
+    }
+
     @GetMapping("/board/{id}")
     public String getBoard(@NotNull @PathVariable("id") Long id) {
         return "board/boardView";
