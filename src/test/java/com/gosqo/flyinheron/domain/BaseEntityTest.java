@@ -1,24 +1,17 @@
 package com.gosqo.flyinheron.domain;
 
-import com.gosqo.flyinheron.global.data.TestDataRemover;
+import com.gosqo.flyinheron.global.jpadirect.JpaDirectTestDataManager;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-class BaseEntityTest extends EntityManagerDataInitializer {
-
-    @Autowired
-    public BaseEntityTest(EntityManager em, TestDataRemover remover) {
-        super(em, remover);
-    }
+class BaseEntityTest extends JpaDirectTestDataManager {
 
     private TestEntity newTestEntity() {
         return new TestEntity("This is a TestEntity.", 999L, true);

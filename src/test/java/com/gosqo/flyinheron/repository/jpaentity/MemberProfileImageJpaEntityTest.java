@@ -1,15 +1,12 @@
 package com.gosqo.flyinheron.repository.jpaentity;
 
-import com.gosqo.flyinheron.domain.EntityManagerDataInitializer;
 import com.gosqo.flyinheron.domain.Member;
 import com.gosqo.flyinheron.domain.MemberProfileImage;
 import com.gosqo.flyinheron.domain.MemberProfileImageManager;
-import com.gosqo.flyinheron.global.data.TestDataRemover;
-import jakarta.persistence.EntityManager;
+import com.gosqo.flyinheron.global.jpadirect.JpaDirectTestDataManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,15 +18,10 @@ import static com.gosqo.flyinheron.domain.DefaultImageManager.LOCAL_STORAGE_DIR;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-class MemberProfileImageJpaEntityTest extends EntityManagerDataInitializer {
+class MemberProfileImageJpaEntityTest extends JpaDirectTestDataManager {
     static final String CLIENT_IMAGE_DIR = LOCAL_STORAGE_DIR + "/client/";
     private static final String CLIENT_IMAGE_FILENAME = "profile image.png";
     private static final Path SOURCE = Paths.get(CLIENT_IMAGE_DIR, CLIENT_IMAGE_FILENAME);
-
-    @Autowired
-    public MemberProfileImageJpaEntityTest(EntityManager em, TestDataRemover remover) {
-        super(em, remover);
-    }
 
     @BeforeEach
     void setUp() {
