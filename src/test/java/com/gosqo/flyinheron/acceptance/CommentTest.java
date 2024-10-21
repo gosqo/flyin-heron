@@ -1,4 +1,4 @@
-package com.gosqo.flyinheron.integrated;
+package com.gosqo.flyinheron.acceptance;
 
 import com.gosqo.flyinheron.dto.CustomSliceImpl;
 import com.gosqo.flyinheron.dto.comment.CommentGetResponse;

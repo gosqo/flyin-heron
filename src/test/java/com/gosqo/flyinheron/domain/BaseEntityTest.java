@@ -5,6 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -83,6 +84,7 @@ class BaseEntityTest extends JpaDirectTestDataManager {
 }
 
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
 @Entity
 class TestEntity extends IdentityBaseEntity {

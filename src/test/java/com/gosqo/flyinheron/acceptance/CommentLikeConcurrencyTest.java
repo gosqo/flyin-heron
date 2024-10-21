@@ -1,4 +1,4 @@
-package com.gosqo.flyinheron.integrated;
+package com.gosqo.flyinheron.acceptance;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gosqo.flyinheron.domain.Member;

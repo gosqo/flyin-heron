@@ -1,4 +1,4 @@
-package com.gosqo.flyinheron.integrated;
+package com.gosqo.flyinheron.acceptance;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gosqo.flyinheron.domain.fixture.MemberFixture;
@@ -9,7 +9,6 @@ import com.gosqo.flyinheron.global.exception.ErrorResponse;
 import com.gosqo.flyinheron.global.utility.RequestCookie;
 import com.gosqo.flyinheron.global.utility.RespondedCookie;
 import com.gosqo.flyinheron.repository.MemberRepository;
-import com.gosqo.flyinheron.repository.TokenRepository;
 import com.gosqo.flyinheron.service.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,20 +28,17 @@ class LogoutTest extends SpringBootTestBase {
 
     private final JwtService jwtService;
     private final MemberRepository memberRepository;
-    private final TokenRepository tokenRepository;
 
     @Autowired
     public LogoutTest(
             TestRestTemplate template
             , JwtService jwtService
             , MemberRepository memberRepository
-            , TokenRepository tokenRepository
             , TestDataRemover remover
     ) {
         super(template, remover);
         this.jwtService = jwtService;
         this.memberRepository = memberRepository;
-        this.tokenRepository = tokenRepository;
     }
 
     @BeforeEach

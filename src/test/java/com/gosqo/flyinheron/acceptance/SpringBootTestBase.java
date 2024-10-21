@@ -1,4 +1,4 @@
-package com.gosqo.flyinheron.integrated;
+package com.gosqo.flyinheron.acceptance;
 
 import com.gosqo.flyinheron.global.data.TestDataInitializer;
 import com.gosqo.flyinheron.global.data.TestDataRemover;

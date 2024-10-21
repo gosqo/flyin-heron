@@ -1,4 +1,4 @@
-package com.gosqo.flyinheron.integrated;
+package com.gosqo.flyinheron.acceptance;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gosqo.flyinheron.domain.Board;
@@ -62,7 +62,7 @@ class BoardTest extends SpringBootTestBase {
     }
 
     @Nested
-    @DisplayName("board integrated")
+    @DisplayName("board acceptance")
     class IntegratedBoardTest {
         @Test
         @DisplayName("view count does not affect to update date.")
@@ -84,7 +84,7 @@ class BoardTest extends SpringBootTestBase {
         }
 
         @Test
-        @DisplayName("E2E board GET is like.")
+        @DisplayName("board GET is like.")
         public void getBoard() {
             Board board = boards.get(0);
             Long boardId = board.getId();
@@ -101,7 +101,7 @@ class BoardTest extends SpringBootTestBase {
         }
 
         @Test
-        @DisplayName("E2E board POST is like.")
+        @DisplayName("board POST is like.")
         public void boardPostNormally_ItShouldBeLike() throws JsonProcessingException {
             // given
             // to build HTTP headers with Authorization
