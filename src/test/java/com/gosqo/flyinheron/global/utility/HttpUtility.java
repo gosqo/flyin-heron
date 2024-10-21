@@ -37,7 +37,13 @@ public class HttpUtility {
 
     public static HttpHeaders buildDefaultPostHeaders() {
         var headers = new HttpHeaders();
-        headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return headers;
+    }
+
+    public static HttpHeaders buildMultipartPostHeaders() {
+        var headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         return headers;
     }
 
@@ -73,6 +79,19 @@ public class HttpUtility {
             throws JsonProcessingException {
         return new RequestEntity<>(
                 getMappedBody(body)
+                , httpHeaders
+                , HttpMethod.POST
+                , URI.create(uri)
+        );
+    }
+
+    public static RequestEntity<Object> buildMultipartPostRequestEntity(
+            HttpHeaders httpHeaders
+            , Object body
+            , String uri
+    ) {
+        return new RequestEntity<>(
+                body
                 , httpHeaders
                 , HttpMethod.POST
                 , URI.create(uri)

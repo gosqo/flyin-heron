@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static com.gosqo.flyinheron.domain.DefaultImageManager.LOCAL_STORAGE_DIR;
@@ -21,6 +22,10 @@ public class MemberProfileImage {
 
     private final MemberProfileImageManager manager;
     private final Long memberId;
+
+    // domain 의 프레임워크 의존성(스프링 MultipartFile) 탈피를 위해 아래 inputStream, originalFilename 을 따로 받음.
+    // 생성자, 빌더를 통한 this 인스턴스 생성 시, 인자는 동일한 MultipartFile 객체 메서드(getInputStream, getOriginalFilename)를 통해
+    // this 인스턴스 각각의 필드를 채웁니다.
     private final InputStream inputStream;
     private final String originalFilename;
     private final String renamedFilename;
@@ -36,6 +41,8 @@ public class MemberProfileImage {
             , String renamedFilename
             , String fullPath
     ) {
+        Objects.requireNonNull(memberId);
+
         this.manager = manager;
         this.memberId = memberId;
         this.inputStream = inputStream;
