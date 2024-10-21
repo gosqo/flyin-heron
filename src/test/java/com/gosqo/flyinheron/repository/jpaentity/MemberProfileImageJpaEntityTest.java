@@ -2,7 +2,6 @@ package com.gosqo.flyinheron.repository.jpaentity;
 
 import com.gosqo.flyinheron.domain.Member;
 import com.gosqo.flyinheron.domain.MemberProfileImage;
-import com.gosqo.flyinheron.domain.MemberProfileImageManager;
 import com.gosqo.flyinheron.global.jpadirect.JpaDirectTestDataManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,12 +32,10 @@ class MemberProfileImageJpaEntityTest extends JpaDirectTestDataManager {
     @Test
     void persist() throws IOException {
         // given
-        MemberProfileImageManager manager = new MemberProfileImageManager();
         Member member = em.find(Member.class, super.member.getId());
         InputStream in = Files.newInputStream(SOURCE);
 
         MemberProfileImage image = MemberProfileImage.builder()
-                .manager(manager)
                 .memberId(member.getId())
                 .inputStream(in)
                 .originalFilename(SOURCE.getFileName().toString())

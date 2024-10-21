@@ -24,11 +24,9 @@ class MemberProfileImageTest {
     private static final String CLIENT_IMAGE_FILENAME2 = "profile image2.png";
     private static final Path SOURCE = Paths.get(CLIENT_IMAGE_DIR, CLIENT_IMAGE_FILENAME);
     private static final Path SOURCE2 = Paths.get(CLIENT_IMAGE_DIR, CLIENT_IMAGE_FILENAME2);
-    private final MemberProfileImageManager manager;
     private MemberProfileImage profileImage;
 
     MemberProfileImageTest() {
-        this.manager = new MemberProfileImageManager();
     }
 
     @BeforeEach
@@ -36,7 +34,6 @@ class MemberProfileImageTest {
         InputStream inputStream = Files.newInputStream(SOURCE);
 
         this.profileImage = MemberProfileImage.builder()
-                .manager(manager)
                 .memberId(MEMBER_ID)
                 .inputStream(inputStream)
                 .originalFilename(SOURCE.getFileName().toString())
@@ -75,13 +72,11 @@ class MemberProfileImageTest {
     @Test
     void remove_former_if_exists_then_save_new_one() throws IOException {
         // given
-        DefaultImageManager defaultImageManager = new DefaultImageManager();
-
         // dummies to be deleted.
         Path dummy = Paths.get(CLIENT_IMAGE_DIR, CLIENT_IMAGE_FILENAME);
         IntStream.range(0, 5).forEach(i -> {
             try (InputStream stream = Files.newInputStream(dummy)) {
-                defaultImageManager.saveLocal(
+                DefaultImageManager.getInstance().saveLocal(
                         stream
                         , CLIENT_IMAGE_FILENAME.replace(".", i + ".")
                         , profileImage.getStorageDir()
@@ -91,21 +86,26 @@ class MemberProfileImageTest {
             }
         });
 
-        Path formerOutput = Paths.get(profileImage.saveLocal());
+        // when
+        // 이전 5 장의 더미 파일 삭제 및 테스트 필드 profileImage 객체 필드 로컬 저장.
+        String formerFullPath = profileImage.saveLocal();
+        Path formerOutput = Paths.get(formerFullPath);
 
+        // then
         assertThat(formerOutput.toFile().exists()).isTrue();
 
+        // when
         InputStream newInputStream = Files.newInputStream(SOURCE2);
 
         MemberProfileImage newImage = MemberProfileImage.builder()
-                .manager(manager)
                 .memberId(MEMBER_ID)
                 .inputStream(newInputStream)
                 .originalFilename(SOURCE2.getFileName().toString())
                 .build();
 
-        // when
-        Path latterOutput = Paths.get(newImage.saveLocal());
+        // 저장된 로컬 파일(formerOutput) 삭제 및 newImage 객체 필드 로컬 저장.
+        String latterFullPath = newImage.saveLocal();
+        Path latterOutput = Paths.get(latterFullPath);
 
         // then
         assertThat(formerOutput.toFile().exists()).isFalse();

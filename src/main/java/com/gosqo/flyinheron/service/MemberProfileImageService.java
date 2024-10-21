@@ -2,7 +2,6 @@ package com.gosqo.flyinheron.service;
 
 import com.gosqo.flyinheron.domain.Member;
 import com.gosqo.flyinheron.domain.MemberProfileImage;
-import com.gosqo.flyinheron.domain.MemberProfileImageManager;
 import com.gosqo.flyinheron.repository.MemberProfileImageRepository;
 import com.gosqo.flyinheron.repository.MemberRepository;
 import com.gosqo.flyinheron.repository.jpaentity.MemberProfileImageJpaEntity;
@@ -25,7 +24,6 @@ public class MemberProfileImageService {
         );
 
         MemberProfileImage image = MemberProfileImage.builder()
-                .manager(new MemberProfileImageManager())
                 .inputStream(file.getInputStream())
                 .originalFilename(file.getOriginalFilename())
                 .memberId(member.getId())

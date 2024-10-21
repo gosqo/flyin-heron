@@ -20,7 +20,6 @@ import static com.gosqo.flyinheron.domain.MemberProfileImageManager.MEMBER_IMAGE
 public class MemberProfileImage {
     private static final CopyOption MEMBER_PROFILE_IMAGE_COPYOPTION = StandardCopyOption.REPLACE_EXISTING;
 
-    private final MemberProfileImageManager manager;
     private final Long memberId;
 
     // domain 의 프레임워크 의존성(스프링 MultipartFile) 탈피를 위해 아래 inputStream, originalFilename 을 따로 받음.
@@ -34,8 +33,7 @@ public class MemberProfileImage {
 
     @Builder
     public MemberProfileImage(
-            MemberProfileImageManager manager
-            , Long memberId
+            Long memberId
             , InputStream inputStream
             , String originalFilename
             , String renamedFilename
@@ -43,12 +41,11 @@ public class MemberProfileImage {
     ) {
         Objects.requireNonNull(memberId);
 
-        this.manager = manager;
         this.memberId = memberId;
         this.inputStream = inputStream;
         this.originalFilename = originalFilename;
 
-        this.renamedFilename = manager.renameFile(this.originalFilename);
+        this.renamedFilename = MemberProfileImageManager.getInstance().renameFile(this.originalFilename);
         this.storageDir = MEMBER_IMAGE_DIR + this.memberId + "/profile/";
     }
 
@@ -68,7 +65,11 @@ public class MemberProfileImage {
             deleteSubFiles(this.storageDir);
         }
 
-        this.fullPath = manager.saveLocal(this.inputStream, this.renamedFilename, this.storageDir);
+        this.fullPath = MemberProfileImageManager.getInstance().saveLocal(
+                this.inputStream
+                , this.renamedFilename
+                , this.storageDir
+        );
 
         return this.fullPath;
     }

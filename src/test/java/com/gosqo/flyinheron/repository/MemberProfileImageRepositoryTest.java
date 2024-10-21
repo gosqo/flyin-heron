@@ -1,7 +1,6 @@
 package com.gosqo.flyinheron.repository;
 
 import com.gosqo.flyinheron.domain.MemberProfileImage;
-import com.gosqo.flyinheron.domain.MemberProfileImageManager;
 import com.gosqo.flyinheron.global.data.TestImageCreator;
 import com.gosqo.flyinheron.repository.jpaentity.MemberProfileImageJpaEntity;
 import jakarta.persistence.EntityManager;
@@ -44,7 +43,6 @@ class MemberProfileImageRepositoryTest extends RepositoryTestBase {
         // given
         MemberProfileImage image = MemberProfileImage.builder()
                 .memberId(member.getId())
-                .manager(new MemberProfileImageManager())
                 .inputStream(Files.newInputStream(sampleImage.toPath()))
                 .originalFilename("hello image.png")
                 .build();

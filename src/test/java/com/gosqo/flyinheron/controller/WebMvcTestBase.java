@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @ActiveProfiles("test")
 // 앱 컨텍스트에서 가져와 사용할 설정 클래스
 // 해당 클래스가 가진 의존성을 스프링을 통해 해결.
-// 실제 앱 컨텍스트와 같이 작동`.
+// 실제 앱 컨텍스트와 같이 작동.
 @Import(
         value = {
                 SecurityConfig.class
