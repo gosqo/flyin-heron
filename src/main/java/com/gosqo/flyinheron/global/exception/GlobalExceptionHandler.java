@@ -22,14 +22,13 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.io.IOException;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+    private static final List<Set<Class<? extends Exception>>> EXPECTED_EXCEPTIONS = new ArrayList<>();
     private static final Set<Class<? extends Exception>> BAD_REQUEST_EXCEPTIONS = Set.of(
             MethodArgumentNotValidException.class
             , MethodArgumentTypeMismatchException.class
@@ -37,7 +36,6 @@ public class GlobalExceptionHandler {
             , DataIntegrityViolationException.class
             , IllegalArgumentException.class
     );
-
     private static final Set<Class<? extends Exception>> UNAUTHORIZED_EXCEPTIONS = Set.of(
             ExpiredJwtException.class
     );
@@ -47,6 +45,7 @@ public class GlobalExceptionHandler {
             , AccessDeniedException.class
             , JwtException.class
     );
+
     private static final Set<Class<? extends Exception>> NOT_FOUND_EXCEPTIONS = Set.of(
             NoResourceFoundException.class
             , NoSuchElementException.class
@@ -58,13 +57,19 @@ public class GlobalExceptionHandler {
             , RuntimeException.class
             , Exception.class
     );
-
     private static final Set<Class<? extends Exception>> STACK_TRACE_NEEDED = Set.of(
             NullPointerException.class
             , DebugNeededException.class
             , RuntimeException.class
             , Exception.class
     );
+
+    static {
+        EXPECTED_EXCEPTIONS.add(BAD_REQUEST_EXCEPTIONS);
+        EXPECTED_EXCEPTIONS.add(UNAUTHORIZED_EXCEPTIONS);
+        EXPECTED_EXCEPTIONS.add(FORBIDDEN_EXCEPTIONS);
+        EXPECTED_EXCEPTIONS.add(NOT_FOUND_EXCEPTIONS);
+    }
 
     @ExceptionHandler(Exception.class)
     public Object handleGetRequestExceptions(Exception e, HttpServletRequest request, HttpServletResponse response)
@@ -108,7 +113,10 @@ public class GlobalExceptionHandler {
         log.warn(exceptionNameAndMessage(e));
 
         // log stack trace if needed.
-        if (STACK_TRACE_NEEDED.contains(e.getClass())) {
+        if (EXPECTED_EXCEPTIONS.stream().noneMatch(
+                setOfExceptions -> setOfExceptions.contains(e.getClass())
+        )
+        ) {
             log.warn("", e);
         }
 
