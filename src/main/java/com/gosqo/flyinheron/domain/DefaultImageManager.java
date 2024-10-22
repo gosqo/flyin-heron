@@ -2,6 +2,10 @@ package com.gosqo.flyinheron.domain;
 
 import lombok.extern.slf4j.Slf4j;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -40,6 +44,26 @@ public class DefaultImageManager {
         Files.copy(inputStream, output);
 
         return output.toString();
+    }
+
+    public static File createDefaultMemberProfileImage(int width, int height, String username) throws IOException {
+        String firstCharacter = String.valueOf(username.charAt(0));
+        BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = bufferedImage.createGraphics();
+
+        g2d.setColor(Color.ORANGE);
+        g2d.fillRect(width / 2, height / 2, width, height);
+        g2d.fillRect(0, 0, width / 2, height / 2);
+
+        g2d.setColor(new Color(255, 255, 255));
+        g2d.drawString(firstCharacter, width / 100 * 22, height / 100 * 53);
+
+        g2d.dispose();
+
+        File tempFile = File.createTempFile(username + "_", ".png");
+        ImageIO.write(bufferedImage, "png", tempFile);
+
+        return tempFile;
     }
 
     public static String renameFileWithUuid(String originalFilename) {

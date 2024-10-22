@@ -92,6 +92,17 @@ public class MemberProfileImage {
         return this.fullPath;
     }
 
+    public static MemberProfileImage createDefaultImage(Member member) throws IOException {
+        File defaultProfileImage =
+                DefaultImageManager.createDefaultMemberProfileImage(100, 100, member.getNickname());
+
+        return MemberProfileImage.builder()
+                .member(member)
+                .inputStream(Files.newInputStream(defaultProfileImage.toPath()))
+                .originalFilename(defaultProfileImage.getName())
+                .build();
+    }
+
     private void deleteSubFiles(String targetDir) throws IOException {
 
         if (!targetDir.startsWith(LOCAL_STORAGE_DIR) || targetDir.equals(LOCAL_STORAGE_DIR)) {
