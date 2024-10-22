@@ -8,17 +8,21 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Objects;
 import java.util.stream.Stream;
 
 import static com.gosqo.flyinheron.domain.DefaultImageManager.LOCAL_STORAGE_DIR;
-import static com.gosqo.flyinheron.domain.MemberProfileImageManager.MEMBER_IMAGE_DIR;
 
 @Getter
 @Slf4j
 public class MemberProfileImage {
-    private static final CopyOption MEMBER_PROFILE_IMAGE_COPYOPTION = StandardCopyOption.REPLACE_EXISTING;
+    static final Path MEMBER_PROFILE_IMAGE_DIR =
+            Paths.get(DefaultImageManager.LOCAL_STORAGE_DIR, "member");
 
     private final Long memberId;
 
@@ -45,8 +49,11 @@ public class MemberProfileImage {
         this.inputStream = inputStream;
         this.originalFilename = originalFilename;
 
-        this.renamedFilename = MemberProfileImageManager.getInstance().renameFile(this.originalFilename);
-        this.storageDir = MEMBER_IMAGE_DIR + this.memberId + "/profile/";
+        this.renamedFilename = this.renameFile(this.originalFilename);
+        this.storageDir = Paths.get(
+                MEMBER_PROFILE_IMAGE_DIR.toString()
+                , this.memberId.toString()
+                , "profile").toString();
     }
 
     public static MemberProfileImage of(MemberProfileImageJpaEntity entity) {
@@ -58,6 +65,17 @@ public class MemberProfileImage {
                 .build();
     }
 
+    public MemberProfileImageJpaEntity toEntity(Member member) {
+        Objects.requireNonNull(this.fullPath, "image file full path can not be null or blank.");
+
+        return MemberProfileImageJpaEntity.builder()
+                .member(member) // null 일 경우 this 인스턴스를 필드로 가질 Member 타입 인스턴스에서 updateProfileImage() 사용
+                .originalFilename(this.originalFilename)
+                .renamedFilename(this.renamedFilename)
+                .fullPath(this.fullPath)
+                .build();
+    }
+
     public String saveLocal() throws IOException {
         File targetFolder = Paths.get(this.storageDir).toFile();
 
@@ -65,7 +83,7 @@ public class MemberProfileImage {
             deleteSubFiles(this.storageDir);
         }
 
-        this.fullPath = MemberProfileImageManager.getInstance().saveLocal(
+        this.fullPath = DefaultImageManager.saveLocal(
                 this.inputStream
                 , this.renamedFilename
                 , this.storageDir
@@ -92,17 +110,12 @@ public class MemberProfileImage {
         }
     }
 
-    public MemberProfileImageJpaEntity toEntity(Member member) {
+    private String renameFile(String originalFilename) {
+        String spaceReplaced = originalFilename.replaceAll(" ", "-");
 
-        if (this.fullPath == null || this.fullPath.isBlank()) {
-            throw new IllegalStateException("image file full path can not be null or blank.");
-        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+        String formattedDate = format.format(new Date());
 
-        return MemberProfileImageJpaEntity.builder()
-                .member(member)
-                .originalFilename(this.originalFilename)
-                .renamedFilename(this.renamedFilename)
-                .fullPath(this.fullPath)
-                .build();
+        return formattedDate + "_" + spaceReplaced;
     }
 }

@@ -14,27 +14,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 class DefaultImageManagerTest {
-    static final String CLIENT_IMAGE_DIR = LOCAL_STORAGE_DIR + "/client/";
     static final String CLIENT_IMAGE_FILENAME = "test.png";
-    static final String TEST_FILE_FULL_PATH = CLIENT_IMAGE_DIR + CLIENT_IMAGE_FILENAME;
-
-    private final DefaultImageManager manager;
-
-    DefaultImageManagerTest() {
-        manager = new DefaultImageManager();
-    }
+    static final Path CLIENT_IMAGE_DIR = Paths.get(LOCAL_STORAGE_DIR, "client");
+    static final Path TEST_FILE_FULL_PATH = Paths.get(CLIENT_IMAGE_DIR.toString(), CLIENT_IMAGE_FILENAME);
 
     @Test
     void saveLocal() throws IOException {
         // given
         String fullPath = ""; // need to be filled to assert test result.
         String targetDir = LOCAL_STORAGE_DIR + "test/common/";
-        String renamedFilename = manager.renameFile(CLIENT_IMAGE_FILENAME);
-        Path source = Paths.get(TEST_FILE_FULL_PATH);
+        String renamedFilename = DefaultImageManager.renameFileWithUuid(CLIENT_IMAGE_FILENAME);
 
         // when
-        try (InputStream inputStream = Files.newInputStream(source)) {
-            fullPath = manager.saveLocal(inputStream, renamedFilename, targetDir);
+        try (InputStream inputStream = Files.newInputStream(TEST_FILE_FULL_PATH)) {
+            fullPath = DefaultImageManager.saveLocal(inputStream, renamedFilename, targetDir);
         }
 
         // then

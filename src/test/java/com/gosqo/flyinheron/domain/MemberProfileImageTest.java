@@ -13,7 +13,6 @@ import java.nio.file.Paths;
 import java.util.stream.IntStream;
 
 import static com.gosqo.flyinheron.domain.DefaultImageManagerTest.CLIENT_IMAGE_DIR;
-import static com.gosqo.flyinheron.domain.MemberProfileImageManager.MEMBER_IMAGE_DIR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -22,12 +21,11 @@ class MemberProfileImageTest {
     private static final Long MEMBER_ID = 20L;
     private static final String CLIENT_IMAGE_FILENAME = "profile image.png";
     private static final String CLIENT_IMAGE_FILENAME2 = "profile image2.png";
-    private static final Path SOURCE = Paths.get(CLIENT_IMAGE_DIR, CLIENT_IMAGE_FILENAME);
-    private static final Path SOURCE2 = Paths.get(CLIENT_IMAGE_DIR, CLIENT_IMAGE_FILENAME2);
+    private static final Path SOURCE =
+            Paths.get(DefaultImageManagerTest.CLIENT_IMAGE_DIR.toString(), CLIENT_IMAGE_FILENAME);
+    private static final Path SOURCE2 =
+            Paths.get(DefaultImageManagerTest.CLIENT_IMAGE_DIR.toString(), CLIENT_IMAGE_FILENAME2);
     private MemberProfileImage profileImage;
-
-    MemberProfileImageTest() {
-    }
 
     @BeforeEach
     void setUp() throws IOException {
@@ -43,7 +41,7 @@ class MemberProfileImageTest {
     @Test
     void toEntity_before_saveLocal_throws_IllegalStateException() throws IOException {
         assertThatThrownBy(() -> profileImage.toEntity(null))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -64,7 +62,7 @@ class MemberProfileImageTest {
 
         // then
         assertThat(entity.getFullPath()).contains(
-                MEMBER_IMAGE_DIR, "1", "/profile/"
+                MemberProfileImage.MEMBER_PROFILE_IMAGE_DIR.toString(), "1", "/profile/"
                 , CLIENT_IMAGE_FILENAME.replaceAll(" ", "-")
         );
     }
@@ -73,10 +71,10 @@ class MemberProfileImageTest {
     void remove_former_if_exists_then_save_new_one() throws IOException {
         // given
         // dummies to be deleted.
-        Path dummy = Paths.get(CLIENT_IMAGE_DIR, CLIENT_IMAGE_FILENAME);
+        Path dummy = Paths.get(CLIENT_IMAGE_DIR.toString(), CLIENT_IMAGE_FILENAME);
         IntStream.range(0, 5).forEach(i -> {
             try (InputStream stream = Files.newInputStream(dummy)) {
-                DefaultImageManager.getInstance().saveLocal(
+                DefaultImageManager.saveLocal(
                         stream
                         , CLIENT_IMAGE_FILENAME.replace(".", i + ".")
                         , profileImage.getStorageDir()

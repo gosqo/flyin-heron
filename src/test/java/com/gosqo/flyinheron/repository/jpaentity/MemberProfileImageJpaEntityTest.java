@@ -18,13 +18,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 class MemberProfileImageJpaEntityTest extends JpaDirectTestDataManager {
-    static final String CLIENT_IMAGE_DIR = LOCAL_STORAGE_DIR + "/client/";
     private static final String CLIENT_IMAGE_FILENAME = "profile image.png";
-    private static final Path SOURCE = Paths.get(CLIENT_IMAGE_DIR, CLIENT_IMAGE_FILENAME);
+    private static final Path CLIENT_IMAGE_DIR = Paths.get(LOCAL_STORAGE_DIR, "client");
+    private static final Path SOURCE = Paths.get(CLIENT_IMAGE_DIR.toString(), CLIENT_IMAGE_FILENAME);
 
     @BeforeEach
     void setUp() {
-
         initMember();
         log.info("==== Test data initialized. ====");
     }
