@@ -24,7 +24,7 @@ public class MemberProfileImage {
     static final Path MEMBER_PROFILE_IMAGE_DIR =
             Paths.get(DefaultImageManager.LOCAL_STORAGE_DIR, "member");
 
-    private final Long memberId;
+    private final Member member;
 
     // domain 의 프레임워크 의존성(스프링 MultipartFile) 탈피를 위해 아래 inputStream, originalFilename 을 따로 받음.
     // 생성자, 빌더를 통한 this 인스턴스 생성 시, 인자는 동일한 MultipartFile 객체 메서드(getInputStream, getOriginalFilename)를 통해
@@ -37,39 +37,39 @@ public class MemberProfileImage {
 
     @Builder
     public MemberProfileImage(
-            Long memberId
+            Member member
             , InputStream inputStream
             , String originalFilename
             , String renamedFilename
             , String fullPath
     ) {
-        Objects.requireNonNull(memberId);
+        Objects.requireNonNull(member);
 
-        this.memberId = memberId;
+        this.member = member;
         this.inputStream = inputStream;
         this.originalFilename = originalFilename;
 
         this.renamedFilename = this.renameFile(this.originalFilename);
         this.storageDir = Paths.get(
                 MEMBER_PROFILE_IMAGE_DIR.toString()
-                , this.memberId.toString()
+                , String.valueOf(this.member.getId())
                 , "profile").toString();
     }
 
     public static MemberProfileImage of(MemberProfileImageJpaEntity entity) {
         return MemberProfileImage.builder()
-                .memberId(entity.getMember().getId())
+                .member(entity.getMember())
                 .originalFilename(entity.getOriginalFilename())
                 .renamedFilename(entity.getRenamedFilename())
                 .fullPath(entity.getFullPath())
                 .build();
     }
 
-    public MemberProfileImageJpaEntity toEntity(Member member) {
+    public MemberProfileImageJpaEntity toEntity() {
         Objects.requireNonNull(this.fullPath, "image file full path can not be null or blank.");
 
         return MemberProfileImageJpaEntity.builder()
-                .member(member) // null 일 경우 this 인스턴스를 필드로 가질 Member 타입 인스턴스에서 updateProfileImage() 사용
+                .member(this.member)
                 .originalFilename(this.originalFilename)
                 .renamedFilename(this.renamedFilename)
                 .fullPath(this.fullPath)

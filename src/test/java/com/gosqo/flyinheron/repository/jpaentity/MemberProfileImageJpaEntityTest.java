@@ -35,7 +35,7 @@ class MemberProfileImageJpaEntityTest extends JpaDirectTestDataManager {
         InputStream in = Files.newInputStream(SOURCE);
 
         MemberProfileImage image = MemberProfileImage.builder()
-                .memberId(member.getId())
+                .member(member)
                 .inputStream(in)
                 .originalFilename(SOURCE.getFileName().toString())
                 .build();
@@ -44,7 +44,7 @@ class MemberProfileImageJpaEntityTest extends JpaDirectTestDataManager {
         // toEntity() 호출 이전에 저장하지 않으면 fullPath == null 로 예외 던짐.
         image.saveLocal();
 
-        MemberProfileImageJpaEntity entity = image.toEntity(member); // 아래 두 줄과 교체 시, 결과 같음
+        MemberProfileImageJpaEntity entity = image.toEntity(); // 아래 두 줄과 교체 시, 결과 같음
 
 //        MemberProfileImageJpaEntity entity = image.toEntity(null);
 //        member.updateProfileImage(entity);

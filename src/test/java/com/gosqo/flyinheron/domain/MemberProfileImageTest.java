@@ -1,5 +1,6 @@
 package com.gosqo.flyinheron.domain;
 
+import com.gosqo.flyinheron.global.data.TestDataInitializer;
 import com.gosqo.flyinheron.repository.jpaentity.MemberProfileImageJpaEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,8 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Slf4j
-class MemberProfileImageTest {
-    private static final Long MEMBER_ID = 20L;
+class MemberProfileImageTest extends TestDataInitializer {
     private static final String CLIENT_IMAGE_FILENAME = "profile image.png";
     private static final String CLIENT_IMAGE_FILENAME2 = "profile image2.png";
     private static final Path SOURCE =
@@ -29,18 +29,20 @@ class MemberProfileImageTest {
 
     @BeforeEach
     void setUp() throws IOException {
+        member = buildMember();
+
         InputStream inputStream = Files.newInputStream(SOURCE);
 
         this.profileImage = MemberProfileImage.builder()
-                .memberId(MEMBER_ID)
+                .member(member)
                 .inputStream(inputStream)
                 .originalFilename(SOURCE.getFileName().toString())
                 .build();
     }
 
     @Test
-    void toEntity_before_saveLocal_throws_IllegalStateException() throws IOException {
-        assertThatThrownBy(() -> profileImage.toEntity(null))
+    void toEntity_before_saveLocal_throws_IllegalStateException() {
+        assertThatThrownBy(() -> profileImage.toEntity())
                 .isInstanceOf(NullPointerException.class);
     }
 
@@ -58,7 +60,7 @@ class MemberProfileImageTest {
         profileImage.saveLocal();
 
         // when
-        MemberProfileImageJpaEntity entity = profileImage.toEntity(null);
+        MemberProfileImageJpaEntity entity = profileImage.toEntity();
 
         // then
         assertThat(entity.getFullPath()).contains(
@@ -96,7 +98,7 @@ class MemberProfileImageTest {
         InputStream newInputStream = Files.newInputStream(SOURCE2);
 
         MemberProfileImage newImage = MemberProfileImage.builder()
-                .memberId(MEMBER_ID)
+                .member(member)
                 .inputStream(newInputStream)
                 .originalFilename(SOURCE2.getFileName().toString())
                 .build();
