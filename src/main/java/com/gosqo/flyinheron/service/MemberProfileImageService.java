@@ -18,6 +18,19 @@ public class MemberProfileImageService {
     private final MemberProfileImageRepository memberProfileImageRepository;
     private final MemberRepository memberRepository;
 
+    public void removeMemberProfileImage(String memberEmail) throws IOException {
+        Member member = memberRepository.findByEmail(memberEmail).orElseThrow(
+                () -> new NoSuchElementException("존재하지 않는 멤버에 대한 프로필 이미지 삭제 요청")
+        );
+
+        MemberProfileImage domainToStore = MemberProfileImage.createDefaultImage(member);
+        domainToStore.saveLocal();
+
+        MemberProfileImageJpaEntity entity = domainToStore.toEntity();
+        member.updateProfileImage(entity);
+        memberProfileImageRepository.save(entity);
+    }
+
     public void registerMemberProfileImage(MultipartFile file, String memberEmail) throws IOException {
         Member member = memberRepository.findByEmail(memberEmail).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 멤버에 대한 프로필 이미지 등록 요청")
@@ -26,12 +39,12 @@ public class MemberProfileImageService {
         MemberProfileImage image = MemberProfileImage.builder()
                 .inputStream(file.getInputStream())
                 .originalFilename(file.getOriginalFilename())
-                .memberId(member.getId())
+                .member(member)
                 .build();
 
         image.saveLocal();
 
-        MemberProfileImageJpaEntity entity = image.toEntity(member);
+        MemberProfileImageJpaEntity entity = image.toEntity();
 
         memberProfileImageRepository.save(entity);
     }
