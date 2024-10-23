@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/member")
@@ -23,7 +25,7 @@ public class MemberController {
     @PostMapping("")
     public ResponseEntity<Object> register(
             @Valid @RequestBody MemberRegisterRequest request
-    ) {
+    ) throws IOException {
         service.register(request);
         return ResponseEntity
                 .status(HttpStatus.OK)

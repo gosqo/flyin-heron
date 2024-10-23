@@ -1,12 +1,17 @@
 package com.gosqo.flyinheron.service;
 
 import com.gosqo.flyinheron.domain.Member;
+import com.gosqo.flyinheron.domain.MemberProfileImage;
 import com.gosqo.flyinheron.dto.member.*;
+import com.gosqo.flyinheron.repository.MemberProfileImageRepository;
 import com.gosqo.flyinheron.repository.MemberRepository;
+import com.gosqo.flyinheron.repository.jpaentity.MemberProfileImageJpaEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -14,6 +19,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MemberProfileImageRepository memberProfileImageRepository;
 
     public boolean verifyOneself(MemberVerificationRequest request) {
         Member member = memberRepository.findByEmail(request.getEmail())
@@ -37,12 +43,19 @@ public class MemberService {
         return false;
     }
 
-    public void register(MemberRegisterRequest request) {
+    public void register(MemberRegisterRequest request) throws IOException {
         if (isDuplicated(request))
             throw new DataIntegrityViolationException("존재하는 자원과 중복.");
 
+
         final Member member = request.toEntity(passwordEncoder.encode(request.getPassword()));
+
+        MemberProfileImage defaultImage = MemberProfileImage.createDefaultImage(member);
+        defaultImage.saveLocal();
+        MemberProfileImageJpaEntity profileImageJpaEntity = defaultImage.toEntity();
+
         memberRepository.save(member);
+        memberProfileImageRepository.save(profileImageJpaEntity);
     }
 
     public boolean isUniqueEmail(IsUniqueEmailRequest request) {
