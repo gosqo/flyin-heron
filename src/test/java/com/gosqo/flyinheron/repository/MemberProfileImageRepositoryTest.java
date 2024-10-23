@@ -25,7 +25,6 @@ class MemberProfileImageRepositoryTest {
     class Repository_Only extends RepositoryTestBase {
         private final MemberRepository memberRepository;
         private final MemberProfileImageRepository memberProfileImageRepository;
-        private File sampleImage;
         @PersistenceContext
         private EntityManager em;
 
@@ -41,27 +40,14 @@ class MemberProfileImageRepositoryTest {
         @BeforeEach
         void setUp() throws IOException {
             member = memberRepository.save(buildMember());
-            sampleImage = TestImageCreator.createTestImage(100, 100, "Test image 0");
+            profileImageJpaEntity = memberProfileImageRepository.save(buildProfileImageJpaEntity());
 
             em.flush();
             em.clear();
         }
 
         @Test
-        void save() throws IOException {
-            // given
-            MemberProfileImage image = MemberProfileImage.builder()
-                    .member(member)
-                    .inputStream(Files.newInputStream(sampleImage.toPath()))
-                    .originalFilename("hello image.png")
-                    .build();
-            image.saveLocal();
-
-            MemberProfileImageJpaEntity entity = image.toEntity();
-            MemberProfileImageJpaEntity stored = memberProfileImageRepository.save(entity);
-            em.flush();
-            em.clear();
-
+        void saved_profile_image_entity_can_refer_its_member() {
             // when
             MemberProfileImageJpaEntity found = memberProfileImageRepository.findById(stored.getId()).orElseThrow();
 
@@ -76,8 +62,6 @@ class MemberProfileImageRepositoryTest {
         private final MemberProfileImageService service;
         private final MemberRepository memberRepository;
         private final MemberProfileImageRepository memberProfileImageRepository;
-        private MemberProfileImageJpaEntity entity;
-        private File sampleImage;
         @PersistenceContext
         private EntityManager em;
 
@@ -95,18 +79,7 @@ class MemberProfileImageRepositoryTest {
         @BeforeEach
         void setUp() throws IOException {
             member = memberRepository.save(buildMember());
-            sampleImage = TestImageCreator.createTestImage(100, 100, "Test image 0");
-
-            MemberProfileImage image = MemberProfileImage.builder()
-                    .member(member)
-                    .inputStream(Files.newInputStream(sampleImage.toPath()))
-                    .originalFilename("hello image.png")
-                    .build();
-            image.saveLocal();
-
-            MemberProfileImageJpaEntity entity1 = image.toEntity();
-            entity = memberProfileImageRepository.save(entity1);
-            member.updateProfileImage(entity1);
+            profileImageJpaEntity = memberProfileImageRepository.save(buildProfileImageJpaEntity());
 
             em.flush();
             em.clear();

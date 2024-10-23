@@ -20,7 +20,7 @@ public class TestImageCreator {
 
         g2d.dispose();
 
-        File tempFile = File.createTempFile("testImage", ".png");
+        File tempFile = File.createTempFile(text + "_", ".png");
         ImageIO.write(bufferedImage, "png", tempFile);
 
         return tempFile;

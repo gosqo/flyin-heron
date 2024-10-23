@@ -1,7 +1,6 @@
 package com.gosqo.flyinheron.repository.jpaentity;
 
 import com.gosqo.flyinheron.domain.Member;
-import com.gosqo.flyinheron.domain.MemberProfileImage;
 import com.gosqo.flyinheron.global.jpadirect.JpaDirectTestDataManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,17 +33,13 @@ class MemberProfileImageJpaEntityTest extends JpaDirectTestDataManager {
         Member member = em.find(Member.class, super.member.getId());
         InputStream in = Files.newInputStream(SOURCE);
 
-        MemberProfileImage image = MemberProfileImage.builder()
-                .member(member)
-                .inputStream(in)
-                .originalFilename(SOURCE.getFileName().toString())
-                .build();
+        profileImage = buildProfileImage();
 
         // 로컬에 이미지 저장, 해당 객체 fullPath 할당
         // toEntity() 호출 이전에 저장하지 않으면 fullPath == null 로 예외 던짐.
-        image.saveLocal();
+        profileImage.saveLocal();
 
-        MemberProfileImageJpaEntity entity = image.toEntity(); // 아래 두 줄과 교체 시, 결과 같음
+        MemberProfileImageJpaEntity entity = profileImage.toEntity(); // 아래 두 줄과 교체 시, 결과 같음
 
 //        MemberProfileImageJpaEntity entity = image.toEntity(null);
 //        member.updateProfileImage(entity);

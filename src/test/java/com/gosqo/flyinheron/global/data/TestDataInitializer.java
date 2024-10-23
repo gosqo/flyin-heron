@@ -1,14 +1,15 @@
 package com.gosqo.flyinheron.global.data;
 
-import com.gosqo.flyinheron.domain.Board;
-import com.gosqo.flyinheron.domain.Comment;
-import com.gosqo.flyinheron.domain.CommentLike;
-import com.gosqo.flyinheron.domain.Member;
+import com.gosqo.flyinheron.domain.*;
 import com.gosqo.flyinheron.domain.member.Role;
+import com.gosqo.flyinheron.repository.jpaentity.MemberProfileImageJpaEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -23,6 +24,8 @@ public abstract class TestDataInitializer {
     protected static final int COMMENT_LIKE_COUNT = COMMENT_COUNT / 2;
 
     protected Member member;
+    protected MemberProfileImage profileImage;
+    protected MemberProfileImageJpaEntity profileImageJpaEntity;
     protected List<Board> boards;
     protected List<Comment> comments;
     protected List<CommentLike> commentLikes;
@@ -34,6 +37,39 @@ public abstract class TestDataInitializer {
                 .password(ENCODED_PASSWORD)
                 .role(Role.USER)
                 .build();
+    }
+
+    protected MemberProfileImage buildProfileImage() throws IOException {
+        File sampleImage = TestImageCreator.createTestImage(100, 100, "Test image 0");
+
+        return MemberProfileImage.builder()
+                .member(member)
+                .inputStream(Files.newInputStream(sampleImage.toPath()))
+                .originalFilename(sampleImage.getName())
+                .build();
+    }
+
+    protected MemberProfileImage buildProfileImage(String filename) throws IOException {
+        File sampleImage = TestImageCreator.createTestImage(100, 100, filename);
+
+        return MemberProfileImage.builder()
+                .member(member)
+                .inputStream(Files.newInputStream(sampleImage.toPath()))
+                .originalFilename(sampleImage.getName())
+                .build();
+    }
+
+    protected MemberProfileImageJpaEntity buildProfileImageJpaEntity() throws IOException {
+        File sampleImage = TestImageCreator.createTestImage(100, 100, "Test image 0");
+
+        MemberProfileImage image = MemberProfileImage.builder()
+                .member(member)
+                .inputStream(Files.newInputStream(sampleImage.toPath()))
+                .originalFilename(sampleImage.getName())
+                .build();
+        image.saveLocal();
+
+        return image.toEntity();
     }
 
     protected List<Board> buildBoards() {
