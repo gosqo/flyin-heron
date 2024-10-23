@@ -51,12 +51,12 @@ class MemberProfileImageTest extends SpringBootTestBase {
     void register_success_case() throws IOException {
         // given
         String accessToken = jwtService.generateAccessToken(member);
+        String bearerAccessToken = "Bearer " + accessToken;
         HttpHeaders headers = buildMultipartPostHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
-
         File testImage = TestImageCreator.createTestImage(100, 100, "Test Image");
-
         MultiValueMap<String, Object> formBody = new LinkedMultiValueMap<>();
+
+        headers.add(HttpHeaders.AUTHORIZATION, bearerAccessToken);
         formBody.add("profileImage", new FileSystemResource(testImage));
 
         RequestEntity<Object> requestEntity = buildMultipartPostRequestEntity(headers, formBody, "/api/v1/member/" + member.getId() + "/profile/image");
