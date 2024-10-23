@@ -22,30 +22,35 @@ public class MemberProfileImageService {
         Member member = memberRepository.findByEmail(memberEmail).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 멤버에 대한 프로필 이미지 삭제 요청")
         );
+        MemberProfileImageJpaEntity formerProfileImageJpaEntity = memberProfileImageRepository.findById(member.getProfileImage().getId()).orElseThrow(
+                () -> new NoSuchElementException("존재하지 않는 프로필 이미지 변경 요청")
+        );
 
-        MemberProfileImage domainToStore = MemberProfileImage.createDefaultImage(member);
-        domainToStore.saveLocal();
+        MemberProfileImage defaultImage = MemberProfileImage.createDefaultImage(member);
+        defaultImage.saveLocal();
 
-        MemberProfileImageJpaEntity entity = domainToStore.toEntity();
-        member.updateProfileImage(entity);
-        memberProfileImageRepository.save(entity);
+        MemberProfileImageJpaEntity defaultImageJpaEntity = defaultImage.toEntity();
+
+        formerProfileImageJpaEntity.updateImage(defaultImageJpaEntity);
     }
 
-    public void registerMemberProfileImage(MultipartFile file, String memberEmail) throws IOException {
+    public void updateMemberProfileImage(MultipartFile file, String memberEmail) throws IOException {
         Member member = memberRepository.findByEmail(memberEmail).orElseThrow(
-                () -> new NoSuchElementException("존재하지 않는 멤버에 대한 프로필 이미지 등록 요청")
+                () -> new NoSuchElementException("존재하지 않는 멤버에 대한 프로필 이미지 변경 요청")
+        );
+        MemberProfileImageJpaEntity formerProfileImageJpaEntity = memberProfileImageRepository.findById(member.getProfileImage().getId()).orElseThrow(
+                () -> new NoSuchElementException("존재하지 않는 프로필 이미지 변경 요청")
         );
 
         MemberProfileImage image = MemberProfileImage.builder()
+                .member(member)
                 .inputStream(file.getInputStream())
                 .originalFilename(file.getOriginalFilename())
-                .member(member)
                 .build();
-
         image.saveLocal();
 
-        MemberProfileImageJpaEntity entity = image.toEntity();
+        MemberProfileImageJpaEntity newProfileImageJpaEntity = image.toEntity();
 
-        memberProfileImageRepository.save(entity);
+        formerProfileImageJpaEntity.updateImage(newProfileImageJpaEntity);
     }
 }

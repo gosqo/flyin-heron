@@ -32,7 +32,7 @@ public class MemberProfileImageController {
         String accessToken = AuthHeaderUtility.extractAccessToken(request);
         String memberEmail = extractor.extractUserEmail(accessToken);
 
-        memberProfileImageService.registerMemberProfileImage(profileImage, memberEmail);
+        memberProfileImageService.updateMemberProfileImage(profileImage, memberEmail);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

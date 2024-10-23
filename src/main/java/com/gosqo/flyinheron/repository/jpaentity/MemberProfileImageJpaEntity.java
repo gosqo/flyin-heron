@@ -41,4 +41,10 @@ public class MemberProfileImageJpaEntity extends UuidBaseEntity {
     public void updateMember(Member member) {
         this.member = member;
     }
+
+    public void updateImage(MemberProfileImageJpaEntity updateEntity) {
+        this.originalFilename = updateEntity.getOriginalFilename();
+        this.renamedFilename = updateEntity.getRenamedFilename();
+        this.fullPath = updateEntity.getFullPath();
+    }
 }

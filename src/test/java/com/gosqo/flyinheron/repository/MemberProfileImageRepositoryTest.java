@@ -1,7 +1,6 @@
 package com.gosqo.flyinheron.repository;
 
 import com.gosqo.flyinheron.domain.Member;
-import com.gosqo.flyinheron.domain.MemberProfileImage;
 import com.gosqo.flyinheron.global.data.TestImageCreator;
 import com.gosqo.flyinheron.repository.jpaentity.MemberProfileImageJpaEntity;
 import com.gosqo.flyinheron.service.MemberProfileImageService;
@@ -12,6 +11,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -105,11 +106,33 @@ class MemberProfileImageRepositoryTest {
         @Test
         void remove_profile_image_it_actually_turns_it_into_default_image() throws IOException {
             service.removeMemberProfileImage(member.getEmail());
+            em.flush();
+            em.clear();
 
             Member found = memberRepository.findByEmail(member.getEmail()).orElseThrow();
 
             assertThat(found.getProfileImage()).isNotNull();
             assertThat(found.getProfileImage().getFullPath()).contains(member.getNickname());
+        }
+
+        @Test
+        void update_profile_image() throws IOException {
+            File image = TestImageCreator.createTestImage(100, 100, "test image");
+            MultipartFile file = new MockMultipartFile(
+                    image.getName()
+                    , image.getName()
+                    , "image/png"
+                    , Files.newInputStream(image.toPath())
+            );
+
+            service.updateMemberProfileImage(file, member.getEmail());
+            em.flush();
+            em.clear();
+
+            Member found = memberRepository.findByEmail(member.getEmail()).orElseThrow();
+
+            assertThat(found.getProfileImage()).isNotNull();
+            assertThat(found.getProfileImage().getFullPath()).contains(image.getName().replaceAll(" ", "-"));
         }
     }
 }
