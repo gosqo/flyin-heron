@@ -50,10 +50,12 @@ public class MemberProfileImage {
         this.originalFilename = originalFilename;
 
         this.renamedFilename = this.renameFile(this.originalFilename);
-        this.storageDir = Paths.get(
-                MEMBER_PROFILE_IMAGE_DIR.toString()
-                , String.valueOf(this.member.getId())
-                , "profile").toString();
+        this.storageDir = prepareDir(this.member);
+    }
+
+    public static String prepareDir(Member member) {
+        return Paths.get(MEMBER_PROFILE_IMAGE_DIR.toString(), String.valueOf(member.getId()), "profile")
+                .toString();
     }
 
     public static MemberProfileImage of(MemberProfileImageJpaEntity entity) {
@@ -62,6 +64,17 @@ public class MemberProfileImage {
                 .originalFilename(entity.getOriginalFilename())
                 .renamedFilename(entity.getRenamedFilename())
                 .fullPath(entity.getFullPath())
+                .build();
+    }
+
+    public static MemberProfileImage createDefaultImage(Member member) throws IOException {
+        File defaultProfileImage =
+                DefaultImageManager.createDefaultMemberProfileImage(100, 100, member.getNickname());
+
+        return MemberProfileImage.builder()
+                .member(member)
+                .inputStream(Files.newInputStream(defaultProfileImage.toPath()))
+                .originalFilename(defaultProfileImage.getName())
                 .build();
     }
 
@@ -90,17 +103,6 @@ public class MemberProfileImage {
         );
 
         return this.fullPath;
-    }
-
-    public static MemberProfileImage createDefaultImage(Member member) throws IOException {
-        File defaultProfileImage =
-                DefaultImageManager.createDefaultMemberProfileImage(100, 100, member.getNickname());
-
-        return MemberProfileImage.builder()
-                .member(member)
-                .inputStream(Files.newInputStream(defaultProfileImage.toPath()))
-                .originalFilename(defaultProfileImage.getName())
-                .build();
     }
 
     private void deleteSubFiles(String targetDir) throws IOException {

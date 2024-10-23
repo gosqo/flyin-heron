@@ -56,7 +56,7 @@ public class DefaultImageManager {
         g2d.fillRect(0, 0, width / 2, height / 2);
 
         g2d.setColor(new Color(255, 255, 255));
-        g2d.drawString(firstCharacter, width / 100 * 22, height / 100 * 53);
+        g2d.drawString(firstCharacter, width / 100 * 48, height / 100 * 53);
 
         g2d.dispose();
 
