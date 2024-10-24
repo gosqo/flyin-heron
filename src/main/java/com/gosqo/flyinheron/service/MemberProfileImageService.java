@@ -22,7 +22,8 @@ public class MemberProfileImageService {
         Member member = memberRepository.findByEmail(memberEmail).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 멤버에 대한 프로필 이미지 삭제 요청")
         );
-        MemberProfileImageJpaEntity formerProfileImageJpaEntity = memberProfileImageRepository.findById(member.getProfileImage().getId()).orElseThrow(
+        MemberProfileImageJpaEntity formerProfileImageJpaEntity =
+                memberProfileImageRepository.findById(member.getProfileImage().getId()).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 프로필 이미지 변경 요청")
         );
 
@@ -38,7 +39,8 @@ public class MemberProfileImageService {
         Member member = memberRepository.findByEmail(memberEmail).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 멤버에 대한 프로필 이미지 변경 요청")
         );
-        MemberProfileImageJpaEntity formerProfileImageJpaEntity = memberProfileImageRepository.findById(member.getProfileImage().getId()).orElseThrow(
+        MemberProfileImageJpaEntity formerProfileImageJpaEntity =
+                memberProfileImageRepository.findById(member.getProfileImage().getId()).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 프로필 이미지 변경 요청")
         );
 

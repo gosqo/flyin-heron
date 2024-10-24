@@ -16,8 +16,6 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static com.gosqo.flyinheron.domain.DefaultImageManager.LOCAL_STORAGE_DIR;
-
 @Getter
 @Slf4j
 public class MemberProfileImage {
@@ -107,7 +105,9 @@ public class MemberProfileImage {
 
     private void deleteSubFiles(String targetDir) throws IOException {
 
-        if (!targetDir.startsWith(LOCAL_STORAGE_DIR) || targetDir.equals(LOCAL_STORAGE_DIR)) {
+        if (!targetDir.startsWith(DefaultImageManager.LOCAL_STORAGE_DIR)
+                || targetDir.equals(DefaultImageManager.LOCAL_STORAGE_DIR)
+        ) {
             throw new IllegalArgumentException("argument targetDir should refer under the LOCAL_STORAGE_PATH");
         }
 

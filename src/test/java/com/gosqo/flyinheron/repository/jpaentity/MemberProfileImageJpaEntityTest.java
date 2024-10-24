@@ -1,5 +1,6 @@
 package com.gosqo.flyinheron.repository.jpaentity;
 
+import com.gosqo.flyinheron.domain.DefaultImageManager;
 import com.gosqo.flyinheron.domain.Member;
 import com.gosqo.flyinheron.global.jpadirect.JpaDirectTestDataManager;
 import lombok.extern.slf4j.Slf4j;
@@ -12,13 +13,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static com.gosqo.flyinheron.domain.DefaultImageManager.LOCAL_STORAGE_DIR;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 class MemberProfileImageJpaEntityTest extends JpaDirectTestDataManager {
     private static final String CLIENT_IMAGE_FILENAME = "profile image.png";
-    private static final Path CLIENT_IMAGE_DIR = Paths.get(LOCAL_STORAGE_DIR, "client");
+    private static final Path CLIENT_IMAGE_DIR = Paths.get(DefaultImageManager.LOCAL_STORAGE_DIR, "client");
     private static final Path SOURCE = Paths.get(CLIENT_IMAGE_DIR.toString(), CLIENT_IMAGE_FILENAME);
 
     @BeforeEach
