@@ -3,6 +3,7 @@ package com.gosqo.flyinheron.service;
 import com.gosqo.flyinheron.domain.Board;
 import com.gosqo.flyinheron.domain.Member;
 import com.gosqo.flyinheron.dto.board.*;
+import com.gosqo.flyinheron.global.exception.ThrowIf;
 import com.gosqo.flyinheron.global.utility.AuthHeaderUtility;
 import com.gosqo.flyinheron.global.utility.CookieUtility;
 import com.gosqo.flyinheron.repository.BoardRepository;
@@ -15,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -69,14 +69,15 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public BoardUpdateResponse update(Long id, HttpServletRequest request, BoardUpdateRequest requestBody) {
         final String token = AuthHeaderUtility.extractAccessToken(request);
-        final String requestUserEmail = claimExtractor.extractUserEmail(token);
+        final String requesterUserEmail = claimExtractor.extractUserEmail(token);
+        final Member requester = memberRepository.findByEmail(requesterUserEmail).orElseThrow(
+                () -> new NoSuchElementException("존재하지 않는 회원의 게시물 update 요청.")
+        );
         final Board storedBoard = boardRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 게시물 update 요청.")
         );
 
-        if (!storedBoard.getMember().getEmail().equals(requestUserEmail)) {
-            throw new AccessDeniedException("요청자와 저작자의 불일치");
-        }
+        ThrowIf.NotMatchedResourceOwner(requester, storedBoard.getMember().getId());
 
         storedBoard.updateTitle(requestBody.getTitle());
         storedBoard.updateContent(requestBody.getContent());
@@ -93,13 +94,15 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public BoardDeleteResponse delete(Long id, HttpServletRequest request) {
         final String token = AuthHeaderUtility.extractAccessToken(request);
-        final String requestUserEmail = claimExtractor.extractUserEmail(token);
+        final String requesterUserEmail = claimExtractor.extractUserEmail(token);
+        final Member requester = memberRepository.findByEmail(requesterUserEmail).orElseThrow(
+                () -> new NoSuchElementException("존재하지 않는 회원의 게시물 delete 요청.")
+        );
         final Board storedBoard = boardRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 게시물 delete 요청.")
         );
 
-        if (!storedBoard.getMember().getEmail().equals(requestUserEmail))
-            throw new AccessDeniedException("요청자와 저작자의 불일치");
+        ThrowIf.NotMatchedResourceOwner(requester, storedBoard.getMember().getId());
 
         boardRepository.delete(storedBoard);
 

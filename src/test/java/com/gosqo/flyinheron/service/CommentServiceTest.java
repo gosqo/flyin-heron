@@ -17,7 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.security.access.AccessDeniedException;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -39,6 +38,7 @@ class CommentServiceTest {
     private static final String CONTENT = "Hello Comment.";
     private static final String MODIFIED_CONTENT = "Hello modified Comment.";
     private final Member member = Member.builder()
+            .id(1L)
             .email(USER_EMAIL)
             .build();
     private final Comment storedComment = Comment.builder()
@@ -176,11 +176,13 @@ class CommentServiceTest {
             // given
             Long commentId = 1L;
             when(claimExtractor.extractUserEmail(anyString())).thenReturn("not@matched.email");
+            when(memberRepository.findByEmail(any())).thenReturn(Optional.of(Member.builder().id(-1L).build()));
+
             when(commentRepository.findById(anyLong())).thenReturn(Optional.of(storedComment));
 
             // when, then
             assertThatThrownBy(() -> service.modify(commentId, requestWithAuthHeader, new CommentUpdateRequest()))
-                    .isInstanceOf(AccessDeniedException.class);
+                    .isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
@@ -189,6 +191,7 @@ class CommentServiceTest {
             // given
             Long idNotExist = -1L;
             when(claimExtractor.extractUserEmail(anyString())).thenReturn("none@exist.email");
+            when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
             when(commentRepository.findById(anyLong())).thenReturn(Optional.empty());
 
             // when, then
@@ -204,6 +207,7 @@ class CommentServiceTest {
                     .build();
 
             when(claimExtractor.extractUserEmail(any(String.class))).thenReturn(USER_EMAIL);
+            when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
             when(commentRepository.findById(anyLong())).thenReturn(Optional.of(storedComment));
             when(commentRepository.save(any(Comment.class))).thenReturn(modifiedComment);
 
@@ -226,11 +230,12 @@ class CommentServiceTest {
             // given
             Long commentId = 1L;
             when(claimExtractor.extractUserEmail(anyString())).thenReturn("not@matched.email");
+            when(memberRepository.findByEmail(any())).thenReturn(Optional.of(Member.builder().id(2L).build()));
             when(commentRepository.findById(anyLong())).thenReturn(Optional.of(storedComment));
 
             // when, then
             assertThatThrownBy(() -> service.remove(commentId, requestWithAuthHeader))
-                    .isInstanceOf(AccessDeniedException.class);
+                    .isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
@@ -239,6 +244,7 @@ class CommentServiceTest {
             // given
             Long idNotExist = -1L;
             when(claimExtractor.extractUserEmail(anyString())).thenReturn("none@exist.email");
+            when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
             when(commentRepository.findById(anyLong())).thenReturn(Optional.empty());
 
             // when, then
@@ -250,9 +256,7 @@ class CommentServiceTest {
         @DisplayName("case method-works-fine is like.")
         void remove() {
             Comment comment = Comment.builder()
-                    .member(Member.builder()
-                            .email("some@valid.email")
-                            .build())
+                    .member(member)
                     .build();
 
             // context 와 관련 없이 작동 가능한 static method 는
@@ -263,6 +267,7 @@ class CommentServiceTest {
             // claimExtractor 가 사용하는 getSignInKey() 와 같이 전체 컨텍스트에 영향을 받는 메서드를 mock 으로 대체.
             // 테스트 의도대로 움직일 값을 반환하도록 지정한다.
             when(claimExtractor.extractUserEmail(any(String.class))).thenReturn("some@valid.email");
+            when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
             when(commentRepository.findById(anyLong())).thenReturn(Optional.of(comment));
 
             // when

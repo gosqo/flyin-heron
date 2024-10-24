@@ -105,7 +105,7 @@ class MemberProfileImageRepositoryTest {
 
         @Test
         void remove_profile_image_it_actually_turns_it_into_default_image() throws IOException {
-            service.removeMemberProfileImage(member.getEmail());
+            service.removeMemberProfileImage(member.getEmail(), member.getId());
             em.flush();
             em.clear();
 
@@ -125,7 +125,7 @@ class MemberProfileImageRepositoryTest {
                     , Files.newInputStream(image.toPath())
             );
 
-            service.updateMemberProfileImage(file, member.getEmail());
+            service.updateMemberProfileImage(file, member.getEmail(), member.getId());
             em.flush();
             em.clear();
 

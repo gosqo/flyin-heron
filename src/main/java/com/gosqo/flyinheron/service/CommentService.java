@@ -6,6 +6,7 @@ import com.gosqo.flyinheron.domain.CommentLike;
 import com.gosqo.flyinheron.domain.Member;
 import com.gosqo.flyinheron.dto.comment.*;
 import com.gosqo.flyinheron.dto.commentlike.GetCommentsLikedByResponse;
+import com.gosqo.flyinheron.global.exception.ThrowIf;
 import com.gosqo.flyinheron.global.utility.AuthHeaderUtility;
 import com.gosqo.flyinheron.repository.BoardRepository;
 import com.gosqo.flyinheron.repository.CommentLikeRepository;
@@ -15,7 +16,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,13 +70,15 @@ public class CommentService {
 
     public CommentDeleteResponse remove(Long id, HttpServletRequest request) {
         final String token = AuthHeaderUtility.extractAccessToken(request);
-        final String requestUserEmail = claimExtractor.extractUserEmail(token);
+        final String requesterUserEmail = claimExtractor.extractUserEmail(token);
+        final Member requester = memberRepository.findByEmail(requesterUserEmail).orElseThrow(
+                () -> new NoSuchElementException("존재하지 않는 회원의 댓글 삭제 요청.")
+        );
         final Comment storedComment = commentRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("존재하지 않는 게시물 delete 요청.")
+                () -> new NoSuchElementException("존재하지 않는 댓글 삭제 요청.")
         );
 
-        if (!storedComment.getMember().getEmail().equals(requestUserEmail))
-            throw new AccessDeniedException("요청자와 저작자의 불일치");
+        ThrowIf.NotMatchedResourceOwner(requester, storedComment.getMember().getId());
 
         commentRepository.delete(storedComment);
 
@@ -88,14 +90,15 @@ public class CommentService {
 
     public CommentUpdateResponse modify(Long id, HttpServletRequest request, CommentUpdateRequest requestBody) {
         final String token = AuthHeaderUtility.extractAccessToken(request);
-        final String requestUserEmail = claimExtractor.extractUserEmail(token);
+        final String requesterUserEmail = claimExtractor.extractUserEmail(token);
+        final Member requester = memberRepository.findByEmail(requesterUserEmail).orElseThrow(
+                () -> new NoSuchElementException("존재하지 않는 회원의 댓글 수정 요청.")
+        );
         final Comment storedComment = commentRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 댓글 수정 요청.")
         );
 
-        if (!storedComment.getMember().getEmail().equals(requestUserEmail)) {
-            throw new AccessDeniedException("요청자와 저작자의 불일치");
-        }
+        ThrowIf.NotMatchedResourceOwner(requester, storedComment.getMember().getId());
 
         storedComment.updateContent(requestBody.getContent());
         storedComment.updateUpdateDate();

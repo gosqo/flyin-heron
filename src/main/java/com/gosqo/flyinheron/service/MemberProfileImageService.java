@@ -2,6 +2,7 @@ package com.gosqo.flyinheron.service;
 
 import com.gosqo.flyinheron.domain.Member;
 import com.gosqo.flyinheron.domain.MemberProfileImage;
+import com.gosqo.flyinheron.global.exception.ThrowIf;
 import com.gosqo.flyinheron.repository.MemberProfileImageRepository;
 import com.gosqo.flyinheron.repository.MemberRepository;
 import com.gosqo.flyinheron.repository.jpaentity.MemberProfileImageJpaEntity;
@@ -18,16 +19,19 @@ public class MemberProfileImageService {
     private final MemberProfileImageRepository memberProfileImageRepository;
     private final MemberRepository memberRepository;
 
-    public void removeMemberProfileImage(String memberEmail) throws IOException {
-        Member member = memberRepository.findByEmail(memberEmail).orElseThrow(
-                () -> new NoSuchElementException("존재하지 않는 멤버에 대한 프로필 이미지 삭제 요청")
-        );
-        MemberProfileImageJpaEntity formerProfileImageJpaEntity =
-                memberProfileImageRepository.findById(member.getProfileImage().getId()).orElseThrow(
-                () -> new NoSuchElementException("존재하지 않는 프로필 이미지 변경 요청")
+    public void removeMemberProfileImage(String requesterEmail, Long resourceOwnerId) throws IOException {
+        Member requester = memberRepository.findByEmail(requesterEmail).orElseThrow(
+                () -> new NoSuchElementException("존재하지 않는 멤버의 프로필 이미지 삭제 요청")
         );
 
-        MemberProfileImage defaultImage = MemberProfileImage.createDefaultImage(member);
+        ThrowIf.NotMatchedResourceOwner(requester, resourceOwnerId);
+
+        MemberProfileImageJpaEntity formerProfileImageJpaEntity =
+                memberProfileImageRepository.findById(requester.getProfileImage().getId()).orElseThrow(
+                        () -> new NoSuchElementException("존재하지 않는 프로필 이미지 변경 요청")
+                );
+
+        MemberProfileImage defaultImage = MemberProfileImage.createDefaultImage(requester);
         defaultImage.saveLocal();
 
         MemberProfileImageJpaEntity defaultImageJpaEntity = defaultImage.toEntity();
@@ -35,17 +39,20 @@ public class MemberProfileImageService {
         formerProfileImageJpaEntity.updateImage(defaultImageJpaEntity);
     }
 
-    public void updateMemberProfileImage(MultipartFile file, String memberEmail) throws IOException {
-        Member member = memberRepository.findByEmail(memberEmail).orElseThrow(
-                () -> new NoSuchElementException("존재하지 않는 멤버에 대한 프로필 이미지 변경 요청")
-        );
-        MemberProfileImageJpaEntity formerProfileImageJpaEntity =
-                memberProfileImageRepository.findById(member.getProfileImage().getId()).orElseThrow(
-                () -> new NoSuchElementException("존재하지 않는 프로필 이미지 변경 요청")
+    public void updateMemberProfileImage(MultipartFile file, String requesterEmail, Long resourceOwnerId) throws IOException {
+        Member requester = memberRepository.findByEmail(requesterEmail).orElseThrow(
+                () -> new NoSuchElementException("존재하지 않는 멤버의 프로필 이미지 변경 요청")
         );
 
+        ThrowIf.NotMatchedResourceOwner(requester, resourceOwnerId);
+
+        MemberProfileImageJpaEntity formerProfileImageJpaEntity =
+                memberProfileImageRepository.findById(requester.getProfileImage().getId()).orElseThrow(
+                        () -> new NoSuchElementException("존재하지 않는 프로필 이미지 변경 요청")
+                );
+
         MemberProfileImage image = MemberProfileImage.builder()
-                .member(member)
+                .member(requester)
                 .inputStream(file.getInputStream())
                 .originalFilename(file.getOriginalFilename())
                 .build();

@@ -151,6 +151,7 @@ class BoardServiceTest {
             // given
             var boardId = 1L;
             var member = Member.builder()
+                    .id(1L)
                     .email(EMAIL)
                     .build();
             var storedBoard = Board.builder()
@@ -172,6 +173,7 @@ class BoardServiceTest {
 
             mockRequest.addHeader("Authorization", "Bearer some.valid.token");
             when(claimExtractor.extractUserEmail(any(String.class))).thenReturn(EMAIL);
+            when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
             when(boardRepository.findById(boardId)).thenReturn(Optional.of(storedBoard));
             when(boardRepository.save(any(Board.class))).thenReturn(updatedBoard);
 
@@ -186,12 +188,13 @@ class BoardServiceTest {
         void delete() {
             // given
             Member member = Member.builder()
+                    .id(1L)
                     .email(EMAIL)
                     .build();
             Board storedBoard = Board.builder()
+                    .member(member)
                     .title("title")
                     .content("content")
-                    .member(member)
                     .viewCount(0L)
                     .build();
 
@@ -199,6 +202,7 @@ class BoardServiceTest {
             var boardId = 1L;
 
             when(claimExtractor.extractUserEmail(any(String.class))).thenReturn(EMAIL);
+            when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
             when(boardRepository.findById(boardId)).thenReturn(Optional.of(storedBoard));
 
             // when
