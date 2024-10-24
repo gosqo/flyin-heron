@@ -1,6 +1,5 @@
 package com.gosqo.flyinheron.acceptance;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gosqo.flyinheron.domain.Board;
 import com.gosqo.flyinheron.dto.board.BoardGetResponse;
 import com.gosqo.flyinheron.dto.board.BoardRegisterRequest;
@@ -9,6 +8,7 @@ import com.gosqo.flyinheron.global.data.TestDataRemover;
 import com.gosqo.flyinheron.global.utility.HttpUtility;
 import com.gosqo.flyinheron.repository.BoardRepository;
 import com.gosqo.flyinheron.repository.MemberRepository;
+import com.gosqo.flyinheron.service.BoardServiceImpl;
 import com.gosqo.flyinheron.service.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +23,7 @@ import org.springframework.http.RequestEntity;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.gosqo.flyinheron.global.utility.HttpUtility.buildGetRequestEntity;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -102,7 +103,7 @@ class BoardTest extends SpringBootTestBase {
 
         @Test
         @DisplayName("board POST is like.")
-        public void boardPostNormally_ItShouldBeLike() throws JsonProcessingException {
+        public void boardPostNormally_ItShouldBeLike() {
             // given
             // to build HTTP headers with Authorization
             final var accessToken = jwtService.generateAccessToken(member);
@@ -149,9 +150,16 @@ class BoardTest extends SpringBootTestBase {
             final var expectedCookie = String.format("bbv=%d", boardId);
             final var request = HttpUtility.buildGetRequestEntity(uri);
             final var response = template.exchange(request, BoardGetResponse.class);
+            final var responseCookie = Objects.requireNonNull(response.getHeaders().get("Set-Cookie"));
 
-            assertThat(response.getHeaders().get("Set-Cookie")).isNotNull();
-            assertThat(response.getHeaders().get("Set-Cookie").get(0)).startsWith(expectedCookie);
+            assertThat(responseCookie.stream()
+                    .filter(item -> item.startsWith(BoardServiceImpl.BOARD_VIEWS_COOKIE_NAME))
+                    .map(item -> item.split(";"))
+                    .map(item -> item[0])
+                    .findFirst()
+                    .orElseThrow()
+                    .equals(expectedCookie)
+            ).isTrue();
         }
 
         @Test
@@ -183,11 +191,17 @@ class BoardTest extends SpringBootTestBase {
             secondRequestHeaders.addAll("Cookie", cookiesToSend);
             final var secondRequest = buildGetRequestEntity(secondRequestHeaders, secondRequestUri);
             final var secondResponse = template.exchange(secondRequest, BoardGetResponse.class);
-            final var secondResponseCookies = secondResponse.getHeaders().get("Set-Cookie");
+            final var secondResponseCookies = Objects.requireNonNull(secondResponse.getHeaders().get("Set-Cookie"));
 
             assertThat(secondResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-            assertThat(secondResponseCookies).isNotNull();
-            assertThat(secondResponseCookies.get(0)).startsWith(expectedFinalCookie);
+            assertThat(secondResponseCookies.stream()
+                    .filter(item -> item.startsWith(BoardServiceImpl.BOARD_VIEWS_COOKIE_NAME))
+                    .map(item -> item.split(";"))
+                    .map(item -> item[0])
+                    .findFirst()
+                    .orElseThrow()
+                    .equals(expectedFinalCookie)
+            ).isTrue();
         }
     }
 }

@@ -26,7 +26,7 @@ import java.util.NoSuchElementException;
 public class BoardServiceImpl implements BoardService {
 
     public static final int PAGE_SIZE = 3;
-    private static final String BOARDS_BEEN_VIEWED = "bbv";
+    public static final String BOARD_VIEWS_COOKIE_NAME = "bbv";
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final ClaimExtractor claimExtractor;
@@ -133,7 +133,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     private void initializeCookieBbv(Long id, HttpServletResponse response) {
-        Cookie cookie = new Cookie(BOARDS_BEEN_VIEWED, id.toString());
+        Cookie cookie = new Cookie(BOARD_VIEWS_COOKIE_NAME, id.toString());
 
         cookie.setMaxAge(60 * 60);
         response.addCookie(cookie);
@@ -142,12 +142,12 @@ public class BoardServiceImpl implements BoardService {
     private void addValueCookieBbv(Long id, HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
 
-        if (!CookieUtility.hasCookieNamed(BOARDS_BEEN_VIEWED, cookies)) {
+        if (!CookieUtility.hasCookieNamed(BOARD_VIEWS_COOKIE_NAME, cookies)) {
             initializeCookieBbv(id, response);
             return;
         }
 
-        Cookie cookie = CookieUtility.findCookie(BOARDS_BEEN_VIEWED, cookies);
+        Cookie cookie = CookieUtility.findCookie(BOARD_VIEWS_COOKIE_NAME, cookies);
 
         if (CookieUtility.over3500BytesOf(cookie)) CookieUtility.trimFront500Bytes(cookie, '/');
 
@@ -165,7 +165,7 @@ public class BoardServiceImpl implements BoardService {
 
         if (cookies == null) return false;
 
-        Cookie targetCookie = CookieUtility.findCookie(BOARDS_BEEN_VIEWED, cookies);
+        Cookie targetCookie = CookieUtility.findCookie(BOARD_VIEWS_COOKIE_NAME, cookies);
 
         if (targetCookie == null) return false;
 
