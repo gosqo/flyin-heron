@@ -1,6 +1,5 @@
 package com.gosqo.flyinheron.acceptance;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gosqo.flyinheron.domain.Comment;
 import com.gosqo.flyinheron.domain.Member;
 import com.gosqo.flyinheron.dto.commentlike.DeleteCommentLikeResponse;
@@ -23,7 +22,7 @@ import org.springframework.http.RequestEntity;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.gosqo.flyinheron.global.utility.HttpUtility.*;
+import static com.gosqo.flyinheron.global.utility.HeadersUtility.buildHeadersWithToken;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
@@ -91,10 +90,12 @@ class CommentLikeTest extends SpringBootTestBase {
 
         String token = jwtService.generateAccessToken(extraClaims, member);
 
-        final var headers = buildPostHeadersWithToken(token);
-        final var request = RequestEntity.post(uri)
+        final var headers = buildHeadersWithToken(token);
+        final var request = RequestEntity
+                .post(uri)
                 .headers(headers)
                 .build();
+
         final var response = template.exchange(request, RegisterCommentLikeResponse.class);
 
         Comment foundComment = commentRepository.findById(commentIdHasCommentLike).orElseThrow();
@@ -114,10 +115,12 @@ class CommentLikeTest extends SpringBootTestBase {
 
         String token = jwtService.generateAccessToken(extraClaims, member);
 
-        final var headers = buildPostHeadersWithToken(token);
-        final var request = RequestEntity.post(uri)
+        final var headers = buildHeadersWithToken(token);
+        final var request = RequestEntity
+                .post(uri)
                 .headers(headers)
                 .build();
+
         final var response = template.exchange(request, RegisterCommentLikeResponse.class);
 
         Comment foundComment = commentRepository.findById(commentIdToRegisterItsLike).orElseThrow();
@@ -133,8 +136,11 @@ class CommentLikeTest extends SpringBootTestBase {
         extraClaims = claimsPutMemberId(member);
 
         String token = jwtService.generateAccessToken(extraClaims, member);
-        final var headers = buildGetHeadersWithToken(token);
-        final var request = buildGetRequestEntity(headers, uri);
+        final var headers = buildHeadersWithToken(token);
+        final var request = RequestEntity
+                .get(uri)
+                .headers(headers)
+                .build();
 
         final var response = template.exchange(request, HasCommentLikeResponse.class);
 
@@ -142,15 +148,18 @@ class CommentLikeTest extends SpringBootTestBase {
     }
 
     @Test
-    void deleteCommentLike() throws JsonProcessingException {
+    void deleteCommentLike() {
         Long commentId = comments.get(0).getId();
         String uri = String.format(TARGET_URI_FORMAT, commentId);
         extraClaims = claimsPutMemberId(member);
 
         String token = jwtService.generateAccessToken(extraClaims, member);
 
-        final var headers = buildGetHeadersWithToken(token);
-        final var request = buildDeleteRequestEntity(headers, uri);
+        final var headers = buildHeadersWithToken(token);
+        final var request = RequestEntity
+                .delete(uri)
+                .headers(headers)
+                .build();
 
         final var response = template.exchange(request, DeleteCommentLikeResponse.class);
 

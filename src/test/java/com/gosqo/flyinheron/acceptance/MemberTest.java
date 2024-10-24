@@ -1,11 +1,9 @@
 package com.gosqo.flyinheron.acceptance;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gosqo.flyinheron.domain.Member;
 import com.gosqo.flyinheron.domain.fixture.MemberFixture;
 import com.gosqo.flyinheron.dto.member.MemberRegisterRequest;
 import com.gosqo.flyinheron.global.data.TestDataRemover;
-import com.gosqo.flyinheron.global.utility.HttpUtility;
 import com.gosqo.flyinheron.repository.MemberRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +25,7 @@ public class MemberTest extends SpringBootTestBase {
     }
 
     @Test
-    void when_register_member_profile_image_being_filled() throws JsonProcessingException {
+    void when_register_member_profile_image_being_filled() {
         MemberRegisterRequest requestBody =
                 new MemberRegisterRequest(
                         MemberFixture.EMAIL
@@ -35,7 +33,9 @@ public class MemberTest extends SpringBootTestBase {
                         , MemberFixture.PASSWORD
                         , MemberFixture.NICKNAME
                 );
-        RequestEntity<String> request = HttpUtility.buildPostRequestEntity(requestBody, "/api/v1/member");
+        RequestEntity<MemberRegisterRequest> request = RequestEntity
+                .post("/api/v1/member")
+                .body(requestBody);
 
         template.exchange(request, String.class);
 

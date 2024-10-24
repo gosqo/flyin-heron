@@ -21,8 +21,7 @@ import org.springframework.util.MultiValueMap;
 import java.io.File;
 import java.io.IOException;
 
-import static com.gosqo.flyinheron.global.utility.HttpUtility.buildMultipartPostHeaders;
-import static com.gosqo.flyinheron.global.utility.HttpUtility.buildMultipartPostRequestEntity;
+import static com.gosqo.flyinheron.global.utility.HeadersUtility.buildMultipartHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
@@ -52,14 +51,17 @@ class MemberProfileImageTest extends SpringBootTestBase {
         // given
         String accessToken = jwtService.generateAccessToken(member);
         String bearerAccessToken = "Bearer " + accessToken;
-        HttpHeaders headers = buildMultipartPostHeaders();
+        HttpHeaders headers = buildMultipartHeaders();
         File testImage = TestImageCreator.createTestImage(100, 100, "Test Image");
-        MultiValueMap<String, Object> formBody = new LinkedMultiValueMap<>();
+        MultiValueMap<String, FileSystemResource> formBody = new LinkedMultiValueMap<>();
 
         headers.add(HttpHeaders.AUTHORIZATION, bearerAccessToken);
         formBody.add("profileImage", new FileSystemResource(testImage));
 
-        RequestEntity<Object> requestEntity = buildMultipartPostRequestEntity(headers, formBody, "/api/v1/member/" + member.getId() + "/profile/image");
+        RequestEntity<MultiValueMap<String, FileSystemResource>> requestEntity = RequestEntity
+                .post("/api/v1/member/" + member.getId() + "/profile/image")
+                .headers(headers)
+                .body(formBody);
 
         // when
         ResponseEntity<JsonResponse> response = template.exchange(requestEntity, JsonResponse.class);

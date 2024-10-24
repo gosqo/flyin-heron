@@ -5,7 +5,6 @@ import com.gosqo.flyinheron.dto.board.BoardGetResponse;
 import com.gosqo.flyinheron.dto.board.BoardRegisterRequest;
 import com.gosqo.flyinheron.dto.board.BoardRegisterResponse;
 import com.gosqo.flyinheron.global.data.TestDataRemover;
-import com.gosqo.flyinheron.global.utility.HttpUtility;
 import com.gosqo.flyinheron.repository.BoardRepository;
 import com.gosqo.flyinheron.repository.MemberRepository;
 import com.gosqo.flyinheron.service.BoardServiceImpl;
@@ -25,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.gosqo.flyinheron.global.utility.HttpUtility.buildGetRequestEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class BoardTest extends SpringBootTestBase {
@@ -70,7 +68,11 @@ class BoardTest extends SpringBootTestBase {
         public void testViewCountAffectUpdateDate() {
             Long boardId = boards.get(0).getId();
             String uri = String.format("/api/v1/board/%d", boardId);
-            final var request = HttpUtility.buildGetRequestEntity(uri);
+
+            final var request = RequestEntity
+                    .get(uri)
+                    .build();
+
             final var firstResponse = template.exchange(request, BoardGetResponse.class);
 
             assertThat(firstResponse.getBody()).isNotNull();
@@ -91,7 +93,10 @@ class BoardTest extends SpringBootTestBase {
             Long boardId = board.getId();
             String uri = String.format("/api/v1/board/%d", boardId);
 
-            final var request = HttpUtility.buildGetRequestEntity(uri);
+            final var request = RequestEntity
+                    .get(uri)
+                    .build();
+
             final var response = template.exchange(request, BoardGetResponse.class);
 
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -148,7 +153,11 @@ class BoardTest extends SpringBootTestBase {
             final var boardId = boards.get(0).getId();
             final var uri = String.format("/api/v1/board/%d", boardId);
             final var expectedCookie = String.format("bbv=%d", boardId);
-            final var request = HttpUtility.buildGetRequestEntity(uri);
+
+            final var request = RequestEntity
+                    .get(uri)
+                    .build();
+
             final var response = template.exchange(request, BoardGetResponse.class);
             final var responseCookie = Objects.requireNonNull(response.getHeaders().get("Set-Cookie"));
 
@@ -177,7 +186,12 @@ class BoardTest extends SpringBootTestBase {
             // first
             final var firstRequestHeaders = new HttpHeaders();
             firstRequestHeaders.add("Cookie", firstRequestCookie);
-            final var firstRequest = buildGetRequestEntity(firstRequestHeaders, firstRequestUri);
+
+            final var firstRequest = RequestEntity
+                    .get(firstRequestUri)
+                    .headers(firstRequestHeaders)
+                    .build();
+
             final var firstResponse = template.exchange(firstRequest, BoardGetResponse.class);
 
             // Parse cookies in response headers
@@ -189,7 +203,11 @@ class BoardTest extends SpringBootTestBase {
             // second
             final var secondRequestHeaders = new HttpHeaders();
             secondRequestHeaders.addAll("Cookie", cookiesToSend);
-            final var secondRequest = buildGetRequestEntity(secondRequestHeaders, secondRequestUri);
+            final var secondRequest = RequestEntity
+                    .get(secondRequestUri)
+                    .headers(secondRequestHeaders)
+                    .build();
+
             final var secondResponse = template.exchange(secondRequest, BoardGetResponse.class);
             final var secondResponseCookies = Objects.requireNonNull(secondResponse.getHeaders().get("Set-Cookie"));
 

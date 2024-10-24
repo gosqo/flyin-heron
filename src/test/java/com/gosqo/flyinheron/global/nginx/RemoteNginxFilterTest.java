@@ -1,6 +1,6 @@
 package com.gosqo.flyinheron.global.nginx;
 
-import com.gosqo.flyinheron.global.utility.HttpUtility;
+import com.gosqo.flyinheron.global.utility.HeadersUtility;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -21,10 +22,12 @@ class RemoteNginxFilterTest {
 
     @Test
     void pass_case() {
-        ResponseEntity<String> response = restTemplate.exchange(
-                HttpUtility.buildNginxGetRequestEntity(TARGET_URL)
-                , String.class
-        );
+        RequestEntity<Void> request = RequestEntity
+                .get(TARGET_URL)
+                .headers(HeadersUtility.buildNginxGetHeaders())
+                .build();
+
+        ResponseEntity<String> response = restTemplate.exchange(request, String.class);
 
         log.info(String.valueOf(response));
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -38,11 +41,13 @@ class RemoteNginxFilterTest {
             HttpHeaders headers = new HttpHeaders();
 //        headers.set("Connection", "Keep-Alive"); // 명시하지 않아도 HTTP/1.1 프로토콜, nginx 특성상 keep-alive 로 간주.
 
+            RequestEntity<Void> request = RequestEntity
+                    .get(TARGET_URL)
+                    .headers(headers)
+                    .build();
+
             Assertions.assertThatThrownBy(() ->
-                    restTemplate.exchange(
-                            HttpUtility.buildGetRequestEntity(headers, TARGET_URL)
-                            , String.class
-                    ));
+                    restTemplate.exchange(request, String.class));
         }
 
         @Test
@@ -56,11 +61,13 @@ class RemoteNginxFilterTest {
             headers.set("User-Agent", "Mozilla");
             headers.set("Connection", "close");
 
+            RequestEntity<Void> request = RequestEntity
+                    .get(TARGET_URL)
+                    .headers(headers)
+                    .build();
+
             Assertions.assertThatThrownBy(() ->
-                    restTemplate.exchange(
-                            HttpUtility.buildGetRequestEntity(headers, TARGET_URL)
-                            , String.class
-                    ));
+                    restTemplate.exchange(request, String.class));
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.gosqo.flyinheron.acceptance;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gosqo.flyinheron.domain.Member;
 import com.gosqo.flyinheron.dto.CustomSliceImpl;
 import com.gosqo.flyinheron.dto.comment.CommentGetResponse;
@@ -16,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.RequestEntity;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -24,7 +24,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 
-import static com.gosqo.flyinheron.global.utility.HttpUtility.*;
+import static com.gosqo.flyinheron.global.utility.HeadersUtility.buildHeadersWithToken;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
@@ -79,7 +79,7 @@ public class CommentLikeConcurrencyTest extends SpringBootTestBase {
 
         extraClaims = claimsPutMemberId(member);
         final var token = jwtService.generateAccessToken(extraClaims, member);
-        final var headers = buildPostHeadersWithToken(token);
+        final var headers = buildHeadersWithToken(token);
 
         final int countToRegister = 6;
         final int threadPoolSize = 10;
@@ -104,18 +104,19 @@ public class CommentLikeConcurrencyTest extends SpringBootTestBase {
 
                             final var registerCommentLikeUri = String.format(TARGET_URI_FORMAT, i);
 
-                            try {
-                                final var registerRequest = buildPostRequestEntity(headers, null, registerCommentLikeUri);
-                                template.exchange(registerRequest, RegisterCommentLikeResponse.class);
-                            } catch (JsonProcessingException e) {
-                                throw new RuntimeException("JSON processing went wrong");
-                            }
+                            final var registerRequest = RequestEntity
+                                    .post(registerCommentLikeUri)
+                                    .headers(headers)
+                                    .build();
+                            template.exchange(registerRequest, RegisterCommentLikeResponse.class);
                             latch.countDown();
                         }
                 ));
 
         final var getCommentsUri = String.format("/api/v1/board/%d/comments?page-number=1", targetBoardId);
-        final var getCommentsRequest = buildGetRequestEntity(getCommentsUri);
+        final var getCommentsRequest = RequestEntity
+                .get(getCommentsUri)
+                .build();
 
         AtomicReference<LocalDateTime> scheduled = new AtomicReference<>();
 
@@ -149,7 +150,7 @@ public class CommentLikeConcurrencyTest extends SpringBootTestBase {
                 .getContent().stream()
                 .filter((comment) -> idsToRegisterCommentLike.contains(comment.getId()))
                 .forEach((filtered) -> {
-                            log.info("commentid: {}, likeCount: {}", filtered.getId(), filtered.getLikeCount().toString());
+                            log.info("commentId: {}, likeCount: {}", filtered.getId(), filtered.getLikeCount().toString());
                             assertThat(filtered.getLikeCount()).isEqualTo(1L);
                         }
                 );

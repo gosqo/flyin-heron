@@ -15,7 +15,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 
-import static com.gosqo.flyinheron.global.utility.HttpUtility.buildGetRequestEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CommentTest extends SpringBootTestBase {
@@ -49,7 +48,9 @@ public class CommentTest extends SpringBootTestBase {
         Long targetBoardId = boards.get(0).getId();
         final String requestUri = String.format("/api/v1/board/%d/comments?page-number=1", targetBoardId);
 
-        RequestEntity<String> request = buildGetRequestEntity(requestUri);
+        RequestEntity<Void> request = RequestEntity
+                .get(requestUri)
+                .build();
 
         ResponseEntity<CustomSliceImpl<CommentGetResponse>> response = template.exchange(
                 request,

@@ -1,13 +1,13 @@
 package com.gosqo.flyinheron.acceptance;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.gosqo.flyinheron.controller.AuthenticationController;
 import com.gosqo.flyinheron.domain.Token;
 import com.gosqo.flyinheron.domain.fixture.MemberFixture;
 import com.gosqo.flyinheron.dto.auth.AuthenticationRequest;
 import com.gosqo.flyinheron.dto.auth.AuthenticationResponse;
 import com.gosqo.flyinheron.global.data.TestDataRemover;
 import com.gosqo.flyinheron.global.exception.ErrorResponse;
-import com.gosqo.flyinheron.global.utility.HttpUtility;
+import com.gosqo.flyinheron.global.utility.HeadersUtility;
 import com.gosqo.flyinheron.global.utility.RequestCookie;
 import com.gosqo.flyinheron.global.utility.RespondedCookie;
 import com.gosqo.flyinheron.repository.MemberRepository;
@@ -22,10 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 
-import static com.gosqo.flyinheron.controller.AuthenticationController.REFRESH_TOKEN_COOKIE_NAME;
-import static com.gosqo.flyinheron.global.utility.HttpUtility.buildDefaultPostHeaders;
-import static com.gosqo.flyinheron.global.utility.HttpUtility.buildPostRequestEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
@@ -61,20 +59,26 @@ class AuthenticationTest extends SpringBootTestBase {
     }
 
     @Test
-    void auth_success_case() throws JsonProcessingException {
+    void auth_success_case() {
         final var body = AuthenticationRequest.builder()
                 .email(member.getEmail())
                 .password(MemberFixture.PASSWORD)
                 .build();
 
-        final var request = HttpUtility.buildPostRequestEntity(body, AUTHENTICATE_URI);
+        final var request = RequestEntity
+                .post(AUTHENTICATE_URI)
+                .body(body);
+
         final var response = template.exchange(request, AuthenticationResponse.class);
 
         final var cookies = response.getHeaders().get(HttpHeaders.SET_COOKIE);
 
         assertThat(cookies).isNotNull();
 
-        final var refreshTokenCookie = RespondedCookie.extract(cookies, REFRESH_TOKEN_COOKIE_NAME);
+        final var refreshTokenCookie = RespondedCookie.extract(
+                cookies
+                , AuthenticationController.REFRESH_TOKEN_COOKIE_NAME
+        );
 
         assertThat(refreshTokenCookie).isNotNull();
         assertThat(refreshTokenCookie).contains("Max-Age");
@@ -88,13 +92,16 @@ class AuthenticationTest extends SpringBootTestBase {
     }
 
     @Test
-    void bad_credential_response_Bad_Request() throws JsonProcessingException {
+    void bad_credential_response_Bad_Request() {
         // given
         final var body = AuthenticationRequest.builder()
                 .email("wrong@email.ocm")
                 .password("wrongPassword")
                 .build();
-        final var request = HttpUtility.buildPostRequestEntity(body, AUTHENTICATE_URI);
+
+        final var request = RequestEntity
+                .post(AUTHENTICATE_URI)
+                .body(body);
 
         // when
         final var response = template.exchange(request, ErrorResponse.class);
@@ -104,14 +111,22 @@ class AuthenticationTest extends SpringBootTestBase {
     }
 
     @Test
-    void if_requested_refresh_token_not_exist_on_database_response_Not_Found() throws JsonProcessingException {
+    void if_requested_refresh_token_not_exist_on_database_response_Not_Found() {
         final var refreshToken = jwtService.generateRefreshToken(member);
-        final var headers = buildDefaultPostHeaders();
+        final var headers = HeadersUtility.buildHeadersContentTypeJson();
 
-        final var cookieValue = RequestCookie.valueWith(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
+        final var cookieValue = RequestCookie.valueWith(
+                AuthenticationController.REFRESH_TOKEN_COOKIE_NAME
+                , refreshToken
+        );
+
         headers.add(HttpHeaders.COOKIE, cookieValue);
 
-        final var request = buildPostRequestEntity(headers, null, REFRESH_TOKEN_URI);
+        final var request = RequestEntity
+                .post(REFRESH_TOKEN_URI)
+                .headers(headers)
+                .build();
+
         final var response = template.exchange(request, ErrorResponse.class);
 
         assertThat(response.getBody()).isNotNull();
@@ -122,7 +137,7 @@ class AuthenticationTest extends SpringBootTestBase {
     class If_expiry_of_refresh_token_left {
 
         @Test
-        void _7_days_Reissue_refresh_token() throws JsonProcessingException {
+        void _7_days_Reissue_refresh_token() {
             final var refreshTokenExpiresIn7Days = jwtService.generateRefreshToken(member, EXPIRATION_7_DAYS);
             final var expiry = claimExtractor.extractExpiration(refreshTokenExpiresIn7Days);
             final var tokenEntityExpiresIn7Days = Token.builder()
@@ -133,19 +148,30 @@ class AuthenticationTest extends SpringBootTestBase {
 
             tokenRepository.save(tokenEntityExpiresIn7Days);
 
-            final var headers = buildDefaultPostHeaders();
+            final var headers = HeadersUtility.buildHeadersContentTypeJson();
 
-            final var cookieValue = RequestCookie.valueWith(REFRESH_TOKEN_COOKIE_NAME, refreshTokenExpiresIn7Days);
+            final var cookieValue = RequestCookie.valueWith(
+                    AuthenticationController.REFRESH_TOKEN_COOKIE_NAME
+                    , refreshTokenExpiresIn7Days
+            );
+
             headers.add(HttpHeaders.COOKIE, cookieValue);
 
-            final var request = buildPostRequestEntity(headers, null, REFRESH_TOKEN_URI);
+            final var request = RequestEntity
+                    .post(REFRESH_TOKEN_URI)
+                    .headers(headers)
+                    .build();
+
             final var response = template.exchange(request, AuthenticationResponse.class);
 
             final var cookies = response.getHeaders().get(HttpHeaders.SET_COOKIE);
 
             assertThat(cookies).isNotNull();
 
-            String refreshTokenCookie = RespondedCookie.extract(cookies, REFRESH_TOKEN_COOKIE_NAME);
+            String refreshTokenCookie = RespondedCookie.extract(
+                    cookies
+                    , AuthenticationController.REFRESH_TOKEN_COOKIE_NAME
+            );
 
             assertThat(refreshTokenCookie).isNotNull();
             assertThat(refreshTokenCookie).contains("Max-Age");
@@ -158,7 +184,7 @@ class AuthenticationTest extends SpringBootTestBase {
         }
 
         @Test
-        void _8_days_Return_as_it_is() throws JsonProcessingException {
+        void _8_days_Return_as_it_is() {
             final var refreshTokenExpiresIn8Days = jwtService.generateRefreshToken(member, EXPIRATION_8_DAYS);
             final var expiry = claimExtractor.extractExpiration(refreshTokenExpiresIn8Days);
             final var tokenEntityIn8Days = Token.builder()
@@ -169,12 +195,20 @@ class AuthenticationTest extends SpringBootTestBase {
 
             tokenRepository.save(tokenEntityIn8Days);
 
-            final var headers = buildDefaultPostHeaders();
+            final var headers = HeadersUtility.buildHeadersContentTypeJson();
 
-            final var cookieValue = RequestCookie.valueWith(REFRESH_TOKEN_COOKIE_NAME, refreshTokenExpiresIn8Days);
+            final var cookieValue = RequestCookie.valueWith(
+                    AuthenticationController.REFRESH_TOKEN_COOKIE_NAME
+                    , refreshTokenExpiresIn8Days
+            );
+
             headers.add(HttpHeaders.COOKIE, cookieValue);
 
-            final var request = buildPostRequestEntity(headers, null, REFRESH_TOKEN_URI);
+            final var request = RequestEntity
+                    .post(REFRESH_TOKEN_URI)
+                    .headers(headers)
+                    .build();
+
             final var response = template.exchange(request, AuthenticationResponse.class);
 
             assertThat(response.getBody()).isNotNull();

@@ -1,6 +1,5 @@
 package com.gosqo.flyinheron.acceptance;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gosqo.flyinheron.domain.fixture.MemberFixture;
 import com.gosqo.flyinheron.dto.JsonResponse;
 import com.gosqo.flyinheron.dto.auth.AuthenticationResponse;
@@ -16,10 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 
 import static com.gosqo.flyinheron.controller.AuthenticationController.REFRESH_TOKEN_COOKIE_NAME;
-import static com.gosqo.flyinheron.global.utility.HttpUtility.buildDefaultPostHeaders;
-import static com.gosqo.flyinheron.global.utility.HttpUtility.buildPostRequestEntity;
+import static com.gosqo.flyinheron.global.utility.HeadersUtility.buildHeadersContentTypeJson;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LogoutTest extends SpringBootTestBase {
@@ -47,9 +46,11 @@ class LogoutTest extends SpringBootTestBase {
     }
 
     @Test
-    public void logout_without_auth_header_response_Bad_Request() throws JsonProcessingException {
+    public void logout_without_auth_header_response_Bad_Request() {
         // given
-        final var request = buildPostRequestEntity(null, LOGOUT_URI);
+        final var request = RequestEntity
+                .post(LOGOUT_URI)
+                .build();
 
         // when
         final var response = template.exchange(request, ErrorResponse.class);
@@ -59,13 +60,17 @@ class LogoutTest extends SpringBootTestBase {
     }
 
     @Test
-    public void logout_with_token_not_exist_on_database_response_Bad_Request() throws JsonProcessingException {
+    public void logout_with_token_not_exist_on_database_response_Bad_Request() {
         // given
         final var refreshToken = jwtService.generateRefreshToken(member);
-        final var headers = buildDefaultPostHeaders();
+        final var headers = buildHeadersContentTypeJson();
         final var cookieValue = RequestCookie.valueWith(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
         headers.add(HttpHeaders.COOKIE, cookieValue);
-        final var request = buildPostRequestEntity(headers, null, LOGOUT_URI);
+
+        final var request = RequestEntity
+                .post(LOGOUT_URI)
+                .headers(headers)
+                .build();
 
         // when
         final var response = template.exchange(request, ErrorResponse.class);
@@ -74,10 +79,13 @@ class LogoutTest extends SpringBootTestBase {
     }
 
     @Test
-    public void login_then_logout_response_Ok() throws JsonProcessingException {
+    public void login_then_logout_response_Ok() {
         // given
         final var body = MemberFixture.AUTH_REQUEST;
-        final var loginRequest = buildPostRequestEntity(body, LOGIN_URI);
+        final var loginRequest = RequestEntity
+                .post(LOGIN_URI)
+                .body(body);
+
         final var loginResponse = template.exchange(loginRequest, AuthenticationResponse.class);
 
         assertThat(loginResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -93,11 +101,14 @@ class LogoutTest extends SpringBootTestBase {
 
         final var refreshToken = RespondedCookie.getCookieValue(refreshTokenCookie);
 
-        final var logoutHeaders = buildDefaultPostHeaders();
+        final var logoutHeaders = buildHeadersContentTypeJson();
         final var requestCookieValue = RequestCookie.valueWith(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
         logoutHeaders.add(HttpHeaders.COOKIE, requestCookieValue);
 
-        final var logoutRequest = buildPostRequestEntity(logoutHeaders, null, LOGOUT_URI);
+        final var logoutRequest = RequestEntity
+                .post(LOGOUT_URI)
+                .headers(logoutHeaders)
+                .build();
 
         // when
         final var logoutResponse = template.exchange(logoutRequest, JsonResponse.class);
