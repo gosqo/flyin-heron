@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.NoSuchElementException;
@@ -39,6 +40,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public BoardPageResponse getBoardPage(int pageNumber) throws NoResourceFoundException {
         PageRequest pageRequest = getPageRequest(pageNumber);
         Page<Board> foundPage = boardRepository.findAll(pageRequest);
@@ -112,12 +114,13 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public BoardGetResponse get(
             Long id
             , HttpServletRequest request
             , HttpServletResponse response
     ) throws NoResourceFoundException {
-        var entity = boardRepository.findById(id).orElseThrow(
+        Board entity = boardRepository.findById(id).orElseThrow(
                 () -> new NoResourceFoundException(HttpMethod.GET, request.getRequestURI())
         );
 
@@ -130,8 +133,8 @@ public class BoardServiceImpl implements BoardService {
             }
 
             entity.addViewCount(); // throws NPException in previous version.
-            boardRepository.save(entity);
         }
+
         return BoardGetResponse.of(entity);
     }
 
