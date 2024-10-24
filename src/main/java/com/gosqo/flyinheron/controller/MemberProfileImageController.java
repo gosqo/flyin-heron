@@ -25,8 +25,8 @@ public class MemberProfileImageController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("")
     public ResponseEntity<JsonResponse> registerMemberProfileImage(
-            HttpServletRequest request,
-            @PathVariable("memberId") Long memberId
+            HttpServletRequest request
+            , @PathVariable("memberId") Long memberId
             , @RequestParam("profileImage") MultipartFile profileImage
     ) throws IOException {
         String accessToken = AuthHeaderUtility.extractAccessToken(request);
@@ -38,7 +38,27 @@ public class MemberProfileImageController {
                 .status(HttpStatus.CREATED)
                 .body(JsonResponse.builder()
                         .status(HttpStatus.CREATED.value())
-                        .message("정상적으로 등록 했습니다.")
+                        .message("프로필 이미지를 정상적으로 등록했습니다.")
+                        .build()
+                );
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @DeleteMapping("")
+    public ResponseEntity<JsonResponse> deleteMemberProfileImage(
+            HttpServletRequest request
+            , @PathVariable("memberId") Long memberId
+    ) throws IOException {
+        String accessToken = AuthHeaderUtility.extractAccessToken(request);
+        String memberEmail = extractor.extractUserEmail(accessToken);
+
+        memberProfileImageService.removeMemberProfileImage(memberEmail, memberId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(JsonResponse.builder()
+                        .status(HttpStatus.OK.value())
+                        .message("프로필 이미지가 삭제됐습니다.")
                         .build()
                 );
     }

@@ -3,6 +3,8 @@ package com.gosqo.flyinheron.acceptance;
 import com.gosqo.flyinheron.dto.JsonResponse;
 import com.gosqo.flyinheron.global.data.TestDataRemover;
 import com.gosqo.flyinheron.global.data.TestImageCreator;
+import com.gosqo.flyinheron.global.utility.HeadersUtility;
+import com.gosqo.flyinheron.repository.MemberProfileImageRepository;
 import com.gosqo.flyinheron.repository.MemberRepository;
 import com.gosqo.flyinheron.service.JwtService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,23 +29,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 class MemberProfileImageTest extends SpringBootTestBase {
     private final MemberRepository memberRepository;
+    private final MemberProfileImageRepository memberProfileImageRepository;
     private final JwtService jwtService;
+    private String endPoint;
 
     @Autowired
     public MemberProfileImageTest(
             TestRestTemplate template
-            , MemberRepository memberRepository
-            , JwtService jwtService
             , TestDataRemover remover
+            , JwtService jwtService
+            , MemberRepository memberRepository
+            , MemberProfileImageRepository memberProfileImageRepository
     ) {
         super(template, remover);
         this.memberRepository = memberRepository;
+        this.memberProfileImageRepository = memberProfileImageRepository;
         this.jwtService = jwtService;
     }
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         member = memberRepository.save(buildMember());
+        profileImageJpaEntity = memberProfileImageRepository.save(buildProfileImageJpaEntity());
+        endPoint = "/api/v1/member/" + member.getId() + "/profile/image";
     }
 
     @Test
@@ -59,7 +67,7 @@ class MemberProfileImageTest extends SpringBootTestBase {
         formBody.add("profileImage", new FileSystemResource(testImage));
 
         RequestEntity<MultiValueMap<String, FileSystemResource>> requestEntity = RequestEntity
-                .post("/api/v1/member/" + member.getId() + "/profile/image")
+                .post(endPoint)
                 .headers(headers)
                 .body(formBody);
 
@@ -68,5 +76,23 @@ class MemberProfileImageTest extends SpringBootTestBase {
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    }
+
+    @Test
+    void remove_success_case() {
+        // given
+        String accessToken = jwtService.generateAccessToken(member);
+        HttpHeaders headers = HeadersUtility.buildHeadersWithToken(accessToken);
+
+        RequestEntity<Void> request = RequestEntity
+                .delete(endPoint)
+                .headers(headers)
+                .build();
+
+        // when
+        ResponseEntity<JsonResponse> response = template.exchange(request, JsonResponse.class);
+
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 }
