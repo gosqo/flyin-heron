@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CommentControllerTest extends WebMvcTestBase {
 
     @Autowired
-    public CommentControllerTest(MockMvc mockMvc) {
+    CommentControllerTest(MockMvc mockMvc) {
         super(mockMvc);
     }
 

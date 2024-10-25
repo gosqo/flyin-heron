@@ -12,7 +12,7 @@ abstract class IntegratedServiceTestBase extends TestDataInitializer {
 
     private final TestDataRemover remover;
 
-    public IntegratedServiceTestBase(TestDataRemover remover) {
+    IntegratedServiceTestBase(TestDataRemover remover) {
         this.remover = remover;
     }
 

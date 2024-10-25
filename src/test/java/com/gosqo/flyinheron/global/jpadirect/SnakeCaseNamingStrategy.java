@@ -17,13 +17,13 @@ public class SnakeCaseNamingStrategy implements PhysicalNamingStrategy {
     }
 
     @Override
-    public Identifier toPhysicalTableName(Identifier name, JdbcEnvironment jdbcEnvironment) {
-        return new Identifier(toSnakeCase(name.getText()), name.isQuoted());
+    public Identifier toPhysicalSequenceName(Identifier name, JdbcEnvironment jdbcEnvironment) {
+        return name;
     }
 
     @Override
-    public Identifier toPhysicalSequenceName(Identifier name, JdbcEnvironment jdbcEnvironment) {
-        return name;
+    public Identifier toPhysicalTableName(Identifier name, JdbcEnvironment jdbcEnvironment) {
+        return new Identifier(toSnakeCase(name.getText()), name.isQuoted());
     }
 
     @Override

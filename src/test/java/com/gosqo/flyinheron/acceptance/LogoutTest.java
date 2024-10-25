@@ -29,7 +29,7 @@ class LogoutTest extends SpringBootTestBase {
     private final MemberRepository memberRepository;
 
     @Autowired
-    public LogoutTest(
+    LogoutTest(
             TestRestTemplate template
             , JwtService jwtService
             , MemberRepository memberRepository

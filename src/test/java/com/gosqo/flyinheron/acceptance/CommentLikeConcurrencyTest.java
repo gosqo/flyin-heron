@@ -28,7 +28,7 @@ import static com.gosqo.flyinheron.global.utility.HeadersUtility.buildHeadersWit
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-public class CommentLikeConcurrencyTest extends SpringBootTestBase {
+class CommentLikeConcurrencyTest extends SpringBootTestBase {
 
     private static final String TARGET_URI_FORMAT = "/api/v1/comment-like/%d";
     private final JwtService jwtService;

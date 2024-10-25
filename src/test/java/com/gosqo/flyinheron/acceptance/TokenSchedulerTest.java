@@ -33,7 +33,7 @@ class TokenSchedulerTest extends SpringBootTestBase {
     private final TokenRepository tokenRepository;
 
     @Autowired
-    public TokenSchedulerTest(
+    TokenSchedulerTest(
             TestRestTemplate template
             , JwtService jwtService
             , MemberRepository memberRepository

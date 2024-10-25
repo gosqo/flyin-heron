@@ -13,7 +13,7 @@ abstract class SpringBootTestBase extends TestDataInitializer {
     protected final TestRestTemplate template;
     protected final TestDataRemover remover;
 
-    public SpringBootTestBase(
+    SpringBootTestBase(
             TestRestTemplate template
             , TestDataRemover remover
     ) {

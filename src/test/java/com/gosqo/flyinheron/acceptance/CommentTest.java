@@ -17,13 +17,13 @@ import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CommentTest extends SpringBootTestBase {
+class CommentTest extends SpringBootTestBase {
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
 
     @Autowired
-    public CommentTest(
+    CommentTest(
             TestRestTemplate template
             , MemberRepository memberRepository
             , BoardRepository boardRepository

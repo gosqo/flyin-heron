@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Slf4j
-public class CommentLikeServiceTest extends IntegratedServiceTestBase {
+class CommentLikeServiceTest extends IntegratedServiceTestBase {
     private static final Long NOT_EXISTING_MEMBER_ID = 0L;
     private static final Long NOT_EXISTING_COMMENT_ID = 0L;
     private final CommentLikeService commentLikeService;
@@ -38,7 +38,7 @@ public class CommentLikeServiceTest extends IntegratedServiceTestBase {
     private Long commentIdToRegisterItsLike;
 
     @Autowired
-    public CommentLikeServiceTest(TestDataRemover remover
+    CommentLikeServiceTest(TestDataRemover remover
                                   , CommentLikeService commentLikeService
                                   , CommentLikeRepository commentLikeRepository
                                   , MemberRepository memberRepository

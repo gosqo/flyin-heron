@@ -12,11 +12,11 @@ import org.springframework.http.RequestEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MemberTest extends SpringBootTestBase {
+class MemberTest extends SpringBootTestBase {
     private final MemberRepository memberRepository;
 
     @Autowired
-    public MemberTest(
+    MemberTest(
             TestRestTemplate template,
             TestDataRemover remover, MemberRepository memberRepository
     ) {

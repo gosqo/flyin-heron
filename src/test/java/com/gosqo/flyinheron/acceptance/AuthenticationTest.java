@@ -38,7 +38,7 @@ class AuthenticationTest extends SpringBootTestBase {
     private final JwtService jwtService;
 
     @Autowired
-    public AuthenticationTest(
+    AuthenticationTest(
             TestRestTemplate template
             , MemberRepository memberRepository
             , TokenRepository tokenRepository

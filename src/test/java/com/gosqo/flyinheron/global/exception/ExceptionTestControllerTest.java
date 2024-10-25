@@ -22,7 +22,7 @@ class ExceptionTestControllerTest extends WebMvcTestBase {
     private StringBuilder baseUri;
 
     @Autowired
-    public ExceptionTestControllerTest(MockMvc mockMvc) {
+    ExceptionTestControllerTest(MockMvc mockMvc) {
         super(mockMvc);
     }
 

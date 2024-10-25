@@ -27,7 +27,7 @@ class MemberIsUniqueTest extends SpringBootTestBase {
     private final MemberRepository memberRepository;
 
     @Autowired
-    public MemberIsUniqueTest(
+    MemberIsUniqueTest(
             TestRestTemplate template
             , MockMvc mockMvc
             , MemberRepository memberRepository

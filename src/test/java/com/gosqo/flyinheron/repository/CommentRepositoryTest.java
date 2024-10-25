@@ -18,7 +18,7 @@ class CommentRepositoryTest extends RepositoryTestBase {
     private final CommentRepository commentRepository;
 
     @Autowired
-    public CommentRepositoryTest(
+    CommentRepositoryTest(
             MemberRepository memberRepository,
             BoardRepository boardRepository,
             CommentRepository commentRepository

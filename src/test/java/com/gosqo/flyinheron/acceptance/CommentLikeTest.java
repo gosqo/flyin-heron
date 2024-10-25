@@ -39,7 +39,7 @@ class CommentLikeTest extends SpringBootTestBase {
     private Map<String, Object> extraClaims;
 
     @Autowired
-    public CommentLikeTest(
+    CommentLikeTest(
             TestRestTemplate template
             , JwtService jwtService
             , MemberRepository memberRepository

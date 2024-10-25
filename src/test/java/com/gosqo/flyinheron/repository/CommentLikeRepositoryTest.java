@@ -29,7 +29,7 @@ class CommentLikeRepositoryTest extends RepositoryTestBase {
     private Long commentIdHasCommentLike;
 
     @Autowired
-    public CommentLikeRepositoryTest(
+    CommentLikeRepositoryTest(
             CommentLikeRepository commentLikeRepository,
             MemberRepository memberRepository,
             BoardRepository boardRepository,

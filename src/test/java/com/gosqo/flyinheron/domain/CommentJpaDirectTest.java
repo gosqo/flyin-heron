@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Slf4j
-public class CommentJpaDirectTest extends JpaDirectTestDataManager {
+class CommentJpaDirectTest extends JpaDirectTestDataManager {
     private static final String COMMENT_CONTENT = "hello, comment.";
 
     @BeforeEach

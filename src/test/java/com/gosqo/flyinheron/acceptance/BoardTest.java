@@ -32,7 +32,7 @@ class BoardTest extends SpringBootTestBase {
     private final BoardRepository boardRepository;
 
     @Autowired
-    public BoardTest(
+    BoardTest(
             TestRestTemplate template
             , JwtService jwtService
             , MemberRepository memberRepository

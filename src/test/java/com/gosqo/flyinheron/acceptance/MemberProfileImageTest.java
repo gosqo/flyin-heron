@@ -34,7 +34,7 @@ class MemberProfileImageTest extends SpringBootTestBase {
     private String endPoint;
 
     @Autowired
-    public MemberProfileImageTest(
+    MemberProfileImageTest(
             TestRestTemplate template
             , TestDataRemover remover
             , JwtService jwtService
