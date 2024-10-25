@@ -31,7 +31,7 @@ class MemberProfileImageTest extends TestDataInitializer {
 
     @Test
     void toEntity_before_saveLocal_throws_IllegalStateException() {
-        assertThatThrownBy(() -> profileImage.toEntity())
+        assertThatThrownBy(() -> MemberProfileImageJpaEntity.of(profileImage))
                 .isInstanceOf(IllegalStateException.class);
     }
 
@@ -49,7 +49,7 @@ class MemberProfileImageTest extends TestDataInitializer {
         profileImage.saveLocal();
 
         // when
-        MemberProfileImageJpaEntity entity = profileImage.toEntity();
+        MemberProfileImageJpaEntity entity = MemberProfileImageJpaEntity.of(profileImage);
 
         // then
         assertThat(entity.getFullPath())

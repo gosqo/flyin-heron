@@ -1,6 +1,5 @@
 package com.gosqo.flyinheron.domain;
 
-import com.gosqo.flyinheron.repository.jpaentity.MemberProfileImageJpaEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +43,7 @@ public class MemberProfileImage {
             , String referencePath
             , String renamedFilename
             , String fullPath
+            , boolean savedLocal
     ) {
         Objects.requireNonNull(member);
 
@@ -65,16 +65,6 @@ public class MemberProfileImage {
         ).toString();
     }
 
-    public static MemberProfileImage of(MemberProfileImageJpaEntity entity) {
-        return MemberProfileImage.builder()
-                .member(entity.getMember())
-                .originalFilename(entity.getOriginalFilename())
-                .renamedFilename(entity.getRenamedFilename())
-                .referencePath(entity.getReferencePath())
-                .fullPath(entity.getFullPath())
-                .build();
-    }
-
     public static MemberProfileImage createDefaultImage(Member member) throws IOException {
         File defaultProfileImage =
                 DefaultImageManager.createDefaultMemberProfileImage(100, 100, member.getNickname());
@@ -83,20 +73,6 @@ public class MemberProfileImage {
                 .member(member)
                 .inputStream(Files.newInputStream(defaultProfileImage.toPath()))
                 .originalFilename(defaultProfileImage.getName())
-                .build();
-    }
-
-    public MemberProfileImageJpaEntity toEntity() {
-        if (!this.savedLocal) {
-            throw new IllegalStateException("Attempt to toEntity with an unsaved image.");
-        }
-
-        return MemberProfileImageJpaEntity.builder()
-                .member(this.member)
-                .originalFilename(this.originalFilename)
-                .renamedFilename(this.renamedFilename)
-                .fullPath(this.fullPath)
-                .referencePath(this.referencePath)
                 .build();
     }
 

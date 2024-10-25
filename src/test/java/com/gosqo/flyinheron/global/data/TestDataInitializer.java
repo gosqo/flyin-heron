@@ -64,7 +64,7 @@ public abstract class TestDataInitializer {
 
         image.saveLocal();
 
-        return image.toEntity();
+        return MemberProfileImageJpaEntity.of(image);
     }
 
     protected MemberProfileImageJpaEntity buildProfileImageJpaEntity(String filename) throws IOException {
@@ -72,7 +72,7 @@ public abstract class TestDataInitializer {
 
         image.saveLocal();
 
-        return image.toEntity();
+        return MemberProfileImageJpaEntity.of(image);
     }
 
     protected List<Board> buildBoards() {

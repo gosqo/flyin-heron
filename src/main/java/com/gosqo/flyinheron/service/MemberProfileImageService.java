@@ -36,7 +36,7 @@ public class MemberProfileImageService {
         MemberProfileImage defaultImage = MemberProfileImage.createDefaultImage(requester);
         defaultImage.saveLocal();
 
-        MemberProfileImageJpaEntity defaultImageJpaEntity = defaultImage.toEntity();
+        MemberProfileImageJpaEntity defaultImageJpaEntity = MemberProfileImageJpaEntity.of(defaultImage);
 
         formerProfileImageJpaEntity.updateImage(defaultImageJpaEntity);
     }
@@ -61,7 +61,7 @@ public class MemberProfileImageService {
                 .build();
         image.saveLocal();
 
-        MemberProfileImageJpaEntity newProfileImageJpaEntity = image.toEntity();
+        MemberProfileImageJpaEntity newProfileImageJpaEntity = MemberProfileImageJpaEntity.of(image);
 
         formerProfileImageJpaEntity.updateImage(newProfileImageJpaEntity);
     }

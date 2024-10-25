@@ -30,7 +30,7 @@ class MemberProfileImageJpaEntityTest extends JpaDirectTestDataManager {
         // toEntity() 호출 이전에 저장하지 않으면 fullPath == null 로 예외 던짐.
         profileImage.saveLocal();
 
-        MemberProfileImageJpaEntity entity = profileImage.toEntity(); // 아래 두 줄과 교체 시, 결과 같음
+        MemberProfileImageJpaEntity entity = MemberProfileImageJpaEntity.of(profileImage); // 아래 두 줄과 교체 시, 결과 같음
 
 //        MemberProfileImageJpaEntity entity = image.toEntity(null);
 //        member.updateProfileImage(entity);

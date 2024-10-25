@@ -1,6 +1,7 @@
 package com.gosqo.flyinheron.repository.jpaentity;
 
 import com.gosqo.flyinheron.domain.Member;
+import com.gosqo.flyinheron.domain.MemberProfileImage;
 import com.gosqo.flyinheron.domain.UuidBaseEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -35,12 +36,41 @@ public class MemberProfileImageJpaEntity extends UuidBaseEntity {
             , String originalFilename
             , String renamedFilename
             , String referencePath
-            , String fullPath) {
+            , String fullPath
+    ) {
         this.member = member;
         this.originalFilename = originalFilename;
         this.renamedFilename = renamedFilename;
         this.referencePath = referencePath;
         this.fullPath = fullPath;
+    }
+
+    public static MemberProfileImageJpaEntity of(MemberProfileImage model) {
+
+        if (!model.isSavedLocal()) {
+            throw new IllegalStateException("Attempt to toEntity with an unsaved image.");
+        }
+
+        MemberProfileImageJpaEntity entity = new MemberProfileImageJpaEntity();
+
+        entity.member = model.getMember();
+        entity.originalFilename = model.getOriginalFilename();
+        entity.renamedFilename = model.getRenamedFilename();
+        entity.referencePath = model.getReferencePath();
+        entity.fullPath = model.getFullPath();
+
+        return entity;
+    }
+
+    public MemberProfileImage toModel() {
+        return MemberProfileImage.builder()
+                .member(this.member)
+                .originalFilename(this.originalFilename)
+                .renamedFilename(this.renamedFilename)
+                .fullPath(this.fullPath)
+                .referencePath(this.referencePath)
+                .savedLocal(true)
+                .build();
     }
 
     public void updateMember(Member member) {

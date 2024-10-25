@@ -52,7 +52,7 @@ public class MemberService {
 
         MemberProfileImage defaultImage = MemberProfileImage.createDefaultImage(member);
         defaultImage.saveLocal();
-        MemberProfileImageJpaEntity profileImageJpaEntity = defaultImage.toEntity();
+        MemberProfileImageJpaEntity profileImageJpaEntity = MemberProfileImageJpaEntity.of(defaultImage);
 
         memberRepository.save(member);
         memberProfileImageRepository.save(profileImageJpaEntity);
