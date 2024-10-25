@@ -20,20 +20,17 @@ class DefaultImageManagerTest {
     @Test
     void saveLocal() throws IOException {
         // given
-        String fullPath = ""; // need to be filled to assert test result.
         String targetDir = DefaultImageManager.LOCAL_STORAGE_DIR + "test/common/";
         String renamedFilename = DefaultImageManager.renameFileWithUuid(CLIENT_IMAGE_FILENAME);
+        String fullPath = Paths.get(targetDir, renamedFilename).toString();
 
         // when
         try (InputStream inputStream = Files.newInputStream(TEST_FILE_FULL_PATH)) {
-            fullPath = DefaultImageManager.saveLocal(inputStream, renamedFilename, targetDir);
+            DefaultImageManager.saveLocal(inputStream, fullPath);
         }
 
         // then
-        assertThat(fullPath).isNotBlank();
-
         Path output = Paths.get(fullPath);
-
         assertThat(output.toFile().exists()).isTrue();
     }
 }

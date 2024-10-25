@@ -29,21 +29,18 @@ import java.util.UUID;
 public class DefaultImageManager {
     public static final String LOCAL_STORAGE_DIR = System.getenv("FLYINHERON_STORAGE");
 
-    public static String saveLocal(
+    public static void saveLocal(
             InputStream inputStream
-            , String renamedFilename
-            , String targetDir
+            , String fullPath
     ) throws IOException {
-        Path targetFolder = Paths.get(targetDir);
+        Path targetFullPath = Paths.get(fullPath);
+        Path targetFolder = targetFullPath.getParent();
 
         if (!targetFolder.toFile().exists()) {
             Files.createDirectories(targetFolder);
         }
 
-        Path output = Paths.get(targetDir, renamedFilename);
-        Files.copy(inputStream, output);
-
-        return output.toString();
+        Files.copy(inputStream, targetFullPath);
     }
 
     public static File createDefaultMemberProfileImage(int width, int height, String username) throws IOException {

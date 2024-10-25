@@ -1,6 +1,5 @@
 package com.gosqo.flyinheron.repository.jpaentity;
 
-import com.gosqo.flyinheron.domain.DefaultImageManager;
 import com.gosqo.flyinheron.domain.Member;
 import com.gosqo.flyinheron.global.jpadirect.JpaDirectTestDataManager;
 import lombok.extern.slf4j.Slf4j;
@@ -8,18 +7,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 class MemberProfileImageJpaEntityTest extends JpaDirectTestDataManager {
-    private static final String CLIENT_IMAGE_FILENAME = "profile image.png";
-    private static final Path CLIENT_IMAGE_DIR = Paths.get(DefaultImageManager.LOCAL_STORAGE_DIR, "client");
-    private static final Path SOURCE = Paths.get(CLIENT_IMAGE_DIR.toString(), CLIENT_IMAGE_FILENAME);
 
     @BeforeEach
     void setUp() {
@@ -31,7 +23,6 @@ class MemberProfileImageJpaEntityTest extends JpaDirectTestDataManager {
     void persist() throws IOException {
         // given
         Member member = em.find(Member.class, super.member.getId());
-        InputStream in = Files.newInputStream(SOURCE);
 
         profileImage = buildProfileImage();
 

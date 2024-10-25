@@ -24,6 +24,9 @@ public class MemberProfileImageJpaEntity extends UuidBaseEntity {
     private String renamedFilename;
 
     @Column(nullable = false)
+    private String referencePath;
+
+    @Column(nullable = false)
     private String fullPath;
 
     @Builder
@@ -31,20 +34,27 @@ public class MemberProfileImageJpaEntity extends UuidBaseEntity {
             Member member
             , String originalFilename
             , String renamedFilename
+            , String referencePath
             , String fullPath) {
         this.member = member;
         this.originalFilename = originalFilename;
         this.renamedFilename = renamedFilename;
+        this.referencePath = referencePath;
         this.fullPath = fullPath;
     }
 
     public void updateMember(Member member) {
         this.member = member;
+
+        if (this.member.getProfileImage() != this) {
+            this.member.updateProfileImage(this);
+        }
     }
 
     public void updateImage(MemberProfileImageJpaEntity updateEntity) {
         this.originalFilename = updateEntity.getOriginalFilename();
         this.renamedFilename = updateEntity.getRenamedFilename();
+        this.referencePath = updateEntity.getReferencePath();
         this.fullPath = updateEntity.getFullPath();
     }
 }

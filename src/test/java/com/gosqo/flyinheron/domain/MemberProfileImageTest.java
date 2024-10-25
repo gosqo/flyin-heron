@@ -32,13 +32,13 @@ class MemberProfileImageTest extends TestDataInitializer {
     @Test
     void toEntity_before_saveLocal_throws_IllegalStateException() {
         assertThatThrownBy(() -> profileImage.toEntity())
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
     void saveMemberProfileImage() throws IOException {
-        String fullPath = profileImage.saveLocal();
-        Path output = Paths.get(fullPath);
+        profileImage.saveLocal();
+        Path output = Paths.get(profileImage.getFullPath());
 
         assertThat(output.toFile().exists()).isTrue();
     }
@@ -59,7 +59,6 @@ class MemberProfileImageTest extends TestDataInitializer {
     @Test
     void remove_former_if_exists_then_save_new_one() throws IOException {
         String targetDir = MemberProfileImage.prepareDir(member);
-        Path targetDirPath = Paths.get(targetDir);
 
         // given
         // dummies to be deleted.
@@ -67,24 +66,24 @@ class MemberProfileImageTest extends TestDataInitializer {
             try {
                 File file = TestImageCreator.createTestImage(100, 100, "sample image" + i);
                 InputStream stream = Files.newInputStream(file.toPath());
-                DefaultImageManager.saveLocal(
-                        stream
-                        , file.getName()
-                        , targetDir
-                );
+                String fullPath = Paths.get(targetDir, file.getName()).toString();
+                DefaultImageManager.saveLocal(stream, fullPath);
             } catch (IOException e) {
                 log.info("IOException. occurred, check.");
             }
         });
 
-        assertThat(Arrays.sizeOf(targetDirPath.toFile().listFiles()))
+        assertThat(Arrays.sizeOf(Paths.get(targetDir).toFile().listFiles()))
                 .isGreaterThanOrEqualTo(5);
 
         // when
         // 이전 5 장의 더미 파일 삭제 및 테스트 필드 profileImage 객체 필드 로컬 저장.
         MemberProfileImage newImage = buildProfileImage("new one");
-        String newImageFullPath = newImage.saveLocal();
-        Path newImagePath = Paths.get(newImageFullPath);
+        newImage.saveLocal();
+
+        assertThat(newImage.isSavedLocal()).isTrue();
+
+        Path newImagePath = Paths.get(newImage.getFullPath());
 
         // then
         int targetDirFileCount = Arrays.sizeOf(newImagePath.getParent().toFile().listFiles());

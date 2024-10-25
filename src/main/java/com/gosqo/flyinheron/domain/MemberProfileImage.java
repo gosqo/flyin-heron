@@ -29,15 +29,19 @@ public class MemberProfileImage {
     // this 인스턴스 각각의 필드를 채웁니다.
     private final InputStream inputStream;
     private final String originalFilename;
-    private final String renamedFilename;
     private final String storageDir;
-    private String fullPath;
+    private final String renamedFilename;
+    private final String fullPath;
+    private final String referencePath;
+
+    private boolean savedLocal = false;
 
     @Builder
     public MemberProfileImage(
             Member member
             , InputStream inputStream
             , String originalFilename
+            , String referencePath
             , String renamedFilename
             , String fullPath
     ) {
@@ -47,13 +51,18 @@ public class MemberProfileImage {
         this.inputStream = inputStream;
         this.originalFilename = originalFilename;
 
-        this.renamedFilename = this.renameFile(this.originalFilename);
         this.storageDir = prepareDir(this.member);
+        this.renamedFilename = this.renameFile(this.originalFilename);
+        this.fullPath = Paths.get(this.storageDir, this.renamedFilename).toString();
+        this.referencePath = this.fullPath.replaceAll(DefaultImageManager.LOCAL_STORAGE_DIR, "");
     }
 
     public static String prepareDir(Member member) {
-        return Paths.get(MEMBER_PROFILE_IMAGE_DIR.toString(), String.valueOf(member.getId()), "profile")
-                .toString();
+        return Paths.get(
+                MEMBER_PROFILE_IMAGE_DIR.toString()
+                , String.valueOf(member.getId())
+                , "profile"
+        ).toString();
     }
 
     public static MemberProfileImage of(MemberProfileImageJpaEntity entity) {
@@ -61,6 +70,7 @@ public class MemberProfileImage {
                 .member(entity.getMember())
                 .originalFilename(entity.getOriginalFilename())
                 .renamedFilename(entity.getRenamedFilename())
+                .referencePath(entity.getReferencePath())
                 .fullPath(entity.getFullPath())
                 .build();
     }
@@ -77,30 +87,28 @@ public class MemberProfileImage {
     }
 
     public MemberProfileImageJpaEntity toEntity() {
-        Objects.requireNonNull(this.fullPath, "image file full path can not be null or blank.");
+        if (!this.savedLocal) {
+            throw new IllegalStateException("Attempt to toEntity with an unsaved image.");
+        }
 
         return MemberProfileImageJpaEntity.builder()
                 .member(this.member)
                 .originalFilename(this.originalFilename)
                 .renamedFilename(this.renamedFilename)
                 .fullPath(this.fullPath)
+                .referencePath(this.referencePath)
                 .build();
     }
 
-    public String saveLocal() throws IOException {
+    public void saveLocal() throws IOException {
         File targetFolder = Paths.get(this.storageDir).toFile();
 
         if (targetFolder.exists() && targetFolder.listFiles() != null) {
             deleteSubFiles(this.storageDir);
         }
 
-        this.fullPath = DefaultImageManager.saveLocal(
-                this.inputStream
-                , this.renamedFilename
-                , this.storageDir
-        );
-
-        return this.fullPath;
+        DefaultImageManager.saveLocal(this.inputStream, this.fullPath);
+        this.savedLocal = true;
     }
 
     private void deleteSubFiles(String targetDir) throws IOException {
