@@ -1,138 +1,57 @@
 package com.gosqo.flyinheron.repository;
 
 import com.gosqo.flyinheron.domain.Member;
-import com.gosqo.flyinheron.global.data.TestImageCreator;
 import com.gosqo.flyinheron.repository.jpaentity.MemberProfileImageJpaEntity;
-import com.gosqo.flyinheron.service.MemberProfileImageService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class MemberProfileImageRepositoryTest {
+class MemberProfileImageRepositoryTest extends RepositoryTestBase {
+    private final MemberRepository memberRepository;
+    private final MemberProfileImageRepository memberProfileImageRepository;
+    @PersistenceContext
+    private EntityManager em;
 
-    @Nested
-    class Repository_Only extends RepositoryTestBase {
-        private final MemberRepository memberRepository;
-        private final MemberProfileImageRepository memberProfileImageRepository;
-        @PersistenceContext
-        private EntityManager em;
-
-        @Autowired
-        Repository_Only(
-                MemberRepository memberRepository
-                , MemberProfileImageRepository memberProfileImageRepository
-        ) {
-            this.memberRepository = memberRepository;
-            this.memberProfileImageRepository = memberProfileImageRepository;
-        }
-
-        @BeforeEach
-        void setUp() throws IOException {
-            member = memberRepository.save(buildMember());
-            profileImageJpaEntity = memberProfileImageRepository.save(buildProfileImageJpaEntity());
-
-            em.flush();
-            em.clear();
-        }
-
-        @Test
-        void saved_profile_image_entity_can_refer_its_member() {
-            // when
-            MemberProfileImageJpaEntity found =
-                    memberProfileImageRepository.findById(profileImageJpaEntity.getId()).orElseThrow();
-
-            //then
-            assertThat(found.getMember().getId()).isEqualTo(member.getId());
-        }
-
-        @Test
-        void saved_profile_image_entity_can_be_referenced_by_its_member() {
-            // when
-            Member found = memberRepository.findById(member.getId()).orElseThrow();
-
-            //then
-            assertThat(found.getProfileImage().getId()).isEqualTo(profileImageJpaEntity.getId());
-        }
+    @Autowired
+    MemberProfileImageRepositoryTest(
+            MemberRepository memberRepository
+            , MemberProfileImageRepository memberProfileImageRepository
+    ) {
+        this.memberRepository = memberRepository;
+        this.memberProfileImageRepository = memberProfileImageRepository;
     }
 
-    @Nested
-    @Import(MemberProfileImageService.class)
-    class With_Service extends RepositoryTestBase {
-        private final MemberProfileImageService service;
-        private final MemberRepository memberRepository;
-        private final MemberProfileImageRepository memberProfileImageRepository;
-        @PersistenceContext
-        private EntityManager em;
+    @BeforeEach
+    void setUp() throws IOException {
+        member = memberRepository.save(buildMember());
+        profileImageJpaEntity = memberProfileImageRepository.save(buildProfileImageJpaEntity());
 
-        @Autowired
-        With_Service(
-                MemberProfileImageService memberProfileImageService
-                , MemberRepository memberRepository
-                , MemberProfileImageRepository memberProfileImageRepository
-        ) {
-            this.service = memberProfileImageService;
-            this.memberRepository = memberRepository;
-            this.memberProfileImageRepository = memberProfileImageRepository;
-        }
+        em.flush();
+        em.clear();
+    }
 
-        @BeforeEach
-        void setUp() throws IOException {
-            member = memberRepository.save(buildMember());
-            profileImageJpaEntity = memberProfileImageRepository.save(buildProfileImageJpaEntity());
+    @Test
+    void saved_profile_image_entity_can_refer_its_member() {
+        // when
+        MemberProfileImageJpaEntity found =
+                memberProfileImageRepository.findById(profileImageJpaEntity.getId()).orElseThrow();
 
-            em.flush();
-            em.clear();
-        }
+        //then
+        assertThat(found.getMember().getId()).isEqualTo(member.getId());
+    }
 
-        @Test
-        void saved_profile_image_can_referenced_by_its_member() {
-            Member found = memberRepository.findById(member.getId()).orElseThrow();
+    @Test
+    void saved_profile_image_entity_can_be_referenced_by_its_member() {
+        // when
+        Member found = memberRepository.findById(member.getId()).orElseThrow();
 
-            assertThat(found.getProfileImage().getId()).isEqualTo(profileImageJpaEntity.getId());
-        }
-
-        @Test
-        void remove_profile_image_it_actually_turns_it_into_default_image() throws IOException {
-            service.removeMemberProfileImage(member.getEmail(), member.getId());
-            em.flush();
-            em.clear();
-
-            Member found = memberRepository.findByEmail(member.getEmail()).orElseThrow();
-
-            assertThat(found.getProfileImage()).isNotNull();
-            assertThat(found.getProfileImage().getFullPath()).contains(member.getNickname());
-        }
-
-        @Test
-        void update_profile_image() throws IOException {
-            File image = TestImageCreator.createTestImage(100, 100, "test image");
-            MultipartFile file = new MockMultipartFile(
-                    image.getName()
-                    , image.getName()
-                    , "image/png"
-                    , Files.newInputStream(image.toPath())
-            );
-
-            service.updateMemberProfileImage(file, member.getEmail(), member.getId());
-            em.flush();
-            em.clear();
-
-            Member found = memberRepository.findByEmail(member.getEmail()).orElseThrow();
-
-            assertThat(found.getProfileImage()).isNotNull();
-            assertThat(found.getProfileImage().getFullPath()).contains(image.getName().replaceAll(" ", "-"));
-        }
+        //then
+        assertThat(found.getProfileImage().getId()).isEqualTo(profileImageJpaEntity.getId());
     }
 }

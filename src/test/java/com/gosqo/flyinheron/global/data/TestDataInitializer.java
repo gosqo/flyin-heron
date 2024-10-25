@@ -40,7 +40,7 @@ public abstract class TestDataInitializer {
     }
 
     protected MemberProfileImage buildProfileImage() throws IOException {
-        File sampleImage = TestImageCreator.createTestImage(100, 100, "Test image 0");
+        File sampleImage = TestImageCreator.createTestImage(100, 100, "TestDataInitializer built it");
 
         return MemberProfileImage.builder()
                 .member(member)
@@ -60,13 +60,16 @@ public abstract class TestDataInitializer {
     }
 
     protected MemberProfileImageJpaEntity buildProfileImageJpaEntity() throws IOException {
-        File sampleImage = TestImageCreator.createTestImage(100, 100, "Test image 0");
+        MemberProfileImage image = buildProfileImage();
 
-        MemberProfileImage image = MemberProfileImage.builder()
-                .member(member)
-                .inputStream(Files.newInputStream(sampleImage.toPath()))
-                .originalFilename(sampleImage.getName())
-                .build();
+        image.saveLocal();
+
+        return image.toEntity();
+    }
+
+    protected MemberProfileImageJpaEntity buildProfileImageJpaEntity(String filename) throws IOException {
+        MemberProfileImage image = buildProfileImage(filename);
+
         image.saveLocal();
 
         return image.toEntity();
