@@ -67,6 +67,18 @@ public class Member implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    public MemberModel toModel() {
+        return MemberModel.builder()
+                .id(this.id)
+                .profileImage(this.profileImage)
+                .email(this.email)
+                .password(this.password)
+                .nickname(this.nickname)
+                .registerDate(this.registerDate)
+                .role(this.role)
+                .build();
+    }
+
     public void updateProfileImage(MemberProfileImageJpaEntity profileImage) {
         this.profileImage = profileImage;
 
