@@ -12,8 +12,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-
 @RestController
 @RequestMapping("/api/v1/member/{memberId}/profile/image")
 @RequiredArgsConstructor
@@ -24,11 +22,11 @@ public class MemberProfileImageController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("")
-    public ResponseEntity<JsonResponse> registerMemberProfileImage(
+    public ResponseEntity<JsonResponse> updateMemberProfileImage(
             HttpServletRequest request
             , @PathVariable("memberId") Long memberId
             , @RequestParam("profileImage") MultipartFile profileImage
-    ) throws IOException {
+    ) {
         String accessToken = AuthHeaderUtility.extractAccessToken(request);
         String memberEmail = extractor.extractUserEmail(accessToken);
 
@@ -48,7 +46,7 @@ public class MemberProfileImageController {
     public ResponseEntity<JsonResponse> deleteMemberProfileImage(
             HttpServletRequest request
             , @PathVariable("memberId") Long memberId
-    ) throws IOException {
+    ) {
         String accessToken = AuthHeaderUtility.extractAccessToken(request);
         String memberEmail = extractor.extractUserEmail(accessToken);
 

@@ -65,18 +65,31 @@ public class MemberProfileImage {
         ).toString();
     }
 
-    public static MemberProfileImage createDefaultImage(Member member) throws IOException {
+    public static MemberProfileImage convertToProfileImage(Member member, File file) {
+        MemberProfileImage image = null;
+
+        try {
+            image = MemberProfileImage.builder()
+                    .member(member)
+                    .inputStream(Files.newInputStream(file.toPath()))
+                    .originalFilename(file.getName())
+                    .build();
+        } catch (IOException e) {
+            log.error("I/O Error", e);
+            throw new RuntimeException(e.getClass().getName() + " " + e.getMessage());
+        }
+
+        return image;
+    }
+
+    public static MemberProfileImage createDefaultImage(Member member) {
         File defaultProfileImage =
                 DefaultImageManager.createDefaultMemberProfileImage(100, 100, member.getNickname());
 
-        return MemberProfileImage.builder()
-                .member(member)
-                .inputStream(Files.newInputStream(defaultProfileImage.toPath()))
-                .originalFilename(defaultProfileImage.getName())
-                .build();
+        return MemberProfileImage.convertToProfileImage(member, defaultProfileImage);
     }
 
-    public void saveLocal() throws IOException {
+    public void saveLocal() {
         File targetFolder = Paths.get(this.storageDir).toFile();
 
         if (targetFolder.exists() && targetFolder.listFiles() != null) {
@@ -87,7 +100,7 @@ public class MemberProfileImage {
         this.savedLocal = true;
     }
 
-    private void deleteSubFiles(String targetDir) throws IOException {
+    private void deleteSubFiles(String targetDir) {
 
         if (!targetDir.startsWith(DefaultImageManager.LOCAL_STORAGE_DIR)
                 || targetDir.equals(DefaultImageManager.LOCAL_STORAGE_DIR)
@@ -104,6 +117,9 @@ public class MemberProfileImage {
                     .filter(file -> !file.delete())
                     .map(file -> "Failed to delete: " + file)
                     .forEach(log::warn);
+        } catch (IOException e) {
+            log.error("I/O Error", e);
+            throw new RuntimeException(e.getClass().getName() + " " + e.getMessage());
         }
     }
 

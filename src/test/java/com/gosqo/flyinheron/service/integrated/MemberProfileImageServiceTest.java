@@ -37,7 +37,7 @@ public class MemberProfileImageServiceTest extends IntegratedServiceTestBase {
     }
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() {
         member = memberRepository.save(buildMember());
         profileImageJpaEntity = memberProfileImageRepository.save(buildProfileImageJpaEntity());
     }
@@ -50,7 +50,7 @@ public class MemberProfileImageServiceTest extends IntegratedServiceTestBase {
     }
 
     @Test
-    void remove_profile_image_it_actually_turns_it_into_default_image() throws IOException {
+    void remove_profile_image_it_actually_turns_it_into_default_image() {
         service.removeMemberProfileImage(member.getEmail(), member.getId());
 
         Member found = memberRepository.findByEmail(member.getEmail()).orElseThrow();

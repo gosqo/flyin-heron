@@ -21,10 +21,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Slf4j
 class MemberProfileImageTest extends TestDataInitializer {
-    private static final String CLIENT_IMAGE_FILENAME = "profile image.png";
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() {
         member = buildMember();
         profileImage = buildProfileImage();
     }
@@ -36,7 +35,7 @@ class MemberProfileImageTest extends TestDataInitializer {
     }
 
     @Test
-    void saveMemberProfileImage() throws IOException {
+    void saveMemberProfileImage() {
         profileImage.saveLocal();
         Path output = Paths.get(profileImage.getFullPath());
 
@@ -44,7 +43,7 @@ class MemberProfileImageTest extends TestDataInitializer {
     }
 
     @Test
-    void toEntity_after_save() throws IOException {
+    void toEntity_after_save() {
         // given
         profileImage.saveLocal();
 
@@ -70,6 +69,7 @@ class MemberProfileImageTest extends TestDataInitializer {
                 DefaultImageManager.saveLocal(stream, fullPath);
             } catch (IOException e) {
                 log.info("IOException. occurred, check.");
+                throw new RuntimeException(e.getClass().getName() + " " + e.getMessage());
             }
         });
 

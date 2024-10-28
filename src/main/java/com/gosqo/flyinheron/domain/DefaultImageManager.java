@@ -29,24 +29,28 @@ import java.util.UUID;
 public class DefaultImageManager {
     public static final String LOCAL_STORAGE_DIR = System.getenv("FLYINHERON_STORAGE");
 
-    public static void saveLocal(
-            InputStream inputStream
-            , String fullPath
-    ) throws IOException {
+    public static void saveLocal(InputStream inputStream, String fullPath) {
         Path targetFullPath = Paths.get(fullPath);
         Path targetFolder = targetFullPath.getParent();
 
-        if (!targetFolder.toFile().exists()) {
-            Files.createDirectories(targetFolder);
-        }
+        try (inputStream) {
 
-        Files.copy(inputStream, targetFullPath);
+            if (!targetFolder.toFile().exists()) {
+                Files.createDirectories(targetFolder);
+            }
+
+            Files.copy(inputStream, targetFullPath);
+        } catch (IOException e) {
+            log.error("I/O Error", e);
+            throw new RuntimeException(e.getClass().getName() + " " + e.getMessage());
+        }
     }
 
-    public static File createDefaultMemberProfileImage(int width, int height, String username) throws IOException {
+    public static File createDefaultMemberProfileImage(int width, int height, String username) {
         String firstCharacter = String.valueOf(username.charAt(0));
         BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = bufferedImage.createGraphics();
+        File tempFile;
 
         g2d.setColor(Color.ORANGE);
         g2d.fillRect(width / 2, height / 2, width, height);
@@ -57,9 +61,13 @@ public class DefaultImageManager {
 
         g2d.dispose();
 
-        File tempFile = File.createTempFile(username + "_", ".png");
-        ImageIO.write(bufferedImage, "png", tempFile);
-
+        try {
+            tempFile = File.createTempFile(username + "_", ".png");
+            ImageIO.write(bufferedImage, "png", tempFile);
+        } catch (IOException e) {
+            log.error("I/O Error", e);
+            throw new RuntimeException(e.getClass().getName() + " " + e.getMessage());
+        }
         return tempFile;
     }
 

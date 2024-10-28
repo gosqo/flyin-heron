@@ -9,7 +9,6 @@ import org.junit.jupiter.api.DisplayNameGenerator;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -39,27 +38,19 @@ public abstract class TestDataInitializer {
                 .build();
     }
 
-    protected MemberProfileImage buildProfileImage() throws IOException {
+    protected MemberProfileImage buildProfileImage() {
         File sampleImage = TestImageCreator.createTestImage(100, 100, "TestDataInitializer built it");
 
-        return MemberProfileImage.builder()
-                .member(member)
-                .inputStream(Files.newInputStream(sampleImage.toPath()))
-                .originalFilename(sampleImage.getName())
-                .build();
+        return MemberProfileImage.convertToProfileImage(member, sampleImage);
     }
 
-    protected MemberProfileImage buildProfileImage(String filename) throws IOException {
+    protected MemberProfileImage buildProfileImage(String filename) {
         File sampleImage = TestImageCreator.createTestImage(100, 100, filename);
 
-        return MemberProfileImage.builder()
-                .member(member)
-                .inputStream(Files.newInputStream(sampleImage.toPath()))
-                .originalFilename(sampleImage.getName())
-                .build();
+        return MemberProfileImage.convertToProfileImage(member, sampleImage);
     }
 
-    protected MemberProfileImageJpaEntity buildProfileImageJpaEntity() throws IOException {
+    protected MemberProfileImageJpaEntity buildProfileImageJpaEntity() {
         MemberProfileImage image = buildProfileImage();
 
         image.saveLocal();

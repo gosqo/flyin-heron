@@ -7,6 +7,7 @@ import com.gosqo.flyinheron.repository.MemberProfileImageRepository;
 import com.gosqo.flyinheron.repository.MemberRepository;
 import com.gosqo.flyinheron.repository.jpaentity.MemberProfileImageJpaEntity;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberProfileImageService {
@@ -21,7 +23,7 @@ public class MemberProfileImageService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void removeMemberProfileImage(String requesterEmail, Long resourceOwnerId) throws IOException {
+    public void removeMemberProfileImage(String requesterEmail, Long resourceOwnerId) {
         Member requester = memberRepository.findByEmail(requesterEmail).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 멤버의 프로필 이미지 삭제 요청")
         );
@@ -42,27 +44,42 @@ public class MemberProfileImageService {
     }
 
     @Transactional
-    public void updateMemberProfileImage(MultipartFile file, String requesterEmail, Long resourceOwnerId) throws IOException {
+    public void updateMemberProfileImage (MultipartFile file, String requesterEmail, Long resourceOwnerId) {
         Member requester = memberRepository.findByEmail(requesterEmail).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 멤버의 프로필 이미지 변경 요청")
         );
 
         ThrowIf.NotMatchedResourceOwner(requester, resourceOwnerId);
 
-        MemberProfileImageJpaEntity formerProfileImageJpaEntity =
-                memberProfileImageRepository.findById(requester.getProfileImage().getId()).orElseThrow(
-                        () -> new NoSuchElementException("존재하지 않는 프로필 이미지 변경 요청")
-                );
-
-        MemberProfileImage image = MemberProfileImage.builder()
-                .member(requester)
-                .inputStream(file.getInputStream())
-                .originalFilename(file.getOriginalFilename())
-                .build();
+        MemberProfileImage image = convertToProfileImage(requester, file);
         image.saveLocal();
 
-        MemberProfileImageJpaEntity newProfileImageJpaEntity = MemberProfileImageJpaEntity.of(image);
+        memberProfileImageRepository.findByMemberId(requester.getId()).ifPresentOrElse(item ->
+                {
+                    MemberProfileImageJpaEntity newImageEntity = MemberProfileImageJpaEntity.of(image);
+                    item.updateImage(newImageEntity);
+                }
+                , () -> {
+                    MemberProfileImageJpaEntity profileImageJpaEntity = MemberProfileImageJpaEntity.of(image);
+                    memberProfileImageRepository.save(profileImageJpaEntity);
+                }
+        );
+    }
 
-        formerProfileImageJpaEntity.updateImage(newProfileImageJpaEntity);
+    private static MemberProfileImage convertToProfileImage(Member member, MultipartFile file) {
+        MemberProfileImage image;
+
+        try {
+            image = MemberProfileImage.builder()
+                    .member(member)
+                    .inputStream(file.getInputStream())
+                    .originalFilename(file.getOriginalFilename())
+                    .build();
+        } catch (IOException e) {
+            log.error("I/O Error", e);
+            throw new RuntimeException(e.getClass().getName() + " " + e.getMessage());
+        }
+
+        return image;
     }
 }

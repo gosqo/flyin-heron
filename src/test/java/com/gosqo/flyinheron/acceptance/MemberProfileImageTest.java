@@ -9,19 +9,16 @@ import com.gosqo.flyinheron.repository.MemberRepository;
 import com.gosqo.flyinheron.service.JwtService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.io.File;
-import java.io.IOException;
 
 import static com.gosqo.flyinheron.global.utility.HeadersUtility.buildMultipartHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,52 +44,88 @@ class MemberProfileImageTest extends SpringBootTestBase {
         this.jwtService = jwtService;
     }
 
-    @BeforeEach
-    void setUp() throws IOException {
-        member = memberRepository.save(buildMember());
-        profileImageJpaEntity = memberProfileImageRepository.save(buildProfileImageJpaEntity());
-        endPoint = "/api/v1/member/" + member.getId() + "/profile/image";
+    @Nested
+    class When_Profile_Image_Jpa_Entity_Not_Exists {
+        @BeforeEach
+        void setUp() {
+            member = memberRepository.save(buildMember());
+            endPoint = "/api/v1/member/" + member.getId() + "/profile/image";
+        }
+
+        @Test
+        void register_newImage() {
+            String accessToken = jwtService.generateAccessToken(member);
+            HttpHeaders headers = new HttpHeaders();
+            MultiValueMap<String, FileSystemResource> formBody = new LinkedMultiValueMap<>();
+            File testImage = TestImageCreator.createTestImage(100, 100, "Test Image");
+
+            formBody.add("profileImage", new FileSystemResource(testImage));
+
+            headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            RequestEntity<MultiValueMap<String, FileSystemResource>> requestEntity = RequestEntity
+                    .post(endPoint)
+                    .headers(headers)
+                    .body(formBody);
+
+            // when
+            ResponseEntity<JsonResponse> response = template.exchange(requestEntity, JsonResponse.class);
+
+            // then
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        }
     }
 
-    @Test
-    void register_success_case() throws IOException {
-        // given
-        String accessToken = jwtService.generateAccessToken(member);
-        String bearerAccessToken = "Bearer " + accessToken;
-        HttpHeaders headers = buildMultipartHeaders();
-        File testImage = TestImageCreator.createTestImage(100, 100, "Test Image");
-        MultiValueMap<String, FileSystemResource> formBody = new LinkedMultiValueMap<>();
+    @Nested
+    class When_Profile_Image_Jpa_Entity_Exists {
+        @BeforeEach
+        void setUp() {
+            member = memberRepository.save(buildMember());
+            profileImageJpaEntity = memberProfileImageRepository.save(buildProfileImageJpaEntity());
+            endPoint = "/api/v1/member/" + member.getId() + "/profile/image";
+        }
 
-        headers.add(HttpHeaders.AUTHORIZATION, bearerAccessToken);
-        formBody.add("profileImage", new FileSystemResource(testImage));
+        @Test
+        void register_success_case() {
+            // given
+            String accessToken = jwtService.generateAccessToken(member);
+            String bearerAccessToken = "Bearer " + accessToken;
+            HttpHeaders headers = buildMultipartHeaders();
+            File testImage = TestImageCreator.createTestImage(100, 100, "Test Image");
+            MultiValueMap<String, FileSystemResource> formBody = new LinkedMultiValueMap<>();
 
-        RequestEntity<MultiValueMap<String, FileSystemResource>> requestEntity = RequestEntity
-                .post(endPoint)
-                .headers(headers)
-                .body(formBody);
+            headers.add(HttpHeaders.AUTHORIZATION, bearerAccessToken);
+            formBody.add("profileImage", new FileSystemResource(testImage));
 
-        // when
-        ResponseEntity<JsonResponse> response = template.exchange(requestEntity, JsonResponse.class);
+            RequestEntity<MultiValueMap<String, FileSystemResource>> requestEntity = RequestEntity
+                    .post(endPoint)
+                    .headers(headers)
+                    .body(formBody);
 
-        // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-    }
+            // when
+            ResponseEntity<JsonResponse> response = template.exchange(requestEntity, JsonResponse.class);
 
-    @Test
-    void remove_success_case() {
-        // given
-        String accessToken = jwtService.generateAccessToken(member);
-        HttpHeaders headers = HeadersUtility.buildHeadersWithToken(accessToken);
+            // then
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        }
 
-        RequestEntity<Void> request = RequestEntity
-                .delete(endPoint)
-                .headers(headers)
-                .build();
+        @Test
+        void remove_success_case() {
+            // given
+            String accessToken = jwtService.generateAccessToken(member);
+            HttpHeaders headers = HeadersUtility.buildHeadersWithToken(accessToken);
 
-        // when
-        ResponseEntity<JsonResponse> response = template.exchange(request, JsonResponse.class);
+            RequestEntity<Void> request = RequestEntity
+                    .delete(endPoint)
+                    .headers(headers)
+                    .build();
 
-        // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+            // when
+            ResponseEntity<JsonResponse> response = template.exchange(request, JsonResponse.class);
+
+            // then
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        }
     }
 }
