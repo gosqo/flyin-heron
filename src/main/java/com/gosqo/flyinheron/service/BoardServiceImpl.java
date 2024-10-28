@@ -155,7 +155,9 @@ public class BoardServiceImpl implements BoardService {
 
         Cookie cookie = CookieUtility.findCookie(BOARD_VIEWS_COOKIE_NAME, cookies);
 
-        if (CookieUtility.over3500BytesOf(cookie)) CookieUtility.trimFront500Bytes(cookie, '/');
+        if (CookieUtility.over3500BytesOf(cookie)) {
+            CookieUtility.trimFront500Bytes(cookie, '/');
+        }
 
         CookieUtility.appendValue(id, cookie, '/');
 
@@ -169,11 +171,15 @@ public class BoardServiceImpl implements BoardService {
     ) {
         Cookie[] cookies = request.getCookies();
 
-        if (cookies == null) return false;
+        if (cookies == null) {
+            return false;
+        }
 
         Cookie targetCookie = CookieUtility.findCookie(BOARD_VIEWS_COOKIE_NAME, cookies);
 
-        if (targetCookie == null) return false;
+        if (targetCookie == null) {
+            return false;
+        }
 
         return CookieUtility.contains(id, targetCookie);
     }

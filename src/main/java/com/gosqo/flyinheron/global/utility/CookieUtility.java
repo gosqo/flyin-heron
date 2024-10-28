@@ -33,7 +33,9 @@ public class CookieUtility {
      * @return cookieName 을 이름으로 가진 쿠키가 배열에 존재하면 true, 아니면 false.
      */
     public static boolean hasCookieNamed(String cookieName, Cookie[] cookies) {
-        if (cookies == null) return false;
+        if (cookies == null) {
+            return false;
+        }
 
         return Arrays.stream(cookies).anyMatch(cookie -> cookie.getName().equals(cookieName));
     }

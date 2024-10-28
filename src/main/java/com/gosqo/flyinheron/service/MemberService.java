@@ -42,9 +42,11 @@ public class MemberService {
     }
 
     public void register(MemberRegisterRequest request) {
-        if (isDuplicated(request))
-            throw new DataIntegrityViolationException("존재하는 자원과 중복.");
-
+        if (isDuplicated(request)) {
+            throw new DataIntegrityViolationException(
+                    "회원 가입에 중복되는 입력값. 클라이언트에서 유효성 검사 후 통과된 경우로, 확인 필요."
+            );
+        }
 
         final Member member = request.toEntity(passwordEncoder.encode(request.getPassword()));
 
