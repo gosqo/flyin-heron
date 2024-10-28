@@ -1,7 +1,6 @@
 package com.gosqo.flyinheron.controller;
 
 import com.gosqo.flyinheron.dto.member.*;
-import com.gosqo.flyinheron.repository.MemberRepository;
 import com.gosqo.flyinheron.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,20 +11,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/member")
 public class MemberController {
 
     private final MemberService service;
-    private final MemberRepository repository;
 
     @PostMapping("")
     public ResponseEntity<Object> register(
             @Valid @RequestBody MemberRegisterRequest request
-    ) throws IOException {
+    ) {
         service.register(request);
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -72,8 +71,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public Object handleGetRequestExceptions(Exception e, HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+    public Object handleGetRequestExceptions(Exception e, HttpServletRequest request, HttpServletResponse response) {
 
         if (request.getMethod().equalsIgnoreCase(HttpMethod.GET.name())) {
 

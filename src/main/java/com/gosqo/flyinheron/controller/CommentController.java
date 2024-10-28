@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,7 +46,7 @@ public class CommentController {
     public ResponseEntity<Slice<CommentGetResponse>> getSliceOfComment(
             @PathVariable("boardId") Long boardId
             , @RequestParam("page-number") int pageNumber
-    ) throws NoResourceFoundException {
+    ) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(service.getSliceOfComments(boardId, pageNumber));

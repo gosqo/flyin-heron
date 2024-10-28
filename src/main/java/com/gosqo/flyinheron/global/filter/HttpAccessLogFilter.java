@@ -34,10 +34,9 @@ public class HttpAccessLogFilter extends OncePerRequestFilter {
             if (request.getHeader("host") == null
                     || !request.getHeader("host").equals(RequestLogUtility.HOST_DOMAIN)
             ) {
-            RequestLogUtility.logWholeRequestHeaders(request);
+                RequestLogUtility.logWholeRequestHeaders(request);
             }
         }
-
 
         RequestLogUtility.logRequestInfo(request);
 

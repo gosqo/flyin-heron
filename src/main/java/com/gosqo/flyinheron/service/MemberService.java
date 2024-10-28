@@ -11,8 +11,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -43,7 +41,7 @@ public class MemberService {
         return false;
     }
 
-    public void register(MemberRegisterRequest request) throws IOException {
+    public void register(MemberRegisterRequest request) {
         if (isDuplicated(request))
             throw new DataIntegrityViolationException("존재하는 자원과 중복.");
 
