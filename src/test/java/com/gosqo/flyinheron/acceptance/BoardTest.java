@@ -7,7 +7,7 @@ import com.gosqo.flyinheron.dto.board.BoardRegisterResponse;
 import com.gosqo.flyinheron.global.data.TestDataRemover;
 import com.gosqo.flyinheron.repository.BoardRepository;
 import com.gosqo.flyinheron.repository.MemberRepository;
-import com.gosqo.flyinheron.service.BoardServiceImpl;
+import com.gosqo.flyinheron.service.BoardService;
 import com.gosqo.flyinheron.service.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -162,7 +162,7 @@ class BoardTest extends SpringBootTestBase {
             final var responseCookie = Objects.requireNonNull(response.getHeaders().get("Set-Cookie"));
 
             assertThat(responseCookie.stream()
-                    .filter(item -> item.startsWith(BoardServiceImpl.BOARD_VIEWS_COOKIE_NAME))
+                    .filter(item -> item.startsWith(BoardService.BOARD_VIEWS_COOKIE_NAME))
                     .map(item -> item.split(";"))
                     .map(item -> item[0])
                     .findFirst()
@@ -213,7 +213,7 @@ class BoardTest extends SpringBootTestBase {
 
             assertThat(secondResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(secondResponseCookies.stream()
-                    .filter(item -> item.startsWith(BoardServiceImpl.BOARD_VIEWS_COOKIE_NAME))
+                    .filter(item -> item.startsWith(BoardService.BOARD_VIEWS_COOKIE_NAME))
                     .map(item -> item.split(";"))
                     .map(item -> item[0])
                     .findFirst()

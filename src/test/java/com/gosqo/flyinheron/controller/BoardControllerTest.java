@@ -3,7 +3,7 @@ package com.gosqo.flyinheron.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gosqo.flyinheron.dto.board.BoardRegisterRequest;
 import com.gosqo.flyinheron.dto.board.BoardUpdateRequest;
-import com.gosqo.flyinheron.service.BoardServiceImpl;
+import com.gosqo.flyinheron.service.BoardService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 , BoardPageController.class
         }
 )
-@MockBean(BoardServiceImpl.class)
+@MockBean(BoardService.class)
 class BoardControllerTest extends WebMvcTestBase {
 
     @Autowired

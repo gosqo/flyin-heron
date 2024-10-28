@@ -6,7 +6,7 @@ import com.gosqo.flyinheron.dto.board.BoardPageResponse;
 import com.gosqo.flyinheron.global.data.TestDataRemover;
 import com.gosqo.flyinheron.repository.BoardRepository;
 import com.gosqo.flyinheron.repository.MemberRepository;
-import com.gosqo.flyinheron.service.BoardServiceImpl;
+import com.gosqo.flyinheron.service.BoardService;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -21,14 +21,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class BoardServiceTest extends IntegratedServiceTestBase {
 
-    private final BoardServiceImpl service;
+    private final BoardService service;
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
 
     @Autowired
     BoardServiceTest(
             TestDataRemover remover
-            , BoardServiceImpl service
+            , BoardService service
             , MemberRepository memberRepository
             , BoardRepository boardRepository
     ) {
@@ -49,7 +49,7 @@ class BoardServiceTest extends IntegratedServiceTestBase {
 
         @Test
         void if_page_that_repository_returned_is_empty_Throws_NoResourceFoundException() {
-            int NotExistingPage = (boards.size() / BoardServiceImpl.PAGE_SIZE) + 2;
+            int NotExistingPage = (boards.size() / BoardService.PAGE_SIZE) + 2;
 
             assertThatThrownBy(() -> service.getBoardPage(NotExistingPage))
                     .isInstanceOf(NoResourceFoundException.class);
@@ -57,7 +57,7 @@ class BoardServiceTest extends IntegratedServiceTestBase {
 
         @Test
         void when_looking_for_page() throws NoResourceFoundException {
-            int ExistingPage = (boards.size() / BoardServiceImpl.PAGE_SIZE);
+            int ExistingPage = (boards.size() / BoardService.PAGE_SIZE);
 
             BoardPageResponse returned = service.getBoardPage(ExistingPage);
 
@@ -88,7 +88,7 @@ class BoardServiceTest extends IntegratedServiceTestBase {
             Board targetBoard = boards.get(0);
             Long formerViewCount = targetBoard.getViewCount();
 
-            Cookie cookie = new Cookie(BoardServiceImpl.BOARD_VIEWS_COOKIE_NAME, targetBoard.getId().toString());
+            Cookie cookie = new Cookie(BoardService.BOARD_VIEWS_COOKIE_NAME, targetBoard.getId().toString());
             MockHttpServletRequest mockRequest = new MockHttpServletRequest();
             mockRequest.setCookies(cookie);
 
