@@ -73,6 +73,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public Object handleGetRequestExceptions(Exception e, HttpServletRequest request, HttpServletResponse response) {
 
+        if (EXPECTED_EXCEPTIONS.stream().noneMatch(
+                setOfExceptions -> setOfExceptions.contains(e.getClass()))
+        ) {
+            log.warn("", e);
+        }
+
         if (request.getMethod().equalsIgnoreCase(HttpMethod.GET.name())) {
 
             if (BAD_REQUEST_EXCEPTIONS.contains(e.getClass())) {
@@ -112,8 +118,7 @@ public class GlobalExceptionHandler {
 
         // log stack trace if needed.
         if (EXPECTED_EXCEPTIONS.stream().noneMatch(
-                setOfExceptions -> setOfExceptions.contains(e.getClass())
-        )
+                setOfExceptions -> setOfExceptions.contains(e.getClass()))
         ) {
             log.warn("", e);
         }
