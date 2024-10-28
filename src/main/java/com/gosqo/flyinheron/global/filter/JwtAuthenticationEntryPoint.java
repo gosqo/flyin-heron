@@ -1,7 +1,6 @@
 package com.gosqo.flyinheron.global.filter;
 
 import com.gosqo.flyinheron.dto.ResponseBodyWriter;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +9,6 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
 
 @Component
 @Slf4j
@@ -22,7 +19,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             HttpServletRequest request,
             HttpServletResponse response,
             AuthenticationException authException
-    ) throws IOException, ServletException {
+    ) {
         ResponseBodyWriter responseBodyWriter = new ResponseBodyWriter();
 
         if (authException instanceof BadCredentialsException) {
@@ -31,7 +28,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
                     400,
                     "아이디 혹은 비밀번호를 확인해주세요."
             );
-
         } else if (authException instanceof InsufficientAuthenticationException) {
             responseBodyWriter.setResponseWithBody(
                     response,

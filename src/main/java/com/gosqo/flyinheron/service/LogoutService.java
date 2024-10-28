@@ -14,7 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 
 import static com.gosqo.flyinheron.controller.AuthenticationController.REFRESH_TOKEN_COOKIE_NAME;
@@ -55,7 +54,10 @@ public class LogoutService implements LogoutHandler {
 
         if (storedTokens.isEmpty()) { // refreshToken entity 가 존재하지 않는다면,
             log.warn("user tried refresh token that does not exist on database.");
-            responseWith400(response);
+            responseBodyWriter.setResponseWithBody(
+                    response
+                    , 400
+                    , "올바른 요청이 아닙니다.");
 
             return;
         }
@@ -68,28 +70,9 @@ public class LogoutService implements LogoutHandler {
         deleteRefreshToken.setPath("/");
         response.addCookie(deleteRefreshToken);
 
-        responseWith200(request, response);
-    }
-
-    private void responseWith400(HttpServletResponse response) {
-        try {
-            responseBodyWriter.setResponseWithBody(
-                    response
-                    , 400
-                    , "올바른 요청이 아닙니다.");
-        } catch (IOException e) {
-            log.info(e.getMessage());
-        }
-    }
-
-    private void responseWith200(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            responseBodyWriter.setResponseWithBody(
-                    response
-                    , 200
-                    , "로그아웃 했습니다.");
-        } catch (IOException e) {
-            log.info(e.getMessage());
-        }
+        responseBodyWriter.setResponseWithBody(
+                response
+                , 200
+                , "로그아웃 했습니다.");
     }
 }

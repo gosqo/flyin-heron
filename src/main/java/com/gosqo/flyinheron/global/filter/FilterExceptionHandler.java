@@ -11,8 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -25,7 +23,7 @@ public class FilterExceptionHandler extends OncePerRequestFilter {
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain
-    ) throws IOException {
+    ) {
         try {
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException ex) {

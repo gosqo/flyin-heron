@@ -1,13 +1,14 @@
 package com.gosqo.flyinheron.dto;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+@Slf4j
 @Component
 public class ResponseBodyWriter {
 
@@ -15,24 +16,23 @@ public class ResponseBodyWriter {
             HttpServletResponse response,
             int statusCode,
             String message
-    ) throws IOException {
+    ) {
         response.setStatus(statusCode);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().println(writeBody(statusCode, message));
-    }
 
-    private String writeBody(int statusCode, String message)
-            throws JsonProcessingException {
-        return new ObjectMapper().writeValueAsString(
-                buildResponseBody(statusCode, message)
-        );
-    }
-
-    private JsonResponse buildResponseBody(int statusCode, String message) {
-        return JsonResponse.builder()
-                .status(statusCode)
-                .message(message)
-                .build();
+        try {
+            response.getWriter().println(
+                    new ObjectMapper().writeValueAsString(
+                            JsonResponse.builder()
+                                    .status(statusCode)
+                                    .message(message)
+                                    .build()
+                    )
+            );
+        } catch (IOException e) {
+            log.error("IOException while writing response.", e);
+            response.setStatus(503);
+        }
     }
 }
