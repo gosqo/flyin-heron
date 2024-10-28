@@ -46,7 +46,7 @@ public class BoardService {
 
         if (foundPage.getContent().isEmpty()) {
             throw new NoResourceFoundException(HttpMethod.GET
-                    , "/boards/" + (foundPage.getPageable().getPageNumber() + 1));
+                    , "/board?page=" + (foundPage.getPageable().getPageNumber() + 1));
         }
 
         return BoardPageResponse.of(foundPage);

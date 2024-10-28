@@ -24,7 +24,7 @@ export class BoardFetcher {
 
     static async getBoardList() {
         const pageNumber = BoardList.Utility.getPageNumber()
-        const url = `/api/v1/boards/${pageNumber}`;
+        const url = `/api/v1/board?page=${pageNumber}`;
 
         try {
             const response = await fetch(url, { cache: "no-cache" });

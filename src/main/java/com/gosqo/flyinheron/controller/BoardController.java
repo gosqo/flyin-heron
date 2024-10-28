@@ -19,6 +19,13 @@ public class BoardController {
 
     private final BoardService service;
 
+    @GetMapping("")
+    public ResponseEntity<BoardPageResponse> getBoardList(
+            @RequestParam("page") int pageNumber
+    ) throws NoResourceFoundException {
+        return ResponseEntity.status(200).body(service.getBoardPage(pageNumber));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<BoardGetResponse> getBoard(
             @PathVariable("id") Long id

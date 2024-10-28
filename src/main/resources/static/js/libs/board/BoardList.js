@@ -7,10 +7,18 @@ import { Board } from "./Board.js";
 export class BoardList {
     static Utility = class {
         static getPageNumber() {
-            const path = window.location.pathname.split("/");
-            const uriPageNumber = path[path.length - 1] === "boards"
+            const parameters = window.location.search.split("?");
+            const pageQueryString = parameters.find(item => item.startsWith("page"))
+
+            if (pageQueryString === undefined) {
+                return 1;
+            }
+
+            const split = pageQueryString.split("=");
+            const uriPageNumber = split[split.length - 1] === ""
                 ? 1
-                : parseInt(path[path.length - 1]);
+                : parseInt(split[split.length - 1]);
+
             return uriPageNumber;
         }
     }
@@ -116,7 +124,7 @@ export class BoardList {
 
                 function setPrevButton(boardPageNumber) {
                     if (boardPageNumber > 2) {
-                        prevButton.querySelector("a").href = `/boards/${boardPageNumber + 1 - 3}`
+                        prevButton.querySelector("a").href = `/board?page=${boardPageNumber + 1 - 3}`
                         return;
                     }
                     prevButton.remove();
@@ -128,7 +136,7 @@ export class BoardList {
                     const pageAnchor = pageItem.querySelector("a")
 
                     pageItem.id = "page" + (presentNumber);
-                    pageAnchor.href = `/boards/${presentNumber}`;
+                    pageAnchor.href = `/board?page=${presentNumber}`;
                     pageAnchor.textContent = presentNumber;
 
                     if (boardPageNumber === targetNumber) {
@@ -145,7 +153,7 @@ export class BoardList {
 
                 function setNextButton(boardPageNumber) {
                     if (boardPageNumber < boardPageTotalPages - 3) {
-                        nextButton.querySelector("a").href = `/boards/${boardPageNumber + 1 + 3}`
+                        nextButton.querySelector("a").href = `/board?page=${boardPageNumber + 1 + 3}`
                         paginationUl.append(nextButton);
                         return;
                     }

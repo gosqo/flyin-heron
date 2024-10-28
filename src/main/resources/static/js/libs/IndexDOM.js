@@ -60,7 +60,7 @@ export class IndexDOM {
         const buttonsArea = document.querySelector("#buttons-area");
 
         const getBoardButton = DomCreate.button("get-board-btn", "btn btn-warning", "Board List");
-        getBoardButton.onclick = () => { location.href = "/boards"; };
+        getBoardButton.onclick = () => { location.href = "/board"; };
         buttonsArea.append(getBoardButton);
     }
 }

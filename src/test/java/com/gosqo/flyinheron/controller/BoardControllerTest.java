@@ -21,7 +21,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(
         controllers = {
                 BoardController.class
-                , BoardPageController.class
         }
 )
 @MockBean(BoardService.class)
@@ -47,7 +46,7 @@ class BoardControllerTest extends WebMvcTestBase {
         @Test
         @DisplayName("get a page of boards.")
         void getPageOfBoard() throws Exception {
-            mockMvc.perform(get("/api/v1/boards/1"))
+            mockMvc.perform(get("/api/v1/board?page=1"))
                     .andDo(print())
                     .andExpect(status().isOk());
         }

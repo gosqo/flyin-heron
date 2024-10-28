@@ -4,7 +4,7 @@ import { State } from "../libs/state/StateManage.js";
 import { TokenUtility } from "../libs/token/TokenUtility.js"
 
 document.addEventListener("DOMContentLoaded", async () => {
-    if (!location.pathname.startsWith("/boards")) return;
+    if (!location.pathname.startsWith("/board")) return;
 
     State.replaceCurrentState();
 
