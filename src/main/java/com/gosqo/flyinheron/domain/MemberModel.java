@@ -1,6 +1,8 @@
 package com.gosqo.flyinheron.domain;
 
 import com.gosqo.flyinheron.domain.member.Role;
+import com.gosqo.flyinheron.dto.member.MemberLightInfo;
+import com.gosqo.flyinheron.dto.memberprofileimage.MemberProfileImageLightInfo;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -34,5 +36,16 @@ public class MemberModel {
         this.nickname = nickname;
         this.registerDate = registerDate;
         this.role = role;
+    }
+
+    public MemberLightInfo toLightInfo() {
+        MemberProfileImageLightInfo profileImage = this.profileImage == null ? null : this.profileImage.toLightInfo();
+
+        return MemberLightInfo.builder()
+                .id(this.id)
+                .profileImage(profileImage)
+                .nickname(this.nickname)
+                .registerDate(this.registerDate)
+                .build();
     }
 }

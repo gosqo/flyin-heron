@@ -1,9 +1,11 @@
 package com.gosqo.flyinheron.acceptance;
 
 import com.gosqo.flyinheron.dto.JsonResponse;
+import com.gosqo.flyinheron.dto.board.BoardGetResponse;
 import com.gosqo.flyinheron.global.data.TestDataRemover;
 import com.gosqo.flyinheron.global.data.TestImageCreator;
 import com.gosqo.flyinheron.global.utility.HeadersUtility;
+import com.gosqo.flyinheron.repository.BoardRepository;
 import com.gosqo.flyinheron.repository.MemberProfileImageRepository;
 import com.gosqo.flyinheron.repository.MemberRepository;
 import com.gosqo.flyinheron.service.JwtService;
@@ -19,6 +21,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.io.File;
+import java.util.Objects;
 
 import static com.gosqo.flyinheron.global.utility.HeadersUtility.buildMultipartHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MemberProfileImageTest extends SpringBootTestBase {
     private final MemberRepository memberRepository;
     private final MemberProfileImageRepository memberProfileImageRepository;
+    private final BoardRepository boardRepository;
     private final JwtService jwtService;
     private String endPoint;
 
@@ -37,11 +41,13 @@ class MemberProfileImageTest extends SpringBootTestBase {
             , JwtService jwtService
             , MemberRepository memberRepository
             , MemberProfileImageRepository memberProfileImageRepository
+            , BoardRepository boardRepository
     ) {
         super(template, remover);
         this.memberRepository = memberRepository;
         this.memberProfileImageRepository = memberProfileImageRepository;
         this.jwtService = jwtService;
+        this.boardRepository = boardRepository;
     }
 
     @Nested
@@ -126,6 +132,28 @@ class MemberProfileImageTest extends SpringBootTestBase {
 
             // then
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        }
+
+        @Nested
+        class Get_Board_Response {
+
+            @BeforeEach
+            void setUp() {
+                boards = boardRepository.saveAll(buildBoards());
+            }
+
+            @Test
+            void includes_member_profile_image() {
+                RequestEntity<Void> request = RequestEntity
+                        .get("/api/v1/board/" + boards.get(0).getId())
+                        .build();
+
+                ResponseEntity<BoardGetResponse> response = template.exchange(request, BoardGetResponse.class);
+                BoardGetResponse responseBody = Objects.requireNonNull(response.getBody());
+
+                assertThat(responseBody.getMember().profileImage().referencePath())
+                        .contains(profileImageJpaEntity.getRenamedFilename());
+            }
         }
     }
 }

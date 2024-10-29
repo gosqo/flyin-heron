@@ -24,7 +24,7 @@ public class BoardGetResponse {
     private LocalDateTime updateDate;
 
     public static BoardGetResponse of(Board entity) {
-        MemberLightInfo memberInfo = MemberLightInfo.of(entity.getMember().toModel());
+        MemberLightInfo memberInfo = entity.getMember().toModel().toLightInfo();
 
         return BoardGetResponse.builder()
                 .boardId(entity.getId())

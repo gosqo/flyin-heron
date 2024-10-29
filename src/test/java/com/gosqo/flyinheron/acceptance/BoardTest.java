@@ -64,8 +64,7 @@ class BoardTest extends SpringBootTestBase {
     @DisplayName("board acceptance")
     class IntegratedBoardTest {
         @Test
-        @DisplayName("view count does not affect to update date.")
-        public void testViewCountAffectUpdateDate() {
+        public void view_count_does_not_affect_to_update_date() {
             Long boardId = boards.get(0).getId();
             String uri = String.format("/api/v1/board/%d", boardId);
 
@@ -98,28 +97,27 @@ class BoardTest extends SpringBootTestBase {
                     .build();
 
             final var response = template.exchange(request, BoardGetResponse.class);
+            final var responseBody = Objects.requireNonNull(response.getBody());
 
-            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-            assertThat(response.getBody()).isNotNull();
-            assertThat(response.getBody().getBoardId()).isEqualTo(boardId);
-            assertThat(response.getBody().getTitle()).isEqualTo(board.getTitle());
-            assertThat(response.getBody().getContent()).isEqualTo(board.getContent());
+            assertThat(responseBody.getBoardId()).isEqualTo(boardId);
+            assertThat(responseBody.getTitle()).isEqualTo(board.getTitle());
+            assertThat(responseBody.getContent()).isEqualTo(board.getContent());
+            assertThat(responseBody.getMember().profileImage()).isNull();
         }
 
         @Test
         @DisplayName("board POST is like.")
         public void boardPostNormally_ItShouldBeLike() {
             // given
-            // to build HTTP headers with Authorization
             final var accessToken = jwtService.generateAccessToken(member);
             final var bearerAccessToken = "Bearer " + accessToken;
-            // build body, JSON 형태의 스트링으로 보내지 않고 객체로 전달해도 테스트 가능.
             final var body = BoardRegisterRequest.builder()
                     .title("title")
                     .content("content")
                     .build();
-//            final var request = buildPostRequest(headers, body, "/api/v1/board");
-            final var request = RequestEntity.post("/api/v1/board")
+
+            final var request = RequestEntity
+                    .post("/api/v1/board")
                     .header("Authorization", bearerAccessToken)
                     .body(body);
 

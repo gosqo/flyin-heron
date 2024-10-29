@@ -1,5 +1,6 @@
 package com.gosqo.flyinheron.domain;
 
+import com.gosqo.flyinheron.dto.memberprofileimage.MemberProfileImageLightInfo;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -95,6 +96,13 @@ public class MemberProfileImage {
 
         DefaultImageManager.saveLocal(this.inputStream, this.fullPath);
         this.savedLocal = true;
+    }
+
+    public MemberProfileImageLightInfo toLightInfo() {
+        return MemberProfileImageLightInfo.builder()
+                .referencePath(this.referencePath)
+                .originalFilename(this.originalFilename)
+                .build();
     }
 
     private void deleteSubFiles(String targetDir) {
