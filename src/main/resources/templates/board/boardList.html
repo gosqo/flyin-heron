@@ -11,9 +11,18 @@
   <div class="container mb-3" id="board-list-container">
     <div class="card mb-3" id="board-sample">
       <div class="card-body">
-        <div class=" d-flex justify-content-between">
-          <h5 class="card-title" id="board-title"></h5>
-          <p id="board-writer"></p>
+        <div class=" d-flex justify-content-between mb-3">
+          <h5 class="card-title my-auto me-2" id="board-title"></h5>
+          <div class="d-flex">
+            <div class="my-auto">
+              <div class="d-flex">
+                <div class="member-profile-image-container me-2">
+                  <img id="board-member-profile-image"/>
+                </div>
+                <span id="board-writer" class="lh-1 my-auto"></span>
+              </div>
+            </div>
+          </div>
         </div>
         <p class="card-text" id="board-content"></p>
         <p class="card-text"><small class="text-body-secondary" id="board-date"></small></p>

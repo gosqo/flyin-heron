@@ -14,3 +14,15 @@ button > img:hover {
     transform: translateY(-.2rem);
     transition: transform 0.3s ease;
 }
+
+.member-profile-image-container {
+    height: 2rem;
+    width: 2rem;
+}
+
+.member-profile-image-container > img {
+    height: inherit;
+    width: inherit;
+    object-fit: cover;
+    clip-path: circle(50%);
+}

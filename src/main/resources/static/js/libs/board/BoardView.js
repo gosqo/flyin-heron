@@ -25,9 +25,17 @@ export class BoardView {
             function placeData(boardData) {
                 document.querySelector("#board-id").textContent = boardData.boardId;
                 document.querySelector("#board-title").textContent = boardData.title;
-                document.querySelector("#board-writer").textContent = boardData.member.nickname;
                 document.querySelector("#board-hits").textContent = `조회 ${boardData.viewCount}`;
                 document.querySelector("#board-date").textContent = Board.Utility.getRecentBoardDate(boardData);
+                
+                document.querySelector("#board-writer").textContent = boardData.member.nickname;
+                
+                if (boardData.member.profileImage !== null) {
+                    document.querySelector("#board-member-profile-image").src = "/file-storage" + boardData.member.profileImage.referencePath;
+                } else {
+                    document.querySelector(".member-profile-image-container").remove();
+                }
+
                 const boardContent = document.querySelector("#board-content")
                 DomHtml.addHyperLink(boardContent, boardContent.id, boardData.content);
             }

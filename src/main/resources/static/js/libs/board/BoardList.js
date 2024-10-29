@@ -66,9 +66,17 @@ export class BoardList {
 
                 clonedBoard.id = "board" + board.boardId;
                 clonedBoard.querySelector("#board-title").textContent = board.title;
-                clonedBoard.querySelector("#board-writer").textContent = board.writer;
                 clonedBoard.querySelector("#board-content").textContent = trimOver150(board.content);
                 clonedBoard.querySelector("#board-date").textContent = Board.Utility.getRecentBoardDate(board);
+                
+                clonedBoard.querySelector("#board-writer").textContent = board.member.nickname;
+                
+                if (board.member.profileImage !== null) {
+                    // TODO referencePath 문자열 시작에 "/file-storage" 포함해서 데이터베이스에 저장할 것.
+                    clonedBoard.querySelector("#board-member-profile-image").src = "/file-storage" + board.member.profileImage.referencePath;
+                } else {
+                    clonedBoard.querySelector(".member-profile-image-container").remove();
+                }
 
                 addMouseOverEvent(clonedBoard);
                 addClickEvent(clonedBoard);
