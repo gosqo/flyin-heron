@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -105,6 +106,7 @@ public class BoardService {
         boardRepository.delete(storedBoard);
 
         return BoardDeleteResponse.builder()
+                .status(HttpStatus.OK.value())
                 .message("게시물 삭제가 정상적으로 처리됐습니다.")
                 .build();
     }
