@@ -30,7 +30,7 @@ export class Board {
                 throw new Error("No userId detected from token.");
             }
 
-            const writerId = boardData.writerId;
+            const writerId = boardData.member.id;
 
             return userId === writerId;
         }

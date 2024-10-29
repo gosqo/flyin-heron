@@ -1,6 +1,7 @@
 package com.gosqo.flyinheron.dto.board;
 
 import com.gosqo.flyinheron.domain.Board;
+import com.gosqo.flyinheron.dto.member.MemberLightInfo;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 public class BoardGetResponse {
 
     private Long boardId;
-    private Long writerId;
+    private MemberLightInfo member;
     private String title;
     private String content;
     private String writer;
@@ -23,12 +24,13 @@ public class BoardGetResponse {
     private LocalDateTime updateDate;
 
     public static BoardGetResponse of(Board entity) {
+        MemberLightInfo memberInfo = MemberLightInfo.of(entity.getMember().toModel());
+
         return BoardGetResponse.builder()
                 .boardId(entity.getId())
-                .writerId(entity.getMember().getId())
+                .member(memberInfo)
                 .title(entity.getTitle())
                 .content(entity.getContent())
-                .writer(entity.getMember().getNickname())
                 .viewCount(entity.getViewCount())
                 .registerDate(entity.getRegisterDate())
                 .updateDate(entity.getUpdateDate())

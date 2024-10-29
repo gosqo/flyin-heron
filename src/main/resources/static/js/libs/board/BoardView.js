@@ -25,7 +25,7 @@ export class BoardView {
             function placeData(boardData) {
                 document.querySelector("#board-id").textContent = boardData.boardId;
                 document.querySelector("#board-title").textContent = boardData.title;
-                document.querySelector("#board-writer").textContent = boardData.writer;
+                document.querySelector("#board-writer").textContent = boardData.member.nickname;
                 document.querySelector("#board-hits").textContent = `조회 ${boardData.viewCount}`;
                 document.querySelector("#board-date").textContent = Board.Utility.getRecentBoardDate(boardData);
                 const boardContent = document.querySelector("#board-content")
