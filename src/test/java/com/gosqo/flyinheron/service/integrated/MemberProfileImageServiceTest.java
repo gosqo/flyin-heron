@@ -5,6 +5,7 @@ import com.gosqo.flyinheron.global.data.TestDataRemover;
 import com.gosqo.flyinheron.global.data.TestImageCreator;
 import com.gosqo.flyinheron.repository.MemberProfileImageRepository;
 import com.gosqo.flyinheron.repository.MemberRepository;
+import com.gosqo.flyinheron.repository.jpaentity.MemberProfileImageJpaEntity;
 import com.gosqo.flyinheron.service.MemberProfileImageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,12 @@ public class MemberProfileImageServiceTest extends IntegratedServiceTestBase {
     @BeforeEach
     void setUp() {
         member = memberRepository.save(buildMember());
-        profileImageJpaEntity = memberProfileImageRepository.save(buildProfileImageJpaEntity());
+
+        MemberProfileImageJpaEntity entity = buildProfileImageJpaEntity();
+//        member.updateProfileImage(entity);
+        profileImageJpaEntity = memberProfileImageRepository.save(entity);
+
+        memberRepository.save(member);
     }
 
     @Test

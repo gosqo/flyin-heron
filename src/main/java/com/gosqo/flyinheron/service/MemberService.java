@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +42,7 @@ public class MemberService {
         return false;
     }
 
+    @Transactional
     public void register(MemberRegisterRequest request) {
         if (isDuplicated(request)) {
             throw new DataIntegrityViolationException(
@@ -49,13 +51,14 @@ public class MemberService {
         }
 
         final Member member = request.toEntity(passwordEncoder.encode(request.getPassword()));
+        final Member storedMember = memberRepository.save(member);
 
-        MemberProfileImage defaultImage = MemberProfileImage.createDefaultImage(member);
+        MemberProfileImage defaultImage = MemberProfileImage.createDefaultImage(storedMember);
         defaultImage.saveLocal();
         MemberProfileImageJpaEntity profileImageJpaEntity = MemberProfileImageJpaEntity.of(defaultImage);
 
-        memberRepository.save(member);
         memberProfileImageRepository.save(profileImageJpaEntity);
+//        storedMember.updateProfileImage(profileImageJpaEntity);
     }
 
     public boolean isUniqueEmail(IsUniqueEmailRequest request) {

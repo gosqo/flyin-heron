@@ -8,8 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 class MemberProfileImageRepositoryTest extends RepositoryTestBase {
@@ -28,9 +26,14 @@ class MemberProfileImageRepositoryTest extends RepositoryTestBase {
     }
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() {
         member = memberRepository.save(buildMember());
-        profileImageJpaEntity = memberProfileImageRepository.save(buildProfileImageJpaEntity());
+
+        MemberProfileImageJpaEntity profileImageToSave = buildProfileImageJpaEntity();
+//        member.updateProfileImage(profileImageToSave);
+        profileImageJpaEntity = memberProfileImageRepository.save(profileImageToSave);
+
+        member = memberRepository.save(member);
 
         em.flush();
         em.clear();

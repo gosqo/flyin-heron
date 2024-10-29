@@ -53,7 +53,7 @@ public class MemberProfileImageJpaEntity extends UuidBaseEntity {
 
         MemberProfileImageJpaEntity entity = new MemberProfileImageJpaEntity();
 
-        entity.member = model.getMember();
+        entity.member = Member.of(model.getMember());
         entity.originalFilename = model.getOriginalFilename();
         entity.renamedFilename = model.getRenamedFilename();
         entity.referencePath = model.getReferencePath();
@@ -64,7 +64,7 @@ public class MemberProfileImageJpaEntity extends UuidBaseEntity {
 
     public MemberProfileImage toModel() {
         return MemberProfileImage.builder()
-                .member(this.member)
+                .memberId(this.member.getId())
                 .originalFilename(this.originalFilename)
                 .renamedFilename(this.renamedFilename)
                 .fullPath(this.fullPath)

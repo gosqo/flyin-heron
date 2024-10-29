@@ -41,13 +41,13 @@ public abstract class TestDataInitializer {
     protected MemberProfileImage buildProfileImage() {
         File sampleImage = TestImageCreator.createTestImage(100, 100, "TestDataInitializer built it");
 
-        return MemberProfileImage.convertToProfileImage(member, sampleImage);
+        return MemberProfileImage.convertToProfileImage(member.toModel(), sampleImage);
     }
 
     protected MemberProfileImage buildProfileImage(String filename) {
         File sampleImage = TestImageCreator.createTestImage(100, 100, filename);
 
-        return MemberProfileImage.convertToProfileImage(member, sampleImage);
+        return MemberProfileImage.convertToProfileImage(member.toModel(), sampleImage);
     }
 
     protected MemberProfileImageJpaEntity buildProfileImageJpaEntity() {

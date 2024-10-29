@@ -5,6 +5,7 @@ import com.gosqo.flyinheron.domain.Member;
 import com.gosqo.flyinheron.dto.board.BoardGetResponse;
 import com.gosqo.flyinheron.dto.board.BoardRegisterRequest;
 import com.gosqo.flyinheron.dto.board.BoardUpdateRequest;
+import com.gosqo.flyinheron.global.data.TestDataInitializer;
 import com.gosqo.flyinheron.repository.BoardRepository;
 import com.gosqo.flyinheron.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,11 +24,10 @@ import java.util.Optional;
 import static com.gosqo.flyinheron.domain.fixture.MemberFixture.EMAIL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class BoardServiceTest {
+class BoardServiceTest extends TestDataInitializer {
     @InjectMocks
     private BoardService service;
     @Mock
@@ -51,10 +51,9 @@ class BoardServiceTest {
         @Test
         void when_Board_has_null_of_viewCount() throws NoResourceFoundException {
             // given
-            Long viewCount = null;
             var viewCountNull = Board.builder()
-                    .member(mock(Member.class))
-                    .viewCount(viewCount)
+                    .member(buildMember())
+                    .viewCount(null)
                     .build();
             var expected = BoardGetResponse.of(viewCountNull);
 

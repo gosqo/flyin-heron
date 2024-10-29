@@ -1,7 +1,6 @@
 package com.gosqo.flyinheron.domain;
 
 import com.gosqo.flyinheron.domain.member.Role;
-import com.gosqo.flyinheron.repository.jpaentity.MemberProfileImageJpaEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,18 +8,19 @@ import java.time.LocalDateTime;
 
 @Getter
 public class MemberModel {
-    private Long id;
-    private MemberProfileImageJpaEntity profileImage;
-    private String email;
-    private String password;
-    private String nickname;
-    private LocalDateTime registerDate;
-    private Role role;
+    private final Long id;
+    private final String email;
+    private final String password;
+    private final String nickname;
+    private final LocalDateTime registerDate;
+    private final Role role;
+
+    private MemberProfileImage profileImage;
 
     @Builder
     public MemberModel(
             Long id,
-            MemberProfileImageJpaEntity profileImage,
+            MemberProfileImage profileImage,
             String email,
             String password,
             String nickname,

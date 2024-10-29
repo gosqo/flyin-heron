@@ -71,7 +71,7 @@ public class MemberProfileImageService {
 
         try {
             image = MemberProfileImage.builder()
-                    .member(member)
+                    .member(member.toModel())
                     .inputStream(file.getInputStream())
                     .originalFilename(file.getOriginalFilename())
                     .build();

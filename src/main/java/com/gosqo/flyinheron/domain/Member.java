@@ -67,10 +67,27 @@ public class Member implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    public static Member of(MemberModel model) {
+        Member entity = new Member();
+
+        entity.id = model.getId();
+        entity.email = model.getEmail();
+        entity.password = model.getPassword();
+        entity.nickname = model.getNickname();
+        entity.registerDate = model.getRegisterDate();
+        entity.role = model.getRole();
+
+        return entity;
+    }
+
     public MemberModel toModel() {
+        MemberProfileImage profileImageModel = this.profileImage == null
+                ? null
+                : this.profileImage.toModel();
+
         return MemberModel.builder()
                 .id(this.id)
-                .profileImage(this.profileImage)
+                .profileImage(profileImageModel)
                 .email(this.email)
                 .password(this.password)
                 .nickname(this.nickname)

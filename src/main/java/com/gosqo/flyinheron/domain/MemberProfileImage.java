@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 @Getter
@@ -21,11 +20,6 @@ public class MemberProfileImage {
     static final Path MEMBER_PROFILE_IMAGE_DIR =
             Paths.get(DefaultImageManager.LOCAL_STORAGE_DIR, "member");
 
-    private final Member member;
-
-    // domain 의 프레임워크 의존성(스프링 MultipartFile) 탈피를 위해 아래 inputStream, originalFilename 을 따로 받음.
-    // 생성자, 빌더를 통한 this 인스턴스 생성 시, 인자는 동일한 MultipartFile 객체 메서드(getInputStream, getOriginalFilename)를 통해
-    // this 인스턴스 각각의 필드를 채웁니다.
     private final InputStream inputStream;
     private final String originalFilename;
     private final String storageDir;
@@ -33,11 +27,15 @@ public class MemberProfileImage {
     private final String fullPath;
     private final String referencePath;
 
+    private final Long memberId;
+    private MemberModel member;
+
     private boolean savedLocal = false;
 
     @Builder
     public MemberProfileImage(
-            Member member
+            MemberModel member
+            , Long memberId
             , InputStream inputStream
             , String originalFilename
             , String referencePath
@@ -45,28 +43,27 @@ public class MemberProfileImage {
             , String fullPath
             , boolean savedLocal
     ) {
-        Objects.requireNonNull(member);
-
         this.member = member;
+        this.memberId = memberId == null ? member.getId() : memberId;
         this.inputStream = inputStream;
         this.originalFilename = originalFilename;
 
-        this.storageDir = prepareDir(this.member);
+        this.storageDir = prepareDir(memberId);
         this.renamedFilename = this.renameFile(this.originalFilename);
         this.fullPath = Paths.get(this.storageDir, this.renamedFilename).toString();
         this.referencePath = this.fullPath.replaceAll(DefaultImageManager.LOCAL_STORAGE_DIR, "");
     }
 
-    public static String prepareDir(Member member) {
+    public static String prepareDir(Long memberId) {
         return Paths.get(
                 MEMBER_PROFILE_IMAGE_DIR.toString()
-                , String.valueOf(member.getId())
+                , String.valueOf(memberId)
                 , "profile"
         ).toString();
     }
 
-    public static MemberProfileImage convertToProfileImage(Member member, File file) {
-        MemberProfileImage image = null;
+    public static MemberProfileImage convertToProfileImage(MemberModel member, File file) {
+        MemberProfileImage image;
 
         try {
             image = MemberProfileImage.builder()
@@ -86,7 +83,7 @@ public class MemberProfileImage {
         File defaultProfileImage =
                 DefaultImageManager.createDefaultMemberProfileImage(100, 100, member.getNickname());
 
-        return MemberProfileImage.convertToProfileImage(member, defaultProfileImage);
+        return MemberProfileImage.convertToProfileImage(member.toModel(), defaultProfileImage);
     }
 
     public void saveLocal() {

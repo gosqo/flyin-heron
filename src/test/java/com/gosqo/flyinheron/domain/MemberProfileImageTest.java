@@ -52,12 +52,12 @@ class MemberProfileImageTest extends TestDataInitializer {
 
         // then
         assertThat(entity.getFullPath())
-                .contains(MemberProfileImage.prepareDir(member), profileImage.getRenamedFilename());
+                .contains(MemberProfileImage.prepareDir(member.toModel().getId()), profileImage.getRenamedFilename());
     }
 
     @Test
-    void remove_former_if_exists_then_save_new_one() throws IOException {
-        String targetDir = MemberProfileImage.prepareDir(member);
+    void remove_former_if_exists_then_save_new_one() {
+        String targetDir = MemberProfileImage.prepareDir(member.toModel().getId());
 
         // given
         // dummies to be deleted.

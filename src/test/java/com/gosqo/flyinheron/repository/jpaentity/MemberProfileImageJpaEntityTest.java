@@ -6,8 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
@@ -20,7 +18,7 @@ class MemberProfileImageJpaEntityTest extends JpaDirectTestDataManager {
     }
 
     @Test
-    void persist() throws IOException {
+    void persist() {
         // given
         Member member = em.find(Member.class, super.member.getId());
 
@@ -31,8 +29,6 @@ class MemberProfileImageJpaEntityTest extends JpaDirectTestDataManager {
         profileImage.saveLocal();
 
         MemberProfileImageJpaEntity entity = MemberProfileImageJpaEntity.of(profileImage); // 아래 두 줄과 교체 시, 결과 같음
-
-//        MemberProfileImageJpaEntity entity = image.toEntity(null);
 //        member.updateProfileImage(entity);
 
         em.persist(entity);
