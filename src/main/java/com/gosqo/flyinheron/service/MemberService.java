@@ -53,7 +53,7 @@ public class MemberService {
         final Member member = request.toEntity(passwordEncoder.encode(request.getPassword()));
         final Member storedMember = memberRepository.save(member);
 
-        MemberProfileImage defaultImage = MemberProfileImage.createDefaultImage(storedMember);
+        MemberProfileImage defaultImage = MemberProfileImage.createDefaultImage(storedMember.toModel());
         defaultImage.saveLocal();
         MemberProfileImageJpaEntity profileImageJpaEntity = MemberProfileImageJpaEntity.of(defaultImage);
 

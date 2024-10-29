@@ -79,11 +79,11 @@ public class MemberProfileImage {
         return image;
     }
 
-    public static MemberProfileImage createDefaultImage(Member member) {
+    public static MemberProfileImage createDefaultImage(MemberModel member) {
         File defaultProfileImage =
                 DefaultImageManager.createDefaultMemberProfileImage(100, 100, member.getNickname());
 
-        return MemberProfileImage.convertToProfileImage(member.toModel(), defaultProfileImage);
+        return MemberProfileImage.convertToProfileImage(member, defaultProfileImage);
     }
 
     public void saveLocal() {

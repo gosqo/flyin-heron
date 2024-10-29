@@ -35,7 +35,7 @@ public class MemberProfileImageService {
                         () -> new NoSuchElementException("존재하지 않는 프로필 이미지 변경 요청")
                 );
 
-        MemberProfileImage defaultImage = MemberProfileImage.createDefaultImage(requester);
+        MemberProfileImage defaultImage = MemberProfileImage.createDefaultImage(requester.toModel());
         defaultImage.saveLocal();
 
         MemberProfileImageJpaEntity defaultImageJpaEntity = MemberProfileImageJpaEntity.of(defaultImage);
