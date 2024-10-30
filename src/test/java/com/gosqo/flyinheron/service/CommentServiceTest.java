@@ -5,7 +5,9 @@ import com.gosqo.flyinheron.domain.Comment;
 import com.gosqo.flyinheron.domain.Member;
 import com.gosqo.flyinheron.dto.comment.CommentRegisterRequest;
 import com.gosqo.flyinheron.dto.comment.CommentUpdateRequest;
+import com.gosqo.flyinheron.global.data.TestDataInitializer;
 import com.gosqo.flyinheron.repository.BoardRepository;
+import com.gosqo.flyinheron.repository.CommentLikeRepository;
 import com.gosqo.flyinheron.repository.CommentRepository;
 import com.gosqo.flyinheron.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +15,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 
@@ -33,34 +33,35 @@ import static org.mockito.Mockito.when;
  * Slice 를 활용하기 위해 CommentRepositoryTest 내부 WithService 중첩 클래스 에서 진행.
  */
 @ExtendWith({MockitoExtension.class})
-class CommentServiceTest {
+class CommentServiceTest extends TestDataInitializer {
     private static final String USER_EMAIL = "some@valid.email";
     private static final String CONTENT = "Hello Comment.";
     private static final String MODIFIED_CONTENT = "Hello modified Comment.";
-    private final Member member = Member.builder()
-            .id(1L)
-            .email(USER_EMAIL)
-            .build();
-    private final Comment storedComment = Comment.builder()
-            .content(CONTENT)
-            .member(member)
-            .board(mock(Board.class))
-            .build();
-    @Mock
-    private CommentRepository commentRepository;
-    @Mock
-    private MemberRepository memberRepository;
-    @Mock
-    private BoardRepository boardRepository;
-    @Mock
-    private ClaimExtractor claimExtractor;
-    @InjectMocks
-    private CommentService service;
+    private Comment storedComment;
+
+    private final CommentRepository commentRepository = mock(CommentRepository.class);
+    private final CommentLikeRepository commentLikeRepository = mock(CommentLikeRepository.class);
+    private final MemberRepository memberRepository = mock(MemberRepository.class);
+    private final BoardRepository boardRepository = mock(BoardRepository.class);
+    private final ClaimExtractor claimExtractor = mock(ClaimExtractor.class);
+
+    private final CommentService service = new CommentService(
+            commentRepository
+            , memberRepository
+            , boardRepository
+            , claimExtractor
+            , commentLikeRepository
+    );
 
     private MockHttpServletRequest requestWithAuthHeader;
 
     @BeforeEach
     void setUp() {
+        member = buildMemberWithId();
+        boards = buildBoards();
+        comments = buildComments();
+        storedComment = comments.get(0);
+
         requestWithAuthHeader = new MockHttpServletRequest();
         requestWithAuthHeader.addHeader("Authorization", "Bearer some.valid.token");
     }
@@ -120,7 +121,7 @@ class CommentServiceTest {
             assertThat(result).isNotNull();
             assertThat(result.getStatus()).isEqualTo(201);
             assertThat(result.getMessage()).isEqualTo("댓글을 등록했습니다.");
-            assertThat(result.getComment().getContent()).isEqualTo(CONTENT);
+            assertThat(result.getComment().getContent()).isEqualTo(storedComment.getContent());
         }
     }
 
@@ -141,14 +142,13 @@ class CommentServiceTest {
         }
 
         @Test
-        @DisplayName("case method-works-fine is like.")
-        void getComment() {
+        void works_normally_like() {
             Comment comment = Comment.builder()
                     .content("Hello, comment.")
                     // 해당 필드에 mock 혹은 실제 값을 넣지 않으면,
                     // service.get(Long id) 내부, CommentGetResponse.of(Comment entity) 에서
                     // entity.getMember.getNickname 호출 시, member 가 null 이면 NullPointerException 발생.
-                    .member(mock(Member.class))
+                    .member(member)
                     // 위와 마찬가지로 entity.getBoard().getId() 시에 NPE 발생.
                     .board(mock(Board.class))
                     .build();
@@ -164,11 +164,6 @@ class CommentServiceTest {
     @Nested
     @DisplayName("when modify a comment,")
     class Modify {
-        private final Comment modifiedComment = Comment.builder()
-                .content(MODIFIED_CONTENT)
-                .member(mock(Member.class))
-                .board(mock(Board.class))
-                .build();
 
         @Test
         @DisplayName("throws exception if writer(email) not matched.")
@@ -207,9 +202,9 @@ class CommentServiceTest {
                     .build();
 
             when(claimExtractor.extractUserEmail(any(String.class))).thenReturn(USER_EMAIL);
-            when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
+            when(memberRepository.findByEmail(anyString())).thenReturn(Optional.of(member));
             when(commentRepository.findById(anyLong())).thenReturn(Optional.of(storedComment));
-            when(commentRepository.save(any(Comment.class))).thenReturn(modifiedComment);
+            when(commentRepository.save(any(Comment.class))).thenReturn(storedComment);
 
             // when
             var result = service.modify(anyLong(), requestWithAuthHeader, requestBody);

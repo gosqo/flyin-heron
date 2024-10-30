@@ -38,6 +38,16 @@ public abstract class TestDataInitializer {
                 .build();
     }
 
+    protected Member buildMemberWithId() {
+        return Member.builder()
+                .id(1L)
+                .email(EMAIL)
+                .nickname(NICKNAME)
+                .password(ENCODED_PASSWORD)
+                .role(Role.USER)
+                .build();
+    }
+
     protected MemberProfileImage buildProfileImage() {
         File sampleImage = TestImageCreator.createTestImage(100, 100, "TestDataInitializer built it");
 
@@ -91,7 +101,8 @@ public abstract class TestDataInitializer {
                                 .member(member)
                                 .board(boards.get(0))
                                 .content("Hello, Comment " + (i + 1))
-                                .build())
+                                .build()
+                )
         );
 
         return comments;

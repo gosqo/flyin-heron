@@ -1,6 +1,7 @@
 package com.gosqo.flyinheron.dto.comment;
 
 import com.gosqo.flyinheron.domain.Comment;
+import com.gosqo.flyinheron.dto.member.MemberLightInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,8 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 public class CommentGetResponse {
     private Long id;
-    private Long writerId;
-    private String writerNickname;
+    private MemberLightInfo member;
     private Long boardId;
     private String content;
     private Long likeCount;
@@ -23,10 +23,11 @@ public class CommentGetResponse {
     private LocalDateTime updateDate;
 
     public static CommentGetResponse of(Comment entity) {
+        MemberLightInfo memberInfo = entity.getMember().toModel().toLightInfo();
+
         return CommentGetResponse.builder()
                 .id(entity.getId())
-                .writerId(entity.getMember().getId())
-                .writerNickname(entity.getMember().getNickname())
+                .member(memberInfo)
                 .boardId(entity.getBoard().getId())
                 .content(entity.getContent())
                 .likeCount(entity.getLikeCount())
