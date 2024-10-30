@@ -49,7 +49,7 @@ public class MemberProfileImage {
         this.inputStream = inputStream;
         this.originalFilename = originalFilename;
 
-        this.storageDir = prepareDir(memberId);
+        this.storageDir = prepareDir(this.memberId);
 
         this.renamedFilename = renamedFilename == null
                 ? this.renameFile(this.originalFilename)
