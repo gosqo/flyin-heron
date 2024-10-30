@@ -4,7 +4,7 @@ import { TokenUtility } from "../token/TokenUtility.js";
 import { AuthChecker } from "../token/AuthChecker.js";
 import { DomHtml } from "../dom/DomHtml.js";
 import { CommentLike } from "../commentLike/CommentLike.js";
-import { MemberProfile } from "../member/MemberProfile.js";
+import { MemberProfileImage } from "../member/MemberProfile.js";
 
 export class Comment {
     static pageNumber = 1;
@@ -351,7 +351,7 @@ export class Comment {
             const profileImageData = data.member.profileImage;
             const profileImage = commentUnit.querySelector("#comment-member-profile-image")
 
-            MemberProfile.renderProfileImage(profileImageData, profileImageContainer, profileImage);
+            MemberProfileImage.renderProfileImage(profileImageData, profileImageContainer, profileImage);
 
             DomHtml.addHyperLink(commentContent, commentContent.id, data.content);
         }

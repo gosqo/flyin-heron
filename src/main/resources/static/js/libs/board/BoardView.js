@@ -5,7 +5,7 @@ import { State } from "../state/StateManage.js";
 import { AuthChecker } from "../token/AuthChecker.js";
 import { Board } from "./Board.js";
 import { DomHtml } from "../dom/DomHtml.js";
-import { MemberProfile } from "../member/MemberProfile.js";
+import { MemberProfileImage } from "../member/MemberProfile.js";
 
 export class BoardView {
     static DOM = class {
@@ -35,7 +35,7 @@ export class BoardView {
                 const profileImage = document.querySelector("#board-member-profile-image");
                 const profileImageData = boardData.member.profileImage;
                 
-                MemberProfile.renderProfileImage(profileImageData, profileImageContainer, profileImage);
+                MemberProfileImage.renderProfileImage(profileImageData, profileImageContainer, profileImage);
 
                 const boardContent = document.querySelector("#board-content")
                 DomHtml.addHyperLink(boardContent, boardContent.id, boardData.content);

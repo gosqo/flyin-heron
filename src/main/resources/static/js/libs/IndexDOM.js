@@ -2,6 +2,7 @@ import { AuthChecker } from "./token/AuthChecker.js";
 import { DomCreate } from "./dom/DomCreate.js";
 import { Logout } from "./member/Logout.js";
 import { TestJwt } from "./token/TestJwt.js";
+import { MemberProfileImage } from "./member/MemberProfile.js";
 
 export class IndexDOM {
     testJwt = new TestJwt();
@@ -10,6 +11,7 @@ export class IndexDOM {
         if (AuthChecker.hasAuth()) {
             this.addLogoutButton();
             this.addJwtTestButton();
+            MemberProfileImage.addImageUploader();
 
             return;
         }

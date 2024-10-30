@@ -3,7 +3,7 @@ import { State } from "../state/StateManage.js";
 import { BoardFetcher } from "./BoardFetcher.js";
 import { Fetcher } from "../common/Fetcher.js";
 import { Board } from "./Board.js";
-import { MemberProfile } from "../member/MemberProfile.js"
+import { MemberProfileImage } from "../member/MemberProfile.js"
 
 export class BoardList {
     static Utility = class {
@@ -77,7 +77,7 @@ export class BoardList {
                 const profileImageData = board.member.profileImage;
 
 
-                MemberProfile.renderProfileImage(profileImageData, profileImageContainer, profileImage)
+                MemberProfileImage.renderProfileImage(profileImageData, profileImageContainer, profileImage)
 
                 addMouseOverEvent(clonedBoard);
                 addClickEvent(clonedBoard);
