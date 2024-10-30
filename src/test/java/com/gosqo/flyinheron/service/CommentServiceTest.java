@@ -37,8 +37,6 @@ class CommentServiceTest extends TestDataInitializer {
     private static final String USER_EMAIL = "some@valid.email";
     private static final String CONTENT = "Hello Comment.";
     private static final String MODIFIED_CONTENT = "Hello modified Comment.";
-    private Comment storedComment;
-
     private final CommentRepository commentRepository = mock(CommentRepository.class);
     private final CommentLikeRepository commentLikeRepository = mock(CommentLikeRepository.class);
     private final MemberRepository memberRepository = mock(MemberRepository.class);
@@ -53,6 +51,7 @@ class CommentServiceTest extends TestDataInitializer {
             , commentLikeRepository
     );
 
+    private Comment storedComment;
     private MockHttpServletRequest requestWithAuthHeader;
 
     @BeforeEach
@@ -257,7 +256,7 @@ class CommentServiceTest extends TestDataInitializer {
             // context 와 관련 없이 작동 가능한 static method 는
             // 기존 동작을 수행할 수 있도록 파라미터 및 변수에 사용할 값의 조건을 해당 메서드가 잘 작동할 수 있도록 맞춰줘야된다.
             // 해당 메서드의 동작을 제어하면, ArgumentMatchers 에 null 값이 넘어가면서 의도대로 동작하지 않음.
-//            when(AuthHeaderUtility.extractJwt(eq(mockHttpRequest))).thenReturn("some.valid.token");
+            // when(AuthHeaderUtility.extractJwt(eq(mockHttpRequest))).thenReturn("some.valid.token");
 
             // claimExtractor 가 사용하는 getSignInKey() 와 같이 전체 컨텍스트에 영향을 받는 메서드를 mock 으로 대체.
             // 테스트 의도대로 움직일 값을 반환하도록 지정한다.

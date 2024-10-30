@@ -38,13 +38,14 @@ class CommentLikeServiceTest extends IntegratedServiceTestBase {
     private Long commentIdToRegisterItsLike;
 
     @Autowired
-    CommentLikeServiceTest(TestDataRemover remover
-                                  , CommentLikeService commentLikeService
-                                  , CommentLikeRepository commentLikeRepository
-                                  , MemberRepository memberRepository
-                                  , BoardRepository boardRepository
-                                  , CommentRepository commentRepository
-                                  , TransactionTemplate transactionTemplate
+    CommentLikeServiceTest(
+            TestDataRemover remover
+            , CommentLikeService commentLikeService
+            , CommentLikeRepository commentLikeRepository
+            , MemberRepository memberRepository
+            , BoardRepository boardRepository
+            , CommentRepository commentRepository
+            , TransactionTemplate transactionTemplate
     ) {
         super(remover);
         this.commentLikeService = commentLikeService;

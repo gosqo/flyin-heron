@@ -12,7 +12,7 @@ class EmailRegexpTest {
 
     @Test
     void case_not_matches_email_regex() {
-//        String regExp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*[.][a-zA-Z]{2,3}$";
+        // String regExp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*[.][a-zA-Z]{2,3}$";
         String[] InappropriateEmails = {
                 "helllo@world..cc" // 마지막 . 이전에 영문 대소문자 혹은 숫자가 존재하지 않음.
                 , "hello@world00.commm" // 최상위 도메인 자리수 초과
@@ -29,7 +29,7 @@ class EmailRegexpTest {
 
     @Test
     void case_matches_email_regex() {
-//        String regExp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*[.][a-zA-Z]{2,3}$";
+        // String regExp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*[.][a-zA-Z]{2,3}$";
         String[] InappropriateEmails = {
                 "helllo@world.cc"
                 , "hello@world00.com"

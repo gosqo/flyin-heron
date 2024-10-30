@@ -29,7 +29,7 @@ class MemberProfileImageJpaEntityTest extends JpaDirectTestDataManager {
         profileImage.saveLocal();
 
         MemberProfileImageJpaEntity entity = MemberProfileImageJpaEntity.of(profileImage); // 아래 두 줄과 교체 시, 결과 같음
-//        member.updateProfileImage(entity);
+        // member.updateProfileImage(entity);
 
         em.persist(entity);
         em.flush(); // 데이터베이스로 지연 쿼리 발송.

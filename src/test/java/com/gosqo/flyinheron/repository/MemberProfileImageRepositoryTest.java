@@ -30,7 +30,7 @@ class MemberProfileImageRepositoryTest extends RepositoryTestBase {
         member = memberRepository.save(buildMember());
 
         MemberProfileImageJpaEntity profileImageToSave = buildProfileImageJpaEntity();
-//        member.updateProfileImage(profileImageToSave);
+        // member.updateProfileImage(profileImageToSave);
         profileImageJpaEntity = memberProfileImageRepository.save(profileImageToSave);
 
         member = memberRepository.save(member);

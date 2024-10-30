@@ -75,8 +75,8 @@ class CommentLikeRepositoryTest extends RepositoryTestBase {
     void findByMemberId() {
         int pageNumber = 1;
         Slice<Comment> commentsLikedByMember = commentLikeRepository.findByMemberId(
-                        memberId, getLikedCommentsPageRequest(pageNumber)
-                ).map(CommentLike::getComment);
+                memberId, getLikedCommentsPageRequest(pageNumber)
+        ).map(CommentLike::getComment);
 
         commentsLikedByMember.getContent().forEach((item) -> log.info("{}", item));
     }
@@ -84,7 +84,10 @@ class CommentLikeRepositoryTest extends RepositoryTestBase {
     @Test
     void
     findByMemberIdAndCommentId() {
-        CommentLike foundCommentLike = commentLikeRepository.findByMemberIdAndCommentId(memberId, commentIdHasCommentLike).orElseThrow();
+        CommentLike foundCommentLike = commentLikeRepository.findByMemberIdAndCommentId(
+                memberId
+                , commentIdHasCommentLike
+        ).orElseThrow();
 
         assertThat(foundCommentLike).isNotNull();
     }

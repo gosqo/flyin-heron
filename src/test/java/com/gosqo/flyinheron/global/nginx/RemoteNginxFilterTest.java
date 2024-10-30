@@ -39,7 +39,7 @@ class RemoteNginxFilterTest {
         @Test
         void null_User_Agent() {
             HttpHeaders headers = new HttpHeaders();
-//        headers.set("Connection", "Keep-Alive"); // 명시하지 않아도 HTTP/1.1 프로토콜, nginx 특성상 keep-alive 로 간주.
+            // headers.set("Connection", "Keep-Alive"); // 명시하지 않아도 HTTP/1.1 프로토콜, nginx 특성상 keep-alive 로 간주.
 
             RequestEntity<Void> request = RequestEntity
                     .get(TARGET_URL)

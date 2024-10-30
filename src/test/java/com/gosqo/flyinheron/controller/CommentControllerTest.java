@@ -62,7 +62,8 @@ class CommentControllerTest extends WebMvcTestBase {
                     .build();
             mockMvc.perform(post("/api/v1/comment")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(new ObjectMapper().writeValueAsString(requestBody)))                    .andDo(print())
+                            .content(new ObjectMapper().writeValueAsString(requestBody)))
+                    .andDo(print())
                     .andExpect(status().isCreated());
         }
 
@@ -74,7 +75,8 @@ class CommentControllerTest extends WebMvcTestBase {
                     .build();
             mockMvc.perform(put("/api/v1/comment/1")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(new ObjectMapper().writeValueAsString(requestBody)))                    .andDo(print())
+                            .content(new ObjectMapper().writeValueAsString(requestBody)))
+                    .andDo(print())
                     .andExpect(status().isOk());
         }
 

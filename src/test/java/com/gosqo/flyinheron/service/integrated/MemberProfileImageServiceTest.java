@@ -42,7 +42,7 @@ public class MemberProfileImageServiceTest extends IntegratedServiceTestBase {
         member = memberRepository.save(buildMember());
 
         MemberProfileImageJpaEntity entity = buildProfileImageJpaEntity();
-//        member.updateProfileImage(entity);
+        // member.updateProfileImage(entity);
         profileImageJpaEntity = memberProfileImageRepository.save(entity);
 
         memberRepository.save(member);
