@@ -28,6 +28,12 @@ import java.util.UUID;
 @Slf4j
 public class DefaultImageManager {
     public static final String LOCAL_STORAGE_DIR = System.getenv("FLYINHERON_STORAGE");
+
+    static {
+        if (LOCAL_STORAGE_DIR == null) {
+            throw new IllegalStateException("FLYINHERON_STORAGE not set.");
+        }
+    }
     public static final String WEB_FILE_PATH = "/file-storage";
 
     public static void saveLocal(InputStream inputStream, String fullPath) {
