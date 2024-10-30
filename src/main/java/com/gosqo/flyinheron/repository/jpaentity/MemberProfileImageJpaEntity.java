@@ -47,7 +47,7 @@ public class MemberProfileImageJpaEntity extends UuidBaseEntity {
 
     public static MemberProfileImageJpaEntity of(MemberProfileImage model) {
 
-        if (!model.isSavedLocal()) {
+        if (!model.getSavedLocal()) {
             throw new IllegalStateException("Attempt to toEntity with an unsaved image.");
         }
 

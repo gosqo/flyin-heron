@@ -81,7 +81,7 @@ class MemberProfileImageTest extends TestDataInitializer {
         MemberProfileImage newImage = buildProfileImage("new one");
         newImage.saveLocal();
 
-        assertThat(newImage.isSavedLocal()).isTrue();
+        assertThat(newImage.getSavedLocal()).isTrue();
 
         Path newImagePath = Paths.get(newImage.getFullPath());
 

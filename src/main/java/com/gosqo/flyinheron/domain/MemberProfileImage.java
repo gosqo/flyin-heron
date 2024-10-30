@@ -31,7 +31,7 @@ public class MemberProfileImage {
     private final Long memberId;
     private MemberModel member;
 
-    private boolean savedLocal = false;
+    private Boolean savedLocal = Boolean.FALSE;
 
     @Builder
     public MemberProfileImage(
@@ -42,7 +42,7 @@ public class MemberProfileImage {
             , String referencePath
             , String renamedFilename
             , String fullPath
-            , boolean savedLocal
+            , Boolean savedLocal
     ) {
         this.member = member;
         this.memberId = memberId == null ? member.getId() : memberId;
@@ -50,9 +50,20 @@ public class MemberProfileImage {
         this.originalFilename = originalFilename;
 
         this.storageDir = prepareDir(memberId);
-        this.renamedFilename = this.renameFile(this.originalFilename);
-        this.fullPath = Paths.get(this.storageDir, this.renamedFilename).toString();
-        this.referencePath = this.fullPath.replaceAll(DefaultImageManager.LOCAL_STORAGE_DIR, "");
+
+        this.renamedFilename = renamedFilename == null
+                ? this.renameFile(this.originalFilename)
+                : renamedFilename;
+
+        this.fullPath = fullPath == null
+                ? Paths.get(this.storageDir, this.renamedFilename).toString()
+                : fullPath;
+
+        this.referencePath = referencePath == null
+                ? this.fullPath.replaceAll(DefaultImageManager.LOCAL_STORAGE_DIR, "")
+                : referencePath;
+
+        this.savedLocal = savedLocal != null && savedLocal;
     }
 
     public static String prepareDir(Long memberId) {
