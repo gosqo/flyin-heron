@@ -29,6 +29,11 @@ class MemberProfileImageTest extends TestDataInitializer {
     }
 
     @Test
+    void instance_reference_path_starts_with_file_storage() {
+        assertThat(profileImage.getReferencePath()).startsWith("/file-storage/");
+    }
+
+    @Test
     void toEntity_before_saveLocal_throws_IllegalStateException() {
         assertThatThrownBy(() -> MemberProfileImageJpaEntity.of(profileImage))
                 .isInstanceOf(IllegalStateException.class);

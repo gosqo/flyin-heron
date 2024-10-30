@@ -60,7 +60,7 @@ public class MemberProfileImage {
                 : fullPath;
 
         this.referencePath = referencePath == null
-                ? this.fullPath.replaceAll(DefaultImageManager.LOCAL_STORAGE_DIR, "")
+                ? this.fullPath.replaceAll(DefaultImageManager.LOCAL_STORAGE_DIR, DefaultImageManager.WEB_FILE_PATH)
                 : referencePath;
 
         this.savedLocal = savedLocal != null && savedLocal;

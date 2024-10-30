@@ -5,6 +5,7 @@ import { State } from "../state/StateManage.js";
 import { AuthChecker } from "../token/AuthChecker.js";
 import { Board } from "./Board.js";
 import { DomHtml } from "../dom/DomHtml.js";
+import { MemberProfile } from "../member/MemberProfile.js";
 
 export class BoardView {
     static DOM = class {
@@ -30,11 +31,11 @@ export class BoardView {
                 
                 document.querySelector("#board-writer").textContent = boardData.member.nickname;
                 
-                if (boardData.member.profileImage !== null) {
-                    document.querySelector("#board-member-profile-image").src = "/file-storage" + boardData.member.profileImage.referencePath;
-                } else {
-                    document.querySelector(".member-profile-image-container").remove();
-                }
+                const profileImageContainer = document.querySelector(".member-profile-image-container");
+                const profileImage = document.querySelector("#board-member-profile-image");
+                const profileImageData = boardData.member.profileImage;
+                
+                MemberProfile.renderProfileImage(profileImageData, profileImageContainer, profileImage);
 
                 const boardContent = document.querySelector("#board-content")
                 DomHtml.addHyperLink(boardContent, boardContent.id, boardData.content);
