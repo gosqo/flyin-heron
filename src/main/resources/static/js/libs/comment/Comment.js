@@ -4,11 +4,11 @@ import { TokenUtility } from "../token/TokenUtility.js";
 import { AuthChecker } from "../token/AuthChecker.js";
 import { DomHtml } from "../dom/DomHtml.js";
 import { CommentLike } from "../commentLike/CommentLike.js";
+import { MemberProfile } from "../member/MemberProfile.js";
 
 export class Comment {
     static pageNumber = 1;
     static loadedCommentsCount = 0;
-    static commentLikeManager = new CommentLike();
 
     static async modify(id) {
         const modifiedContent = document.querySelector("#comment-modify-textarea").value;
@@ -142,7 +142,7 @@ export class Comment {
                 throw new Error("No userId detected from token.");
             }
 
-            const writerId = commentData.writerId;
+            const writerId = commentData.member.id;
 
             return userId === writerId;
         }
@@ -337,15 +337,22 @@ export class Comment {
         static placeData(commentUnit, data) {
             const commentContent = commentUnit.querySelector("#comment-content");
             commentContent.id += "-" + data.id;
-            commentContent.className = "comment-content-selector"
+            commentContent.classList.add("comment-content-selector");
 
             commentUnit.hidden = false;
             commentUnit.id = `comment${data.id}`;
             commentUnit.className = "comments-selector";
 
-            commentUnit.querySelector("#comment-writer").textContent = data.writerNickname;
+            commentUnit.querySelector("#comment-writer").textContent = data.member.nickname;
             commentUnit.querySelector("#comment-date").textContent = Board.Utility.getRecentBoardDate(data);
             commentUnit.querySelector("#comment-like-count").textContent = data.likeCount;
+
+            const profileImageContainer = commentUnit.querySelector(".member-profile-image-container");
+            const profileImageData = data.member.profileImage;
+            const profileImage = commentUnit.querySelector("#comment-member-profile-image")
+
+            MemberProfile.renderProfileImage(profileImageData, profileImageContainer, profileImage);
+
             DomHtml.addHyperLink(commentContent, commentContent.id, data.content);
         }
 
