@@ -33,7 +33,6 @@ public class GlobalExceptionHandler {
             , MethodArgumentTypeMismatchException.class
             , BadCredentialsException.class
             , DataIntegrityViolationException.class
-            , IllegalArgumentException.class
     );
     private static final Set<Class<? extends Exception>> UNAUTHORIZED_EXCEPTIONS = Set.of(
             ExpiredJwtException.class
@@ -58,6 +57,7 @@ public class GlobalExceptionHandler {
     );
     private static final Set<Class<? extends Exception>> STACK_TRACE_NEEDED = Set.of(
             NullPointerException.class
+            , IllegalArgumentException.class
             , DebugNeededException.class
             , RuntimeException.class
             , Exception.class

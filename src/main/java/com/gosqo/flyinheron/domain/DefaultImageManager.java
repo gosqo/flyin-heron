@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
+import java.util.regex.Matcher;
 
 /**
  * 파일 취급 관련 변수명 컨벤션
@@ -27,13 +28,22 @@ import java.util.UUID;
  */
 @Slf4j
 public class DefaultImageManager {
-    public static final String LOCAL_STORAGE_DIR = System.getenv("FLYINHERON_STORAGE");
+    public static final String LOCAL_STORAGE_DIR;
 
     static {
-        if (LOCAL_STORAGE_DIR == null) {
-            throw new IllegalStateException("FLYINHERON_STORAGE not set.");
+        String temp = System.getenv("FLYINHERON_STORAGE");
+
+        if (temp == null) {
+            throw new IllegalStateException("LOCAL_STORAGE_DIR not set.");
+        }
+
+        if (File.separator.equals("\\")) {
+            LOCAL_STORAGE_DIR = temp.replaceAll("/", Matcher.quoteReplacement(File.separator));
+        } else {
+            LOCAL_STORAGE_DIR = temp;
         }
     }
+
     public static final String WEB_FILE_PATH = "/file-storage";
 
     public static void saveLocal(InputStream inputStream, String fullPath) {

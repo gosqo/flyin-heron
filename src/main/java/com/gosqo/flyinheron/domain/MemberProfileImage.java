@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
 @Getter
@@ -60,7 +61,12 @@ public class MemberProfileImage {
                 : fullPath;
 
         this.referencePath = referencePath == null
-                ? this.fullPath.replaceAll(DefaultImageManager.LOCAL_STORAGE_DIR, DefaultImageManager.WEB_FILE_PATH)
+                ? this.fullPath
+                .replaceAll(
+                        Matcher.quoteReplacement(DefaultImageManager.LOCAL_STORAGE_DIR)
+                        , DefaultImageManager.WEB_FILE_PATH
+                )
+                .replaceAll(Matcher.quoteReplacement(File.separator), "/")
                 : referencePath;
 
         this.savedLocal = savedLocal != null && savedLocal;

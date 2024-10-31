@@ -7,4 +7,5 @@
     <include resource="logging/dev-logging.xml"/>
     <include resource="logging/test-logging.xml"/>
     <include resource="logging/win-logging.xml"/>
+    <include resource="logging/winLocal-logging.xml"/>
 </configuration>
