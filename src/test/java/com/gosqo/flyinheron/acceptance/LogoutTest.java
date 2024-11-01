@@ -1,5 +1,6 @@
 package com.gosqo.flyinheron.acceptance;
 
+import com.gosqo.flyinheron.controller.AuthCookieManager;
 import com.gosqo.flyinheron.domain.fixture.MemberFixture;
 import com.gosqo.flyinheron.dto.JsonResponse;
 import com.gosqo.flyinheron.dto.auth.AuthenticationResponse;
@@ -16,8 +17,8 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
+import org.springframework.util.StringUtils;
 
-import static com.gosqo.flyinheron.controller.AuthenticationController.REFRESH_TOKEN_COOKIE_NAME;
 import static com.gosqo.flyinheron.global.utility.HeadersUtility.buildHeadersContentTypeJson;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -64,7 +65,7 @@ class LogoutTest extends SpringBootTestBase {
         // given
         final var refreshToken = jwtService.generateRefreshToken(member);
         final var headers = buildHeadersContentTypeJson();
-        final var cookieValue = RequestCookie.valueWith(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
+        final var cookieValue = RequestCookie.valueWith(AuthCookieManager.REFRESH_TOKEN_COOKIE_NAME, refreshToken);
         headers.add(HttpHeaders.COOKIE, cookieValue);
 
         final var request = RequestEntity
@@ -92,17 +93,16 @@ class LogoutTest extends SpringBootTestBase {
         assertThat(loginResponse.getBody()).isNotNull();
         assertThat(loginResponse.getBody().getAccessToken()).isNotNull();
 
-        final var loginResponseHeaders = loginResponse.getHeaders().get(HttpHeaders.SET_COOKIE);
+        final var loginResponseHeaders = loginResponse.getHeaders();
         assertThat(loginResponseHeaders).isNotNull();
 
-        final var refreshTokenCookie = RespondedCookie
-                .extract(loginResponseHeaders, REFRESH_TOKEN_COOKIE_NAME);
-        assertThat(refreshTokenCookie).isNotNull();
-
-        final var refreshToken = RespondedCookie.getCookieValue(refreshTokenCookie);
+        final var refreshToken = RespondedCookie
+                .getCookieValue(loginResponseHeaders, AuthCookieManager.REFRESH_TOKEN_COOKIE_NAME);
+        assertThat(StringUtils.hasText(refreshToken)).isNotNull();
 
         final var logoutHeaders = buildHeadersContentTypeJson();
-        final var requestCookieValue = RequestCookie.valueWith(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
+        final var requestCookieValue = RequestCookie.valueWith(AuthCookieManager.REFRESH_TOKEN_COOKIE_NAME,
+                refreshToken);
         logoutHeaders.add(HttpHeaders.COOKIE, requestCookieValue);
 
         final var logoutRequest = RequestEntity

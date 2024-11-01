@@ -1,12 +1,10 @@
 package com.gosqo.flyinheron.dto.member;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Builder;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-public class MemberRegisterResponse {
-    private String message;
-}
+@Builder
+public record MemberRegisterResponse(
+        int status
+        , String message
+        , String accessToken
+) {}

@@ -30,9 +30,12 @@ export class SignUpDOM {
                 return;
             }
 
-            const data = await response.text();
-            alert(data);
-            location.replace("/login");
+            const data = await response.json();
+
+            localStorage.setItem("access_token", "Bearer " + data.accessToken);
+            alert(data.message);
+
+            location.replace("/");
         } catch (error) {
             console.error(error);
         }

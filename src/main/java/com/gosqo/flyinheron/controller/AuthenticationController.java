@@ -4,7 +4,6 @@ import com.gosqo.flyinheron.dto.auth.AuthenticationRequest;
 import com.gosqo.flyinheron.dto.auth.AuthenticationResponse;
 import com.gosqo.flyinheron.global.utility.AuthHeaderUtility;
 import com.gosqo.flyinheron.service.AuthenticationService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -24,9 +23,8 @@ import java.util.Map;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
-    public static final String REFRESH_TOKEN_COOKIE_NAME = "sref";
-
     private final AuthenticationService service;
+    private final AuthCookieManager authCookieManager;
 
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshTokenExpiration;
@@ -38,7 +36,7 @@ public class AuthenticationController {
     ) {
         Map<String, String> tokens = service.authenticate(request);
 
-        addRefreshTokenCookie(tokens.get("refreshToken"), response);
+        authCookieManager.addRefreshTokenCookie(tokens.get("refreshToken"), response);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -64,7 +62,7 @@ public class AuthenticationController {
         final String refreshTokenToResponse = tokens.get("refreshToken");
 
         if (!formerRefreshToken.equals(refreshTokenToResponse)) {
-            addRefreshTokenCookie(refreshTokenToResponse, response);
+            authCookieManager.addRefreshTokenCookie(refreshTokenToResponse, response);
         }
 
         return ResponseEntity
@@ -73,16 +71,5 @@ public class AuthenticationController {
                         .accessToken(tokens.get("accessToken"))
                         .build()
                 );
-    }
-
-    private void addRefreshTokenCookie(String tokens, HttpServletResponse response) {
-        Cookie refreshToken = new Cookie(REFRESH_TOKEN_COOKIE_NAME, tokens);
-
-        refreshToken.setAttribute("SameSite", "Strict");
-        refreshToken.setMaxAge((int) (refreshTokenExpiration / 1000)); // millis to seconds
-        refreshToken.setPath("/");
-        refreshToken.setHttpOnly(Boolean.TRUE);
-
-        response.addCookie(refreshToken);
     }
 }

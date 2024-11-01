@@ -2,6 +2,7 @@ package com.gosqo.flyinheron.controller;
 
 import com.gosqo.flyinheron.dto.member.*;
 import com.gosqo.flyinheron.service.MemberService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,21 +12,33 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/member")
 public class MemberController {
 
     private final MemberService service;
+    private final AuthCookieManager cookieManager;
 
     @PostMapping("")
     public ResponseEntity<Object> register(
             @Valid @RequestBody MemberRegisterRequest request
+            , HttpServletResponse response
     ) {
-        service.register(request);
+        Map<String, String> tokens = service.register(request);
+
+        cookieManager.addRefreshTokenCookie(tokens.get("refreshToken"), response);
+
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("회원가입에 성공했습니다.");
+                .status(HttpStatus.CREATED)
+                .body(MemberRegisterResponse.builder()
+                        .status(HttpStatus.CREATED.value())
+                        .message("회원가입에 성공했습니다.")
+                        .accessToken(tokens.get("accessToken"))
+                        .build()
+                );
     }
 
     @PostMapping("/isUniqueEmail")

@@ -1,10 +1,9 @@
 package com.gosqo.flyinheron.global.utility;
 
+import com.gosqo.flyinheron.controller.AuthCookieManager;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Arrays;
-
-import static com.gosqo.flyinheron.controller.AuthenticationController.REFRESH_TOKEN_COOKIE_NAME;
 
 public class AuthHeaderUtility {
     public static final String[] REFRESH_TOKEN_REQUIRED_URI = {
@@ -20,7 +19,7 @@ public class AuthHeaderUtility {
 
         if (needRefreshToken(request)) {
             final String refreshTokenCookieValue = CookieUtility
-                    .findCookie(REFRESH_TOKEN_COOKIE_NAME, request.getCookies())
+                    .findCookie(AuthCookieManager.REFRESH_TOKEN_COOKIE_NAME, request.getCookies())
                     .getValue();
 
             return refreshTokenCookieValue == null || refreshTokenCookieValue.isBlank();
@@ -43,7 +42,7 @@ public class AuthHeaderUtility {
 
     public static String extractRefreshToken(HttpServletRequest request) {
         final String refreshTokenCookieValue = CookieUtility
-                .findCookie(REFRESH_TOKEN_COOKIE_NAME, request.getCookies())
+                .findCookie(AuthCookieManager.REFRESH_TOKEN_COOKIE_NAME, request.getCookies())
                 .getValue();
 
         if (refreshTokenCookieValue == null || refreshTokenCookieValue.isBlank()) {

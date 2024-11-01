@@ -1,6 +1,6 @@
 package com.gosqo.flyinheron.acceptance;
 
-import com.gosqo.flyinheron.controller.AuthenticationController;
+import com.gosqo.flyinheron.controller.AuthCookieManager;
 import com.gosqo.flyinheron.domain.Token;
 import com.gosqo.flyinheron.domain.fixture.MemberFixture;
 import com.gosqo.flyinheron.dto.auth.AuthenticationRequest;
@@ -75,9 +75,9 @@ class AuthenticationTest extends SpringBootTestBase {
 
         assertThat(cookies).isNotNull();
 
-        final var refreshTokenCookie = RespondedCookie.extract(
+        final var refreshTokenCookie = RespondedCookie.extractTargetSetCookieHeader(
                 cookies
-                , AuthenticationController.REFRESH_TOKEN_COOKIE_NAME
+                , AuthCookieManager.REFRESH_TOKEN_COOKIE_NAME
         );
 
         assertThat(refreshTokenCookie).isNotNull();
@@ -116,7 +116,7 @@ class AuthenticationTest extends SpringBootTestBase {
         final var headers = HeadersUtility.buildHeadersContentTypeJson();
 
         final var cookieValue = RequestCookie.valueWith(
-                AuthenticationController.REFRESH_TOKEN_COOKIE_NAME
+                AuthCookieManager.REFRESH_TOKEN_COOKIE_NAME
                 , refreshToken
         );
 
@@ -151,7 +151,7 @@ class AuthenticationTest extends SpringBootTestBase {
             final var headers = HeadersUtility.buildHeadersContentTypeJson();
 
             final var cookieValue = RequestCookie.valueWith(
-                    AuthenticationController.REFRESH_TOKEN_COOKIE_NAME
+                    AuthCookieManager.REFRESH_TOKEN_COOKIE_NAME
                     , refreshTokenExpiresIn7Days
             );
 
@@ -168,9 +168,9 @@ class AuthenticationTest extends SpringBootTestBase {
 
             assertThat(cookies).isNotNull();
 
-            String refreshTokenCookie = RespondedCookie.extract(
+            String refreshTokenCookie = RespondedCookie.extractTargetSetCookieHeader(
                     cookies
-                    , AuthenticationController.REFRESH_TOKEN_COOKIE_NAME
+                    , AuthCookieManager.REFRESH_TOKEN_COOKIE_NAME
             );
 
             assertThat(refreshTokenCookie).isNotNull();
@@ -198,7 +198,7 @@ class AuthenticationTest extends SpringBootTestBase {
             final var headers = HeadersUtility.buildHeadersContentTypeJson();
 
             final var cookieValue = RequestCookie.valueWith(
-                    AuthenticationController.REFRESH_TOKEN_COOKIE_NAME
+                    AuthCookieManager.REFRESH_TOKEN_COOKIE_NAME
                     , refreshTokenExpiresIn8Days
             );
 

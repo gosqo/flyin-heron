@@ -1,5 +1,6 @@
 package com.gosqo.flyinheron.service;
 
+import com.gosqo.flyinheron.controller.AuthCookieManager;
 import com.gosqo.flyinheron.domain.Token;
 import com.gosqo.flyinheron.dto.ResponseBodyWriter;
 import com.gosqo.flyinheron.global.utility.AuthHeaderUtility;
@@ -16,8 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.gosqo.flyinheron.controller.AuthenticationController.REFRESH_TOKEN_COOKIE_NAME;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -32,7 +31,6 @@ public class LogoutService implements LogoutHandler {
      *
      * <pre>
      * {@code List<token>.isEmpty} 가 참이라면, (조회되는 토큰이 없는 상황)
-     *   log.info("user tried refresh token that does not exist on database.");
      *   사용자에게 상태 코드 400과 함께 '잘못된 접근'을 응답합니다.
      * </pre>
      * <pre>
@@ -65,7 +63,10 @@ public class LogoutService implements LogoutHandler {
         int deletedTokenCount = tokenRepository.deleteByToken(refreshToken);
         log.info("Deleted token count is: {}", deletedTokenCount);
 
-        Cookie deleteRefreshToken = CookieUtility.findCookie(REFRESH_TOKEN_COOKIE_NAME, request.getCookies());
+        Cookie deleteRefreshToken = CookieUtility.findCookie(
+                AuthCookieManager.REFRESH_TOKEN_COOKIE_NAME
+                , request.getCookies());
+
         deleteRefreshToken.setMaxAge(0);
         deleteRefreshToken.setPath("/");
         response.addCookie(deleteRefreshToken);
