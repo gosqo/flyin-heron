@@ -207,3 +207,11 @@ src/main/resources/config
 
 # PKCS12
 *.p12
+
+### Node.js ###
+# npm install 시 아래 빈 라인 전 까지 설치 가능
+node_modules/
+package-lock.json
+
+npm-debug.log*
+dist/
