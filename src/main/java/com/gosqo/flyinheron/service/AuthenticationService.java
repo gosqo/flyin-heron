@@ -46,7 +46,7 @@ public class AuthenticationService {
 
         saveMemberToken(member, refreshToken);
 
-        tokensToResponse.put("accessToken", buildAccessTokenWithClaims(member));
+        tokensToResponse.put("accessToken", jwtService.buildAccessTokenWithClaims(member));
         tokensToResponse.put("refreshToken", refreshToken);
 
         return tokensToResponse;
@@ -79,17 +79,10 @@ public class AuthenticationService {
             refreshTokenToResponse = reissuedRefreshToken;
         }
 
-        tokensToResponse.put("accessToken", buildAccessTokenWithClaims(member));
+        tokensToResponse.put("accessToken", jwtService.buildAccessTokenWithClaims(member));
         tokensToResponse.put("refreshToken", refreshTokenToResponse);
 
         return tokensToResponse;
-    }
-
-    private String buildAccessTokenWithClaims(Member member) {
-        Map<String, Object> extraClaims = new HashMap<>();
-        extraClaims.put("id", member.getId());
-
-        return jwtService.generateAccessToken(extraClaims, member);
     }
 
     private void saveMemberToken(Member member, String jwtToken) {

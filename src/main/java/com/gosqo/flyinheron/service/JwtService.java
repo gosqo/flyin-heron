@@ -1,5 +1,6 @@
 package com.gosqo.flyinheron.service;
 
+import com.gosqo.flyinheron.domain.Member;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -24,6 +25,17 @@ public class JwtService {
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshTokenExpiration;
 
+    public String buildAccessTokenWithClaims(Member member) {
+        if (member.getId() == null) {
+            throw new IllegalArgumentException("member has no id value");
+        }
+
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("id", member.getId());
+
+        return generateAccessToken(extraClaims, member);
+    }
+
     public String generateAccessToken(UserDetails userDetails) {
         return generateAccessToken(new HashMap<>(), userDetails);
     }
@@ -42,7 +54,7 @@ public class JwtService {
     public String generateRefreshToken(
             UserDetails userDetails,
             long expiration
-            ) {
+    ) {
         return buildToken(new HashMap<>(), userDetails, expiration);
     }
 
