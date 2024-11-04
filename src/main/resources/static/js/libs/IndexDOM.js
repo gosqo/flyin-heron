@@ -3,6 +3,7 @@ import { DomCreate } from "./dom/DomCreate.js";
 import { Logout } from "./member/Logout.js";
 import { TestJwt } from "./token/TestJwt.js";
 import { MemberProfileImage } from "./member/MemberProfile.js";
+import { throttle } from "./control/Throttle.js";
 
 export class IndexDOM {
     testJwt = new TestJwt();
@@ -36,9 +37,10 @@ export class IndexDOM {
 
     addJwtTestButton() {
         const buttonsArea = document.querySelector("#buttons-area");
-
         const jwtTestButton = DomCreate.button("jwt-test-button", "btn btn-info me-1", "Test JWT");
-        jwtTestButton.onclick = () => this.testJwt.testJwt();
+
+        jwtTestButton.onclick = throttle(this.testJwt.testJwt, 300);
+
         buttonsArea.append(jwtTestButton);
     }
 
