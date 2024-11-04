@@ -33,11 +33,17 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final ClaimExtractor claimExtractor;
 
-    private static PageRequest getPageRequest(int pageNumber) {
-        pageNumber = pageNumber - 1;
+    private static PageRequest getPageRequest(int pageNumber) throws NoResourceFoundException {
+        int pageIndex = pageNumber - 1;
+
+        if (pageIndex < 0) {
+            throw new NoResourceFoundException(HttpMethod.GET
+                    , "/board?page=" + pageIndex + 1);
+        }
+
         Sort sort = Sort.by(Sort.Direction.DESC, "registerDate");
 
-        return PageRequest.of(pageNumber, PAGE_SIZE, sort);
+        return PageRequest.of(pageIndex, PAGE_SIZE, sort);
     }
 
     @Transactional

@@ -107,29 +107,62 @@ export class BoardList {
                 document.querySelector("#board-sample").remove();
             }
 
-            function createPageItems(boardPageTotalPages, boardPageNumber) {
+            function createPageItems(totalPagesCount, currentPageIndex) {
+                const lastPageIndex = totalPagesCount - 1;
+                const itemsCount = 5;
                 // variables for iteration (start|endNumber)
-                const startNumber = boardPageNumber > 1
-                    ? boardPageNumber - 2
-                    : 0;
-
-                const endNumber = boardPageNumber + 3 > boardPageTotalPages
-                    ? boardPageTotalPages
-                    : boardPageNumber + 3;
+                const startNumber = calStartNumber(currentPageIndex, lastPageIndex, itemsCount);
+                const endNumber = calEndNumber(currentPageIndex, startNumber, lastPageIndex, itemsCount);
 
                 const paginationUl = document.querySelector("#pagination-ul");
                 const prevButton = paginationUl.querySelector("#previous-button");
                 const nextButton = paginationUl.querySelector("#next-button");
 
-                setPrevButton(boardPageNumber);
+                setPrevButton(currentPageIndex);
 
-                for (let i = startNumber; i < endNumber; i++) {
-                    const pageItem = createPageItem(i, boardPageNumber);
+                for (let i = startNumber; i <= endNumber; i++) {
+                    const pageItem = createPageItem(i, currentPageIndex);
                     paginationUl.append(pageItem);
                 }
                 removePageButtonSample();
 
-                setNextButton(boardPageNumber);
+                setNextButton(currentPageIndex);
+
+                function calStartNumber(current, last, count) {
+                    let val;
+
+                    if (current <= 1) {
+                        val = 0;
+                        return val;
+                    }
+
+                    const toLast = last - current;
+
+                    if (toLast <= 2) {
+                        val = current - (count - (toLast) - 1);
+                        return val;
+                    }
+
+                    val = current - 2;
+                    return val;
+                }
+
+                function calEndNumber(current, start, last, count) {
+                    let val;
+
+                    if (last - current <= 2) {
+                        val = last;
+                        return val;
+                    }
+
+                    if (current - start <= 1) {
+                        val = start + count - 1;
+                        return val;
+                    }
+
+                    val = current + 2;
+                    return val;
+                }
 
                 function setPrevButton(boardPageNumber) {
                     if (boardPageNumber > 2) {
@@ -161,7 +194,7 @@ export class BoardList {
                 }
 
                 function setNextButton(boardPageNumber) {
-                    if (boardPageNumber < boardPageTotalPages - 3) {
+                    if (boardPageNumber < totalPagesCount - 3) {
                         nextButton.querySelector("a").href = `/board?page=${boardPageNumber + 1 + 3}`
                         paginationUl.append(nextButton);
                         return;
