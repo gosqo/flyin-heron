@@ -54,7 +54,7 @@ export class MemberProfileImage {
                 formData.set("profileImage", resizedBlob, file.name);
 
                 console.log(formData.get("profileImage"));
-                
+
                 registerButton.removeAttribute("disabled");
             });
         });
@@ -63,6 +63,8 @@ export class MemberProfileImage {
         registerButton.disabled = "true";
 
         registerButton.addEventListener("click", async () => {
+            registerButton.disabled = "true";
+
             const file = formData.get("profileImage");
 
             if (file === null || file === undefined) {
@@ -99,8 +101,6 @@ export class MemberProfileImage {
             if (existingPreview) {
                 existingPreview.remove();
             }
-
-            registerButton.disabled = "true";
         });
 
         inputGroup.append(fileInput, registerButton);

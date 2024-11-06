@@ -39,7 +39,7 @@ export class IndexDOM {
         const buttonsArea = document.querySelector("#buttons-area");
         const jwtTestButton = DomCreate.button("jwt-test-button", "btn btn-info me-1", "Test JWT");
 
-        jwtTestButton.onclick = throttle(this.testJwt.testJwt, 300);
+        jwtTestButton.onclick = throttle(this.testJwt.testJwt, 550);
 
         buttonsArea.append(jwtTestButton);
     }

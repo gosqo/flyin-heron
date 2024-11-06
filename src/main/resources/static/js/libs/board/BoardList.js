@@ -69,7 +69,6 @@ export class BoardList {
                 clonedBoard.querySelector("#board-title").textContent = board.title;
                 clonedBoard.querySelector("#board-content").textContent = trimOver150(board.content);
                 clonedBoard.querySelector("#board-date").textContent = Board.Utility.getRecentBoardDate(board);
-
                 clonedBoard.querySelector("#board-writer").textContent = board.member.nickname;
 
                 const profileImage = clonedBoard.querySelector("#board-member-profile-image");
@@ -81,6 +80,8 @@ export class BoardList {
 
                 addMouseOverEvent(clonedBoard);
                 addClickEvent(clonedBoard);
+
+                boardListContainer.removeAttribute("hidden");
 
                 function trimOver150(content) {
                     return content.length > 151 ? trimIn150(content) : content;
@@ -114,11 +115,15 @@ export class BoardList {
                 const startNumber = calStartNumber(currentPageIndex, lastPageIndex, itemsCount);
                 const endNumber = calEndNumber(currentPageIndex, startNumber, lastPageIndex, itemsCount);
 
+                const paginationContainer = document.querySelector("#pagination-container");
                 const paginationUl = document.querySelector("#pagination-ul");
-                const prevButton = paginationUl.querySelector("#previous-button");
-                const nextButton = paginationUl.querySelector("#next-button");
+                const firstPageButton = paginationUl.querySelector("#first-page-button");
+                const prevPageButton = paginationUl.querySelector("#previous-page-button");
+                const nextPageButton = paginationUl.querySelector("#next-page-button");
+                const lastPageButton = paginationUl.querySelector("#last-page-button");
 
-                setPrevButton(currentPageIndex);
+                setFirstPageButton(currentPageIndex);
+                setPrevPageButton(currentPageIndex, lastPageIndex);
 
                 for (let i = startNumber; i <= endNumber; i++) {
                     const pageItem = createPageItem(i, currentPageIndex);
@@ -126,7 +131,11 @@ export class BoardList {
                 }
                 removePageButtonSample();
 
-                setNextButton(currentPageIndex);
+                setNextPageButton(currentPageIndex, lastPageIndex);
+                setLastPageButton(currentPageIndex, lastPageIndex);
+
+                paginationContainer.removeAttribute("hidden");
+
 
                 function calStartNumber(current, last, count) {
                     let val;
@@ -164,16 +173,37 @@ export class BoardList {
                     return val;
                 }
 
-                function setPrevButton(boardPageNumber) {
-                    if (boardPageNumber > 2) {
-                        prevButton.querySelector("a").href = `/board?page=${boardPageNumber + 1 - 3}`
+                function setFirstPageButton(currentPageIndex) {
+                    if (currentPageIndex > 2) {
+                        firstPageButton.querySelector("a").href = `/board?page=1`;
                         return;
                     }
-                    prevButton.remove();
+
+                    firstPageButton.remove();
                 }
 
-                function createPageItem(targetNumber, boardPageNumber) {
-                    const presentNumber = targetNumber + 1
+                function setPrevPageButton(current, last) {
+
+                    if (current === 3) {
+                        prevPageButton.querySelector("a").href = `/board?page=${(current + 1) - 3}`;
+                        return;
+                    }
+
+                    if (current === 4) {
+                        prevPageButton.querySelector("a").href = `/board?page=${(current + 1) - 4}`;
+                        return;
+                    }
+
+                    if (current > 4) {
+                        prevPageButton.querySelector("a").href = `/board?page=${(current + 1) - 5}`;
+                        return;
+                    }
+
+                    prevPageButton.remove();
+                }
+
+                function createPageItem(targetIndex, current) {
+                    const presentNumber = targetIndex + 1
                     const pageItem = document.querySelector("#page-button-sample").cloneNode(true);
                     const pageAnchor = pageItem.querySelector("a")
 
@@ -181,7 +211,7 @@ export class BoardList {
                     pageAnchor.href = `/board?page=${presentNumber}`;
                     pageAnchor.textContent = presentNumber;
 
-                    if (boardPageNumber === targetNumber) {
+                    if (current === targetIndex) {
                         pageAnchor.classList.add("active");
                         pageAnchor.removeAttribute("href");
                     }
@@ -189,17 +219,43 @@ export class BoardList {
                     return pageItem;
                 }
 
-                function removePageButtonSample() {
-                    document.querySelector("#page-button-sample").remove();
-                }
+                function setNextPageButton(current, last) {
 
-                function setNextButton(boardPageNumber) {
-                    if (boardPageNumber < totalPagesCount - 3) {
-                        nextButton.querySelector("a").href = `/board?page=${boardPageNumber + 1 + 3}`
-                        paginationUl.append(nextButton);
+                    const toLast = last - current;
+
+                    if (toLast === 3) {
+                        nextPageButton.querySelector("a").href = `/board?page=${(current + 1) + 3}`;
+                        paginationUl.append(nextPageButton);
                         return;
                     }
-                    nextButton.remove()
+
+                    if (toLast === 4) {
+                        nextPageButton.querySelector("a").href = `/board?page=${(current + 1) + 4}`;
+                        paginationUl.append(nextPageButton);
+                        return;
+                    }
+
+                    if (toLast > 4) {
+                        nextPageButton.querySelector("a").href = `/board?page=${(current + 1) + 5}`;
+                        paginationUl.append(nextPageButton);
+                        return;
+                    }
+
+                    nextPageButton.remove();
+                }
+
+                function setLastPageButton(current, last) {
+                    if (last - current > 2) {
+                        lastPageButton.querySelector("a").href = `/board?page=${last + 1}`;
+                        paginationUl.append(lastPageButton);
+                        return;
+                    }
+
+                    lastPageButton.remove()
+                }
+
+                function removePageButtonSample() {
+                    document.querySelector("#page-button-sample").remove();
                 }
             }
         }
